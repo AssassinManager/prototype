@@ -1,8 +1,0 @@
-name = Game Page System
-description = System to assign targets to all users, and create a block with button
-package = Assassin Manager - Modules
-
-core = 7.x
-php = 5.x
-
-version = "1.0"

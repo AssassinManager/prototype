@@ -540,7 +540,7 @@ class EntityReference_SelectionHandler_Generic_taxonomy_term extends EntityRefer
 
     foreach ($bundles as $bundle) {
       if ($vocabulary = taxonomy_vocabulary_machine_name_load($bundle)) {
-        if ($terms = taxonomy_get_tree($vocabulary->vid, 0, NULL, TRUE)) {
+        if ($terms = taxonomy_get_tree($vocabulary->vid, 0)) {
           foreach ($terms as $term) {
             $options[$vocabulary->machine_name][$term->tid] = str_repeat('-', $term->depth) . check_plain($term->name);
           }

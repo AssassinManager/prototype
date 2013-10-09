@@ -1,8 +1,0 @@
-name = Mandrill email action
-description = An action to send a mandrill email
-package = Assassin Manager - Modules
-
-core = 7.x
-php = 5.x
-
-version = "1.0"
