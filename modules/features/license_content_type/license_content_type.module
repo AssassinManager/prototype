@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the License Content Type feature.
+ */
+
+include_once 'license_content_type.features.inc';
