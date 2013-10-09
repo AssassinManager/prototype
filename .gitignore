@@ -2,6 +2,7 @@
 
 files
 */private
+*/*~
 
 # Ignore default text files
 .htaccess
