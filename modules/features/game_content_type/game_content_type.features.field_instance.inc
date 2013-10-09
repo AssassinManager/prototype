@@ -10,51 +10,6 @@
 function game_content_type_field_default_field_instances() {
   $field_instances = array();
 
-  // Exported field_instance: 'node-game-body'
-  $field_instances['node-game-body'] = array(
-    'bundle' => 'game',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => 'Who\'s this game for? What\'s cool about it? Pitch it!',
-    'display' => array(
-      'default' => array(
-        'label' => 'hidden',
-        'module' => 'text',
-        'settings' => array(),
-        'type' => 'text_default',
-        'weight' => 1,
-      ),
-      'teaser' => array(
-        'label' => 'hidden',
-        'module' => 'text',
-        'settings' => array(
-          'trim_length' => 600,
-        ),
-        'type' => 'text_summary_or_trimmed',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'body',
-    'label' => 'Description',
-    'required' => 1,
-    'settings' => array(
-      'display_summary' => 0,
-      'text_processing' => 1,
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'text',
-      'settings' => array(
-        'rows' => 8,
-        'summary_rows' => 5,
-      ),
-      'type' => 'text_textarea_with_summary',
-      'weight' => 31,
-    ),
-  );
-
   // Exported field_instance: 'node-game-field_date'
   $field_instances['node-game-field_date'] = array(
     'bundle' => 'game',
@@ -104,7 +59,47 @@ function game_content_type_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'date_text',
-      'weight' => 32,
+      'weight' => 4,
+    ),
+  );
+
+  // Exported field_instance: 'node-game-field_description'
+  $field_instances['node-game-field_description'] = array(
+    'bundle' => 'game',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_description',
+    'label' => 'Description',
+    'required' => 1,
+    'settings' => array(
+      'text_processing' => 1,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 6,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 3,
     ),
   );
 
@@ -113,7 +108,6 @@ function game_content_type_field_default_field_instances() {
   t('Date');
   t('Description');
   t('Start & end times for the game!');
-  t('Who\'s this game for? What\'s cool about it? Pitch it!');
 
   return $field_instances;
 }

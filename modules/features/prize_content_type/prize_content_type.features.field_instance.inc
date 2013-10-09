@@ -10,36 +10,32 @@
 function prize_content_type_field_default_field_instances() {
   $field_instances = array();
 
-  // Exported field_instance: 'node-prize-body'
-  $field_instances['node-prize-body'] = array(
+  // Exported field_instance: 'node-prize-field_prize_description'
+  $field_instances['node-prize-field_prize_description'] = array(
     'bundle' => 'prize',
     'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
       'default' => array(
-        'label' => 'hidden',
+        'label' => 'above',
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 0,
+        'weight' => 2,
       ),
       'teaser' => array(
-        'label' => 'hidden',
-        'module' => 'text',
-        'settings' => array(
-          'trim_length' => 600,
-        ),
-        'type' => 'text_summary_or_trimmed',
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
         'weight' => 0,
       ),
     ),
     'entity_type' => 'node',
-    'field_name' => 'body',
-    'label' => 'Description',
-    'required' => 0,
+    'field_name' => 'field_prize_description',
+    'label' => 'Desciption',
+    'required' => 1,
     'settings' => array(
-      'display_summary' => 0,
       'text_processing' => 1,
       'user_register_form' => FALSE,
     ),
@@ -48,10 +44,9 @@ function prize_content_type_field_default_field_instances() {
       'module' => 'text',
       'settings' => array(
         'rows' => 5,
-        'summary_rows' => 5,
       ),
-      'type' => 'text_textarea_with_summary',
-      'weight' => 31,
+      'type' => 'text_textarea',
+      'weight' => 3,
     ),
   );
 
@@ -101,13 +96,13 @@ function prize_content_type_field_default_field_instances() {
       'module' => 'number',
       'settings' => array(),
       'type' => 'number',
-      'weight' => 32,
+      'weight' => 2,
     ),
   );
 
   // Translatables
   // Included for use with string extractors like potx.
-  t('Description');
+  t('Desciption');
   t('Required Rank');
 
   return $field_instances;
