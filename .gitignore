@@ -2,7 +2,11 @@
 
 files
 */private
+
+*~
+.DS_Store
 */*~
+*/.DS_Store
 
 # Ignore default text files
 .htaccess
