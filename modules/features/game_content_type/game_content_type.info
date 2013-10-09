@@ -1,0 +1,14 @@
+name = Game Content Type
+core = 7.x
+package = Assassin Manager
+version = 7.x-1.0-beta1
+project = game_content_type
+dependencies[] = date
+dependencies[] = features
+dependencies[] = text
+features[features_api][] = api:2
+features[field_base][] = body
+features[field_base][] = field_date
+features[field_instance][] = node-game-body
+features[field_instance][] = node-game-field_date
+features[node][] = game
