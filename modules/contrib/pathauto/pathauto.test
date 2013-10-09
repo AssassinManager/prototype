@@ -193,23 +193,6 @@ class PathautoUnitTestCase extends PathautoTestHelper {
   }
 
   /**
-   * Test pathauto_clean_alias().
-   */
-  function testCleanAlias() {
-    $tests = array();
-    $tests['one/two/three'] = 'one/two/three';
-    $tests['/one/two/three/'] = 'one/two/three';
-    $tests['one//two///three'] = 'one/two/three';
-    $tests['one/two--three/-/--/-/--/four---five'] = 'one/two-three/four-five';
-    $tests['one/-//three--/four'] = 'one/three/four';
-    foreach ($tests as $input => $expected) {
-      $output = pathauto_clean_alias($input);
-      $this->assertEqual($output, $expected, t("pathauto_clean_alias('@input') expected '@expected', actual '@output'", array('@input' => $input, '@expected' => $expected, '@output' => $output)));
-    }
-
-  }
-
-  /**
    * Test pathauto_path_delete_multiple().
    */
   function testPathDeleteMultiple() {
@@ -332,17 +315,17 @@ class PathautoUnitTestCase extends PathautoTestHelper {
 
     // Check that Pathauto does not create an alias of '/admin'.
     $node = $this->drupalCreateNode(array('title' => 'Admin', 'type' => 'page'));
-    $this->assertEntityAlias('node', $node, 'admin-0');
+    $this->assertNoEntityAlias('node', $node);
 
     // Check that Pathauto does not create an alias of '/modules'.
     $node->title = 'Modules';
     node_save($node);
-    $this->assertEntityAlias('node', $node, 'modules-0');
+    $this->assertNoEntityAlias('node', $node);
 
     // Check that Pathauto does not create an alias of '/index.php'.
     $node->title = 'index.php';
     node_save($node);
-    $this->assertEntityAlias('node', $node, 'index.php-0');
+    $this->assertNoEntityAlias('node', $node);
 
     // Check that a safe value gets an automatic alias. This is also a control
     // to ensure the above tests work properly.

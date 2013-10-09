@@ -26,14 +26,9 @@ define('PATHAUTO_IGNORE_WORDS', 'a, an, as, at, before, but, by, for, from, is, 
  * Implements hook_hook_info().
  */
 function pathauto_hook_info() {
-  $hooks = array(
-    'pathauto',
-    'path_alias_types',
-    'pathauto_pattern_alter',
-    'pathauto_alias_alter',
-    'pathauto_is_alias_reserved',
-  );
-  return array_fill_keys($hooks, array('group' => 'pathauto'));
+  $info['pathauto'] = array('group' => 'pathauto');
+  $info['path_alias_types'] = array('group' => 'pathauto');
+  return $info;
 }
 
 /**
@@ -42,7 +37,8 @@ function pathauto_hook_info() {
  * Adds pathauto support for core modules.
  */
 function pathauto_module_implements_alter(&$implementations, $hook) {
-  if (in_array($hook, array('pathauto', 'path_alias_types'))) {
+  $hooks = pathauto_hook_info();
+  if (isset($hooks[$hook])) {
     $modules = array('node', 'taxonomy', 'user', 'forum', 'blog');
     foreach ($modules as $module) {
       if (module_exists($module)) {
@@ -70,9 +66,6 @@ function pathauto_help($path, $arg) {
       $output .= '<dt>' . t('Maximum alias and component length') . '</dt>';
       $output .= '<dd>' . t('The <strong>maximum alias length</strong> and <strong>maximum component length</strong> values default to 100 and have a limit of @max from Pathauto. This length is limited by the length of the "alias" column of the url_alias database table. The default database schema for this column is @max. If you set a length that is equal to that of the one set in the "alias" column it will cause problems in situations where the system needs to append additional words to the aliased URL. You should enter a value that is the length of the "alias" column minus the length of any strings that might get added to the end of the URL. The length of strings that might get added to the end of your URLs depends on which modules you have enabled and on your Pathauto settings. The recommended and default value is 100.', array('@max' => _pathauto_get_schema_alias_maxlength())) . '</dd>';
       $output .= '</dl>';
-      return $output;
-    case 'admin/config/search/path/update_bulk':
-      $output = '<p>' . t('Bulk generation will only generate URL aliases for items that currently have no aliases. This is typically used when installing Pathauto on a site that has existing un-aliased content that needs to be aliased in bulk.') . '</p>';
       return $output;
   }
 }
@@ -116,7 +109,7 @@ function pathauto_menu() {
     'file' => 'pathauto.admin.inc',
   );
   $items['admin/config/search/path/update_bulk'] = array(
-    'title' => 'Bulk generate',
+    'title' => 'Bulk update',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('pathauto_bulk_update_form'),
     'access arguments' => array('administer url aliases'),
@@ -381,19 +374,16 @@ function pathauto_action_info() {
     'type' => 'node',
     'label' => t('Update node alias'),
     'configurable' => FALSE,
-    'triggers' => array(),
   );
   $info['pathauto_taxonomy_term_update_action'] = array(
     'type' => 'taxonomy_term',
     'label' => t('Update taxonomy term alias'),
     'configurable' => FALSE,
-    'triggers' => array(),
   );
   $info['pathauto_user_update_action'] = array(
     'type' => 'user',
     'label' => t('Update user alias'),
     'configurable' => FALSE,
-    'triggers' => array(),
   );
 
   return $info;
@@ -425,39 +415,6 @@ function pathauto_entity_language($entity_type, $entity, $check_language_propert
   }
 
   return !empty($langcode) ? $langcode : LANGUAGE_NONE;
-}
-
-function pathauto_is_alias_reserved($alias, $source, $langcode = LANGUAGE_NONE) {
-  foreach (module_implements('pathauto_is_alias_reserved') as $module) {
-    $result = module_invoke($module, 'pathauto_is_alias_reserved', $alias, $source, $langcode);
-    if (!empty($result)) {
-      // As soon as the first module says that an alias is in fact reserved,
-      // then there is no point in checking the rest of the modules.
-      return TRUE;
-    }
-  }
-
-  return FALSE;
-}
-
-/**
- * Implements hook_pathauto_is_alias_reserved() on behalf of path.module.
- */
-function path_pathauto_is_alias_reserved($alias, $source, $langcode) {
-  return (bool) db_query_range("SELECT pid FROM {url_alias} WHERE source <> :source AND alias = :alias AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(
-    ':source' => $source,
-    ':alias' => $alias,
-    ':language' => $langcode,
-    ':language_none' => LANGUAGE_NONE,
-  ))->fetchField();
-}
-
-/**
- * Implements hook_pathauto_is_alias_reserved().
- */
-function pathauto_pathauto_is_alias_reserved($alias, $source, $langcode) {
-  module_load_include('inc', 'pathauto');
-  return _pathauto_path_is_callback($alias);
 }
 
 if (!function_exists('path_field_extra_fields')) {
@@ -573,7 +530,7 @@ function pathauto_node_update_alias(stdClass $node, $op, array $options = array(
 
   module_load_include('inc', 'pathauto');
   $uri = entity_uri('node', $node);
-  return pathauto_create_alias('node', $op, $uri['path'], array('node' => $node), $node->type, $options['language']);
+  pathauto_create_alias('node', $op, $uri['path'], array('node' => $node), $node->type, $options['language']);
 }
 
 /**
@@ -692,7 +649,7 @@ function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options
 
   module_load_include('inc', 'pathauto');
   $uri = entity_uri('taxonomy_term', $term);
-  $result = pathauto_create_alias($module, $op, $uri['path'], array('term' => $term), $term->vocabulary_machine_name, $options['language']);
+  pathauto_create_alias($module, $op, $uri['path'], array('term' => $term), $term->vocabulary_machine_name, $options['language']);
 
   if (!empty($options['alias children'])) {
     // For all children generate new aliases.
@@ -702,8 +659,6 @@ function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options
       pathauto_taxonomy_term_update_alias($subterm, $op, $options);
     }
   }
-
-  return $result;
 }
 
 /**
@@ -811,14 +766,12 @@ function pathauto_user_update_alias(stdClass $account, $op, array $options = arr
 
   module_load_include('inc', 'pathauto');
   $uri = entity_uri('user', $account);
-  $return = pathauto_create_alias('user', $op, $uri['path'], array('user' => $account), NULL, $options['language']);
+  pathauto_create_alias('user', $op, $uri['path'], array('user' => $account), NULL, $options['language']);
 
   // Because blogs are also associated with users, also generate the blog paths.
   if (!empty($options['alias blog'])) {
     pathauto_blog_update_alias($account, $op, $options);
   }
-
-  return $return;
 }
 
 /**
@@ -875,7 +828,7 @@ function pathauto_blog_update_alias(stdClass $account, $op, array $options = arr
 
   module_load_include('inc', 'pathauto');
   if (node_access('create', 'blog', $account)) {
-    return pathauto_create_alias('blog', $op, "blog/{$account->uid}", array('user' => $account), NULL, $options['language']);
+    pathauto_create_alias('blog', $op, "blog/{$account->uid}", array('user' => $account), NULL, $options['language']);
   }
   else {
     pathauto_path_delete_all("blog/{$account->uid}");
