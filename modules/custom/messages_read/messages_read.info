@@ -1,0 +1,9 @@
+name = Messages Read Notifications
+description = Create a rules condition for messages, using the node author, node_recipients and comments
+package = Assassin Manager - Modules
+dependencies[] = rules
+
+core = 7.x
+php = 5.x
+
+version = "1.0"

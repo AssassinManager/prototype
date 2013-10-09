@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Players and Organizers feature.
+ */
+
+include_once 'am_players_and_organizers.features.inc';

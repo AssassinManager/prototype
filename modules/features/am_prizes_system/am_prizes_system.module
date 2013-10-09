@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Prizes System feature.
+ */
+
+include_once 'am_prizes_system.features.inc';

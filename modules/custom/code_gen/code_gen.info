@@ -1,0 +1,11 @@
+name = License to kill
+description = A system to create munltiple licenses and a block to display to the organizer
+package = Assassin Manager - Modules
+
+dependencies[] = views_data_export
+dependencies[] = genpass
+
+core = 7.x
+php = 5.x
+
+version = "1.0"

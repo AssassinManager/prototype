@@ -1,0 +1,8 @@
+name = Player Ranking System
+description = Automatically ranks players at CRON time
+package = Assassin Manager - Modules
+
+core = 7.x
+php = 5.x
+
+version = "1.0"

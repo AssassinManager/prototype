@@ -1,0 +1,8 @@
+name = Player Profile
+description = Automatically create and update the player profile, and edits the display of the user edit page based on the viewer
+package = Assassin Manager - Modules
+
+core = 7.x
+php = 5.x
+
+version = "1.0"

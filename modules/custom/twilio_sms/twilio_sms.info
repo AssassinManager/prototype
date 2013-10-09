@@ -1,0 +1,9 @@
+name = Twilio SMS Action
+description = Sends a twilio SMS when SMS option selected in user message. Also does a form validation for the SMS option.
+package = Assassin Manager - Modules
+dependencies[] = rules
+
+core = 7.x
+php = 5.x
+
+version = "1.0"

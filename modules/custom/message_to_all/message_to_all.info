@@ -1,0 +1,8 @@
+name = Message to all players
+description = A block to display on Game Manager
+package = Assassin Manager - Modules
+
+core = 7.x
+php = 5.x
+
+version = "1.0"

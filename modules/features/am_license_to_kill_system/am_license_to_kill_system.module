@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the License to Kill System feature.
+ */
+
+include_once 'am_license_to_kill_system.features.inc';

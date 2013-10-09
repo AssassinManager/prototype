@@ -1,0 +1,135 @@
+<?php
+ 
+ /**
+ * implements hook_menu().
+ */
+ function twilio_sms_menu() {
+  $items = array();
+  $items['admin/config/sms_action'] = array(
+    'title' => 'Twilio & SMS',
+    'description' => 'Set twilio api settings & msg templates',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('twilio_sms_settings'),
+    'access arguments' => array('administer site configuration'),
+   );
+  return $items;
+}
+
+function twilio_sms_settings() {
+    $form = array();
+
+    $form['api_checkbox'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Twilio API configuration'),
+    );
+	
+    $form['api'] = array(
+        '#type' => 'container',
+        '#states' => array(
+            'visible' => array(
+                ':input[name="api_checkbox"]' => array('checked' => true),
+                ),
+            ),
+    );
+	
+    $form['api']['twilio_sid'] = array(
+        '#type' => 'textfield',
+        '#title' => t('account sid'),
+        '#default_value' => variable_get('twilio_sid'),
+        '#size' => 40,
+        '#maxlength' => 255,
+        '#required' => true,
+        '#description' => t('twilio account sid - the 34 character string beginning with ac'),
+    );
+    $form['api']['twilio_auth_token'] = array(
+        '#type' => 'textfield',
+        '#title' => t('auth token'),
+        '#default_value' => variable_get('twilio_auth_token'),
+        '#size' => 40,
+        '#maxlength' => 255,
+        '#required' => true,
+        '#description' => t('twilio auth token - <a href="https://www.twilio.com/user/account">available on your dashboard</a>'),
+    );
+    $form['api']['twilio_number'] = array(
+        '#type' => 'textfield',
+        '#title' => t('twilio number'),
+        '#default_value' => variable_get('twilio_number'),
+        '#size' => 40,
+        '#maxlength' => 255,
+        '#required' => true,
+        '#description' => t('a <a href="https://www.twilio.com/user/account/phone-numbers" target="_new">phone number</a> from your twilio account'),
+    );
+    $form['suspension_msg'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Suspension message'),
+        '#default_value' => variable_get('suspension_msg'),
+        '#size' => 160,
+        '#maxlength' => 160,
+        '#required' => true,
+    );
+
+    return system_settings_form($form);
+}
+
+/**
+ * implements hook_node_validate().
+ */
+ function twilio_sms_node_validate($node, $form, &$form_state) {
+
+    if($node->type != 'message') return;
+    if (!isset($node->field_recipient_s_) || !isset($node->field_send_sms)) return;
+
+    if (count($node->field_recipient_s_['und']) > 1 && $node->field_send_sms['und'][0]['value'] == 1) {
+      form_set_error('send sms', t('sms option only available when there is one recipient...'));
+    }
+}
+
+/**
+ * implements hook_rules_action_info().
+ */
+function twilio_sms_rules_action_info() {
+    return array(
+        'twilio_sms_action_send_sms' => array(
+            'label' => t('sends a twilio sms'),
+            'group' => t('twilio sms'),
+            'parameter' => array(
+                'user' => array(
+                    'type' => 'user',
+                    'label' => t('recipient'),
+                ),
+                'message' => array(
+                    'type' => 'text',
+                    'label' => t('message'),
+                ),
+            ),
+        ),
+    );
+}
+ 
+function twilio_sms_action_send_sms($user, $message) {
+    if (!isset($user->field_cell_phone['und'])) {
+        drupal_set_message(t('the recipient has no cell phone!'), 'error');
+        return;
+    }
+
+    $file = getcwd() . '/sites/all/libraries/twilio/Twilio.php';
+    if (!is_file($file)) {
+        drupal_set_message(t('sms error, please contact the assassin manager staff for help.'), 'error');
+        return;
+    }
+
+    require_once $file;
+
+    $sid = variable_get('twilio_sid');
+    $token = variable_get('twilio_auth_token');
+    $recipient_phone = $user->field_cell_phone['und'][0]['value'];
+
+    $client = new services_twilio($sid, $token);
+    $sms = $client->account->sms_messages->create(
+        variable_get('twilio_number'),
+        $recipient_phone,
+        $message
+    );
+
+    print $sms->sid;
+}

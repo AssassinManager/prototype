@@ -1,0 +1,310 @@
+<?php
+
+require_once('player_profile.edit.inc');
+require_once('player_profile.page.inc');
+require_once('player_profile.create.inc');
+
+define('SUSPENDED_VALUE',	1);
+
+/**
+ * user profile page displaying a table with:
+ * - current target
+ * - pending target
+ * - killed targets
+ *
+ * also displays buttons to either:
+ * - suspend the user if the organizer is the one viewing the profile
+ * - select that the target has been eliminated if the player is viewing
+ **/
+// implements hook_page_build()
+function player_profile_page_build(&$page) {
+  if ($node = menu_get_object('node', 1)) {
+    if ($node->type != 'profile') return;
+    if (isset($page['content']['system_main']['#node_edit_form'])) return;
+
+    $page['content']['profile_form'] = drupal_get_form('player_profile_form');
+  }
+}
+
+// player data
+function get_player_id() {
+    $split_up_url = explode('user-',$_SERVER['REQUEST_URI']);
+    if(count($split_up_url) == 1) return 0;
+    return $split_up_url[1];
+}
+function player_status() {
+    $player_uid = get_player_id();
+
+    // is the player suspended?
+    $query = db_select('field_data_field_suspended', 'fps')
+        ->fields('fps', array('field_suspended_value'))
+        ->condition('entity_id', $player_uid)
+        ->execute()
+        ->fetch();
+
+	if (is_object($query)) {
+			if ($query->field_suspended_value == 1) return suspended;
+	} else 	if ($query['field_suspended_value'] == 1) return suspended;
+
+    // is the player alive?
+    $query = db_select('field_data_field_alive', 'fa')
+        ->fields('fa', array('field_alive_value'))
+        ->condition('entity_id', $player_uid)
+        ->execute()
+        ->fetch();
+
+    // if he's dead, who killed him?
+	if (is_object($query)) {
+			if ($query->field_alive_value == 0) return dead;
+	} else 	if ($query['field_alive_value'] == 0) return dead;
+
+    // is the user pending death?
+    $query = db_select('field_data_field_pending_target', 'fpt')
+        ->fields('fpt', array('entity_id'))
+        ->condition('field_pending_target_target_id', $player_uid)
+        ->execute()
+        ->fetch();
+
+    // who is saying killed the user?
+    if (isset($query->entity_id)) return pending_death;
+
+    return good;
+}
+function who_killed_player() {
+    $query = db_select('field_data_field_pending_target', 'fpt')
+        ->fields('fpt', array('entity_id', 'field_pending_target_target_id'))
+        ->condition('field_pending_target_target_id', get_player_id())
+        ->execute()
+        ->fetch();
+
+    return $query->entity_id;
+}
+function get_player_profile($uid) {
+    $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'profile')
+        ->condition('uid', $uid)
+        ->execute()
+        ->fetch();
+
+    if (!isset($query->nid)) return NULL;
+    return $query->nid;
+}
+function get_player_profiles() {
+    $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'profile')
+        ->execute();
+
+    $profiles = array();
+    while($record = $query->fetchassoc()) {
+        $profile = node_load($record['nid']);
+        array_push($profiles, $profile);
+    }
+
+    if (count($profiles) == 0) return NULL;
+
+    return $profiles;
+}
+
+// game data
+function get_game() {
+     $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'game', '=')
+        ->execute()
+        ->fetch();
+
+    if (!isset($query->nid)) return NULL;
+
+    return $query->nid;
+}
+
+// targetting
+function get_current_target() {
+    $query = db_select('field_data_field_current_target', 'fct')
+        ->fields('fct', array('field_current_target_target_id'))
+        ->condition('entity_id', get_player_id())
+        ->execute()
+        ->fetchAssoc();
+
+    if (!$query || !isset($query) || count($query) == 0) return '-';
+    if (!isset($query['field_current_target_target_id'])) return '-';
+
+    $curr_target = user_load($query['field_current_target_target_id']);
+    $ct_name = $curr_target->field_first_name['und'][0]['value'] . ' ' . $curr_target->field_last_name['und'][0]['value'];
+    
+    return $ct_name;
+}
+function get_pending_target() {
+    $query = db_select('field_data_field_pending_target', 'fpt')
+        ->fields('fpt', array('field_pending_target_target_id'))
+        ->condition('entity_id', get_player_id())
+        ->execute()
+		->fetchAssoc();
+
+    if (!$query || !isset($query) || count($query) == 0) return '-';
+    if (!isset($query['field_pending_target_target_id'])) return '-';
+
+    $pending_target = user_load($query['field_pending_target_target_id']);
+    $pt_name = $pending_target->field_first_name['und'][0]['value'] . ' ' . $pending_target->field_last_name['und'][0]['value'];
+    
+    return $pt_name;
+}
+function get_killed_targets() {
+    $player_uid = get_player_id();
+    
+    $query = db_select('field_data_field_killed_targets', 'fkt')
+        ->fields('fkt', array('field_killed_targets_target_id'))
+        ->condition('entity_id', $player_uid)
+        ->execute();
+    
+    $killed_targets = array();
+	
+    while($record = $query->fetchAssoc()) {
+        $killed_target = user_load($record['field_killed_targets_target_id']);
+        if(!isset($killed_target->field_first_name['und'])) continue;
+        $kt_name = $killed_target->field_first_name['und'][0]['value'] . ' ' . $killed_target->field_last_name['und'][0]['value'];
+
+        $killed_targets[] = $kt_name;
+    }
+
+    if (count($killed_targets) == 0) return array('-');
+
+    return $killed_targets;
+}
+
+// form submit
+function accept_death() {
+    // make changed to the current, now dead, user
+    $full_user = user_load(get_player_id());
+    $full_user->field_alive['und'][0] = array('value' => 0);
+    unset($full_user->field_current_target['und'][0]);
+    user_save($full_user);
+
+    // make changes to the killer user
+    $killer_user = user_load(who_killed_player());
+    unset($killer_user->field_pending_target['und'][0]);
+    $killer_user->field_killed_targets['und'][] = array('target_id' => get_player_id());
+    user_save($killer_user);
+
+    drupal_set_message(t('you have been terminated'), 'status');
+}
+function deny_death() {
+    // get the user's full name
+    $full_user = user_load(get_player_id());
+    $victim_name = $full_user->field_first_name['und'][0]['value'] . ' ' . $full_user->field_last_name['und'][0]['value'];
+
+    // get the killer's full name
+    $killer_user = user_load(who_killed_player());
+    $killer_name = $killer_user->field_first_name['und'][0]['value'] . ' ' . $killer_user->field_last_name['und'][0]['value'];
+
+    // remove the pending kill
+    unset($killer_user->field_pending_target['und'][0]);
+    $killer_user->field_current_target['und'][0] = array('target_id' => get_player_id());
+    user_save($killer_user);
+
+    // update the victim's profile
+    if (!($nid = get_player_profile(get_player_id()))) return;
+
+    $victim_profile = node_load($nid);
+    $victim_profile->field_status['und'][0]['value'] = 'in good shape';
+    $victim_profile->field_status['und'][0]['format'] = 'filtered_html';
+    node_save($victim_profile);
+
+    // get the organizers
+    $game = node_load(get_game());
+    $organizers = $game->field_organizers['und'];
+
+    // send messages
+    send_message_to_organizers($victim_name, $killer_name, $organizers);
+    send_message_to_killer($victim_name, $killer_user->uid);
+
+    drupal_set_message(t('you have denied death, a message has been sent to your deceitful assassin, as well as to the organizer.'), 'warning');
+}
+function target_killed() {
+    // make changes to the current user (the killer)
+    $full_user = user_load(get_player_id());
+
+    $target_uid = $full_user->field_current_target['und'][0]['target_id'];
+    $full_user->field_pending_target['und'][0] = array('target_id' => $target_uid);
+    unset($full_user->field_current_target['und']);
+    user_save($full_user);
+
+    // get the user name before changing user
+    $killer_name = $full_user->field_first_name['und'][0]['value'] . ' ' . $full_user->field_last_name['und'][0]['value'];
+
+    // make changes to the victim's profile
+    if (!($nid = get_player_profile($target_uid))) return;
+
+    $revived_profile = node_load($nid);
+    $revived_profile->field_status['und'][0]['value'] = 'Have you been killed by ' . $killer_name . '?';
+    $revived_profile->field_status['und'][0]['format'] = 'filtered_html';
+    node_save($revived_profile);
+}
+function suspend_player() {
+    $the_user = user_load(get_player_id());
+
+    $the_user->field_suspended['und'][0]['value'] = SUSPENDED_VALUE;
+    unset($the_user->field_current_target['und']);
+    user_save($the_user);
+	
+	send_suspension_message();
+
+    drupal_set_message('Player suspended');
+}
+
+// get taxonomy terms tid from name
+function get_tax_term_kill() {
+    $term = taxonomy_get_term_by_name('Kill issue');
+    reset($term);
+    return key($term);
+}
+function get_tax_term_suspension() {
+    $term = taxonomy_get_term_by_name('Suspension');
+    reset($term);
+    return key($term);
+}
+
+// messaging system
+function send_message_with_info($category_tid, $title, $message, $send_sms, $send_email, $recipients) {
+    $node = new stdclass();
+    $node->type = 'message';
+    node_object_prepare($node);
+
+    $node->field_category['und'][0]['tid'] = $category_tid;
+    $node->language = 'und';
+
+    $node->title = $title;
+    $node->field_message['und'][0]['value'] = $message;
+    $node->field_message['und'][0]['format'] = 'filtered_html';
+
+    $node->field_send_sms['und'][0]['value'] = $send_sms;
+    $node->field_send_email['und'][0]['value'] = $send_email;
+    $node->field_recipient_s_['und'] = $recipients;
+
+    node_save($node);
+}
+function send_message_to_organizers($victim_name, $killer_name, $organizers) {
+    $title = 'kill objection from ' . $victim_name;
+    $message = $victim_name . ' has contested the kill from ' . $killer_name . '.';
+
+    send_message_with_info(get_tax_term_kill(), $title, $message, 0, 1, $organizers);
+}
+function send_message_to_killer($victim_name, $killer_uid) {
+    $title = 'kill objection from ' . $victim_name;
+    $message = $victim_name . ' has contested your kill. the organizer has been contacted but also try to solve this problem by yourself if you can.';
+    $recipient = array('target_id' => $killer_uid);
+
+    send_message_with_info(get_tax_term_kill(), $title, $message, 1, 1, array($recipient));
+}
+function send_suspension_message() {
+    $title = 'User ' . get_player_id() . ' - Suspension message';
+	
+    $message = variable_get('suspension_msg');
+	if (strlen($message) == 0) $message = 'You have been suspended from AssassinManager.';
+	
+    $recipient = array(array('target_id' => get_player_id()));
+
+    send_message_with_info(get_tax_term_suspension(), $title, $message, 1, 1, $recipient);
+}

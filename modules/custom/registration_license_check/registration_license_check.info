@@ -1,0 +1,8 @@
+name = Registration License Check
+description = Checks the license of a user when he registers
+package = Assassin Manager - Modules
+
+core = 7.x
+php = 5.x
+
+version = "1.0"

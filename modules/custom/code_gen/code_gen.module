@@ -1,0 +1,145 @@
+<?php
+
+function code_gen_form_validate(&$form, &$form_state) {
+    if(!is_numeric($form_state['values']['generate_licenses'])) {
+        form_set_error('generate_licenses', t('must enter number'));
+    }
+
+    if(intval($form_state['values']['generate_licenses']) > 999) {
+        form_set_error('generate_licenses', t('cannot generate more than 999 licenses at a time...'));
+    }
+}
+
+function game_licenses_form() {
+    /* -- message form -- */
+    $form['licenses_checkbox'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Manage Licenses'),
+    );
+
+    $form['licenses'] = array(
+        '#type' => 'container',
+        '#states' => array(
+            'visible' => array(
+                ':input[name="licenses_checkbox"]' => array('checked' => true),
+                ),
+            ),
+    );
+
+   $form['licenses']['licenses_title'] = array(
+        '#type' => 'item', 
+        '#title' => t('%licenses_num  license(s) still unused', array( '%licenses_num' => count_licenses() )),
+    );
+
+    // unused licenses
+    $form['licenses']['licenses_download'] = array(
+        '#type' => 'button', 
+        '#name' => 'download',
+        '#value' => t('Download'),
+        '#button_type' => 'submit',
+        '#executes_submit_callback' => TRUE,
+        '#submit' => array('export_licenses_as_csv'),
+    );
+
+    $form['licenses']['licenses_clean'] = array(
+        '#type' => 'button',
+        '#name' => 'clean',
+        '#value' => t('Clean up'),
+        '#button_type' => 'submit',
+        '#executes_submit_callback' => TRUE,
+        '#submit' => array('clean_licenses'),
+    );
+
+    // code generation
+    $form['licenses']['generate_licenses'] = array(
+        '#type' => 'textfield', 
+        '#title' => t('generate licenses:'),
+        '#default_value' => 0,
+        '#size' => 3, 
+        '#maxlength' => 3, 
+    );
+
+    $form['licenses']['generate_download'] = array(
+        '#type' => 'submit', 
+        '#name' => 'generate',
+        '#value' => t('Generate and download'),
+        '#submit' => array('generate_licenses'),
+    );
+
+    return $form;
+}
+
+// form content manipulation
+
+function count_licenses() {
+    $query = db_select('node', 'n')
+        ->condition('type', 'license_to_kill')
+        ->condition('status', '1')
+        ->countQuery()
+        ->execute();
+    $data = $query->fetchObject();
+
+    return strval($data->expression);
+}
+function clean_licenses() {
+    $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'license_to_kill')
+        ->condition('status', '1')
+        ->execute();
+
+    $nids = array();
+    while($record = $query->fetch()) {
+        array_push($nids, $record->nid);
+    }
+
+    node_delete_multiple($nids);
+}
+function generate_licenses(&$form, &$form_state) {
+    $license_num = intval($form_state['values']['generate_licenses']);
+
+    for ($counter=0; $counter<$license_num; $counter++) {
+        create_license($counter+1);
+    }
+
+    export_licenses_as_csv();
+}
+function export_licenses_as_csv() {
+    global $base_url;
+    $page = $base_url . '/';
+
+    if(variable_get('clean_url', 0) != 1) $page = $page . '?q=';
+    $page = $page . 'licenses-export';
+
+    if (headers_sent()){
+      die('<script type="text/javascript">window.location=\'' . $page . '\';</script>');
+    }else{
+      header("Location: " . $page);
+      die();
+    }
+}
+
+
+// code Generation Doing functions
+
+function create_license($number) {
+    $node = new stdClass();
+    $node->type = 'license_to_kill';
+    node_object_prepare($node);
+
+    $node->title = 'license-' . $number;
+    $node->field_code['und'][0]['value'] = "0";
+
+    node_save($node);
+}
+function code_gen_node_presave($node) {   
+    
+    if ($node->type != 'license_to_kill') return;
+
+    $code = module_invoke(genpass_algorithm_module(), 'password');
+
+    if ($node->field_code['und'][0]['value'] == "0")
+        $node->field_code['und'][0]['value'] = $code;
+
+    return;
+}

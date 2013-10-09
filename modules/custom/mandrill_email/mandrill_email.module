@@ -1,0 +1,91 @@
+<?php
+
+/**
+ * implements hook_rules_action_info().
+ */
+function mandrill_email_rules_action_info() {
+    return array(
+        'mandrill_mail' => array(
+            'label' => t('Send mandrill email'),
+            'group' => t('Mandrill email'),
+            'parameter' => array(
+		        'to' => array(
+		          'type' => 'text',
+		          'label' => t('To'),
+		          'description' => t('The e-mail address or addresses where the message will be sent to. The formatting of this string must comply with RFC 2822.'),
+		        ),
+		        'subject' => array(
+		          'type' => 'text',
+		          'label' => t('Subject'),
+		          'description' => t("The mail's subject."),
+		          'translatable' => TRUE,
+		        ),
+		        'message' => array(
+		          'type' => 'text',
+		          'label' => t('Message'),
+		          'description' => t("The mail's message body."),
+		          'translatable' => TRUE,
+		        ),
+		        'from' => array(
+		          'type' => 'text',
+		          'label' => t('From'),
+		          'description' => t("The mail's from address. Leave it empty to use the site-wide configured address."),
+		          'optional' => TRUE,
+		        ),
+		      ),
+      		'base' => 'mandrill_email_action_mandrill_mail',
+			),
+		);
+}
+
+function _get_email_addresses($to) {
+	
+	$usernames = explode(", ", $to);
+	
+    $query = db_select('users', 'u')
+            ->fields('u', array('mail'))
+            ->condition('name',$usernames,'IN')
+            ->execute();
+
+    $emails = array();
+    while($record = $query->fetchassoc()) {
+        array_push($emails, $record['mail']);
+    }
+	
+	return implode(", ", $emails);
+}
+function mandrill_email_action_mandrill_mail($to, $subject, $message, $from = NULL) {
+
+	if (!isset($to)) return FALSE;
+	$to = _get_email_addresses($to);
+	
+	$from = !empty($from) ? str_replace(array("\r", "\n"), '', $from) : NULL;
+	if (!isset($from)) $from = variable_get('site_mail', ini_get('sendmail_from'));
+	
+	custom_mandrill_email_mail($from, $to, $subject, $message);
+}
+
+function custom_mandrill_email_mail($from, $to, $subject, $message) {
+	
+  $my_module = 'mandrill_email';
+  $my_mail_token = microtime();
+  $message = array(
+    'id' => $my_module . '_' . $my_mail_token,
+    'to' => $to,
+    'subject' => $subject,
+    'body' => array($message),
+    'headers' => array(
+      'From' => $from, 
+      'Sender' => $from, 
+      'Return-Path' => $from,
+    ),
+  );
+  $system = drupal_mail_system($my_module, $my_mail_token);
+  $message = $system->format($message);
+  if ($system->mail($message)) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}

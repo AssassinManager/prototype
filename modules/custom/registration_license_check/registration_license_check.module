@@ -1,0 +1,64 @@
+<?php
+
+function registration_license_check_form_alter(&$form, &$form_state, $form_id) {
+    if($form_id == "user_register_form") {
+        $form['#validate'][] = 'reg_check_validation_callback';
+    }
+}
+
+function check_license($license) {
+    $query = db_select('node', 'n')
+            ->fields('n', array('nid'));
+
+    $query->join('field_data_field_code', 'fc', 'fc.entity_id = n.nid and field_code_value = :license', array(':license' => $license));
+    $result = $query->countquery()->execute()->fetch();
+    
+    if($result->expression > 0) return true;
+
+    return false;
+}
+
+function reg_check_validation_callback(&$form_state) {
+
+    if (!isset($form_state['field_license_code']['und'][0]['value']['#value'])) return;
+    $license_code = $form_state['field_license_code']['und'][0]['value']['#value'];
+
+    if(!check_license($license_code))
+        form_set_error('field-name-field-license-code', t('invalid license code'));
+
+    if(!get_current_game()) form_set_error(null, t('the game you are trying to register to has not yet been created...'));
+}
+
+function registration_license_check_user_insert(&$edit, $account, $category) {
+    $license = $edit['field_license_code']['und'][0]['value'];
+
+    $query = db_select('node', 'n')
+            ->fields('n', array('nid'));
+
+    $query->join('field_data_field_code', 'fc', 'fc.entity_id = n.nid and field_code_value = :license', array(':license' => $license));
+    $result = $query->execute()->fetch();
+
+    node_delete($result->nid);
+
+    add_user_to_game($account->uid);
+}
+
+function get_current_game() {
+     $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'game', '=')
+        ->execute()
+        ->fetch();
+
+    if (!isset($query->nid)) return nil;
+
+    return $query->nid;
+}
+function add_user_to_game($user_id) {
+    $game = node_load(get_current_game());
+
+    if (!isset($game->field_players['und'])) $game->field_players['und'] = array();
+    array_push($game->field_players['und'], array('target_id' => $user_id));
+
+    node_save($game);
+}

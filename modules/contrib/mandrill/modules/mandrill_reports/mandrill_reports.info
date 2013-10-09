@@ -1,0 +1,13 @@
+name = Mandrill Reports
+description = "Providing reporting on activity through Mandrill."
+core = 7.x
+package = MailChimp
+
+dependencies[] = mandrill
+
+; Information added by drupal.org packaging script on 2013-03-26
+version = "7.x-1.4+1-dev"
+core = "7.x"
+project = "mandrill"
+datestamp = "1364260284"
+
