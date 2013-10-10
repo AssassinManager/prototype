@@ -1,6 +1,6 @@
 name = License Content Type
 core = 7.x
-package = Assassin Manager
+package = Assassin Manager - Features
 version = 7.x-1.0-beta1
 project = license_content_type
 dependencies[] = features
