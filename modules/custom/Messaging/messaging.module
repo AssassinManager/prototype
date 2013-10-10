@@ -1,5 +1,15 @@
 <?php
 
+require('messaging_email_action.inc');
 require('messaging_recipients.inc');
-require('messaging_action.inc');
 require('messaging_rule.inc');
+
+require('messaging_sms_action.inc');
+require('messaging_twilio.inc');
+
+function messaging_rules_action_info() {
+	return array(
+		'am_mail' =>_create_email_action(),
+		'am_sms' => _create_sms_action(),
+		);
+}

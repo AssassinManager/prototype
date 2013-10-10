@@ -3,38 +3,36 @@
 /**
  * implements hook_rules_action_info().
  */
-function messaging_rules_action_info() {
+function _create_email_action() {
     return array(
-        'am_mail' => array(
-            'label' => t('Send AM email'),
-            'group' => t('Assassin Manager'),
-            'parameter' => array(
-                'subject' => array(
-                  'type' => 'text',
-                  'label' => t('Subject'),
-                  'description' => t("The mail's subject."),
-                  'translatable' => TRUE,
-                ),
-                'message' => array(
-                  'type' => 'text',
-                  'label' => t('Message'),
-                  'description' => t("The mail's message body."),
-                  'translatable' => TRUE,
-                ),
-                'from' => array(
-                  'type' => 'user',
-                  'label' => t('From'),
-                  'description' => t("Author of the message."),
-                  'optional' => TRUE,
-                ),
-                'to' => array(
-                  'type' => 'unknown',
-                  'label' => t('To'),
-                  'description' => t('User(s) the email will be sent to.'),
-                ),
+          'label' => t('Send AM email'),
+          'group' => t('Assassin Manager'),
+          'parameter' => array(
+              'subject' => array(
+                'type' => 'text',
+                'label' => t('Subject'),
+                'description' => t("The mail's subject."),
+                'translatable' => TRUE,
               ),
-            'base' => '_messaging_am_mail',
+              'message' => array(
+                'type' => 'text',
+                'label' => t('Message'),
+                'description' => t("The mail's message body."),
+                'translatable' => TRUE,
+              ),
+              'from' => array(
+                'type' => 'user',
+                'label' => t('From'),
+                'description' => t("Author of the message."),
+                'optional' => TRUE,
+              ),
+              'to' => array(
+                'type' => 'unknown',
+                'label' => t('To'),
+                'description' => t('User(s) the email will be sent to.'),
+              ),
             ),
+          'base' => '_messaging_am_mail',
         );
 }
 
