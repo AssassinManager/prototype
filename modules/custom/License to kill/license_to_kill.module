@@ -1,0 +1,6 @@
+<?php
+
+require('license_generation.inc');
+require('license_requirement.inc');
+require('license_export.inc');
+require('license_display.inc');
