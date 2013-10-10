@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name = License Content Type
 core = 7.x
 package = Assassin Manager
@@ -9,3 +10,16 @@ features[features_api][] = api:2
 features[field_base][] = field_license
 features[field_instance][] = node-license_to_kill-field_license
 features[node][] = license_to_kill
+=======
+name = License Content Type
+core = 7.x
+package = Assassin Manager - Features
+version = 7.x-1.0-beta1
+project = license_content_type
+dependencies[] = features
+dependencies[] = text
+features[features_api][] = api:2
+features[field_base][] = field_license
+features[field_instance][] = node-license_to_kill-field_license
+features[node][] = license_to_kill
+>>>>>>> code_register

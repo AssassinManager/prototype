@@ -1,0 +1,116 @@
+<?php
+
+
+/**
+ * @file
+ * Install, update and uninstall functions for the mandrill module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function mandrill_uninstall() {
+  // Delete other variables:
+  variable_del('mandrill_filter_format');
+  variable_del('mandrill_from');
+  variable_del('mandrill_from_name');
+  variable_del('mandrill_test_address');
+  variable_del('mandrill_test_body');
+  variable_del('mandrill_process_async');
+}
+
+/**
+ * Implements hook_enable().
+ */
+function mandrill_enable() {
+  mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
+}
+
+/**
+ * Implements hook_disable().
+ */
+function mandrill_disable() {
+  // Tell mailsystem to remove mandrill and restore to defaults:
+  mailsystem_clear(array('mandrill_test' => 'MandrillMailSystem'));
+  watchdog('mandrill', 'Mandrill has been disabled.');
+}
+
+/**
+ * Deletes obsolete variables.
+ */
+function mandrill_update_7001() {
+  variable_del('mandrill_status');
+}
+
+/**
+ * Rebuilds the registry, as we've moved some files around.
+ */
+function mandrill_update_7002() {
+
+  // Rebuild the registry, we've moved some files around.
+  registry_rebuild();
+}
+
+  /**
+   * Implements hook_requirements().
+   */
+function mandrill_requirements($phase) {
+  $requirements = array();
+  // Ensure translations don't break at install time.
+  $t = get_t();
+
+  if ($phase == 'update') {
+    if (!module_exists('mailsystem')) {
+      $requirements['mandrill'] = array(
+        'title' => $t('Mandrill'),
+        'value' => '7.x-1.4',
+        'description' => $t('Mail System module is required for Mandrill 7.x-1.3 or higher.'),
+        'severity' => REQUIREMENT_ERROR,
+      );
+    }
+
+    $path = drupal_get_path('module', 'libraries') . '/libraries.info';
+    $info = drupal_parse_info_file($path);
+    if (version_compare($info['version'], '7.x-2.0', '<')) {
+      $requirements['mandrill'] = array(
+        'title' => $t('Mandrill'),
+        'value' => '7.x-2.x',
+        'description' => $t('libraries 2.x is required for Mandrill 7.x-2.x.'),
+        'severity' => REQUIREMENT_ERROR,
+      );
+    }
+  }
+
+  // Ensure the Mandrill PHP wrapper is installed.
+  if (in_array($phase, array('runtime', 'update'))) {
+    $library = libraries_detect('mandrill');
+    $requirements['mandrill'] = array(
+      'title' => $t('Mandrill'),
+    );
+
+    if ($library['installed']) {
+      $requirements['mandrill'] += array(
+        'value' => $library['version'],
+        'description' => $t('The Mandrill API wrapper library is installed correctly.'),
+        'severity' => REQUIREMENT_OK
+      );
+    }
+    else {
+      $requirements['mandrill'] += array(
+        'value' => $library['error'],
+        'description' => $library['error message'],
+        'severity' => REQUIREMENT_ERROR,
+      );
+    }
+  }
+
+  return $requirements;
+}
+
+
+/**
+ * Delete obsolete batch limit variable.
+ */
+function mandrill_update_7003() {
+  variable_del('mandrill_batch_limit');
+}
