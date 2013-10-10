@@ -60,11 +60,13 @@ function _messaging_am_mail($subject, $message, $from, $to) {
     if (!_is_valid($from))  return false;
     if (!_is_valid($to))    return false;
 
+    $sender_name = $from->field_first_name['und'][0]['value'] . " " . $from->field_last_name['und'][0]['value'];
     $from = $from->mail;
     $to = _get_email_addresses($to);
 
     if (!_is_valid($from))  return false;
     if (!_is_valid($to))    return false;
+    $message = $sender_name . " sent you a message on Assassin Manager: \n\n" . $message;
 
     $my_module = 'messaging';
     $my_mail_token = microtime();
