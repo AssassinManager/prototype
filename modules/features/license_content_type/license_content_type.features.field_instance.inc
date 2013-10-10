@@ -13,7 +13,11 @@ function license_content_type_field_default_field_instances() {
   // Exported field_instance: 'node-license_to_kill-field_license'
   $field_instances['node-license_to_kill-field_license'] = array(
     'bundle' => 'license_to_kill',
-    'default_value' => NULL,
+    'default_value' => array(
+      0 => array(
+        'value' => 0,
+      ),
+    ),
     'deleted' => 0,
     'description' => '',
     'display' => array(
