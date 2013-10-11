@@ -1,0 +1,13 @@
+<?php
+
+require('license_generation.inc');
+require('license_requirement.inc');
+require('license_export.inc');
+//require('license_display.inc');
+
+/**
+ * Implementation of hook_views_api.
+ */
+function license_to_kill_views_api() {
+  return array("version" => "3.0");
+}
