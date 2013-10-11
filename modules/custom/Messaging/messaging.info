@@ -1,0 +1,12 @@
+name = Messaging System
+description = Actions sending emails for apropriate messages
+package = Assassin Manager - Modules
+
+dependencies[] = message_content_type
+dependencies[] = email_registration
+dependencies[] = rules
+
+core = 7.x
+php = 5.x
+
+version = "1.0"
