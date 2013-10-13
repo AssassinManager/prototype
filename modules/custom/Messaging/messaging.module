@@ -3,6 +3,7 @@
 require('messaging_email_action.inc');
 require('messaging_recipients.inc');
 require('messaging_rule.inc');
+require('messaging_read.inc');
 
 require('messaging_sms_action.inc');
 require('messaging_twilio.inc');
