@@ -2,6 +2,7 @@ name = Targetting & Kill System
 description = Actions for Target Assigning and Termination
 package = Assassin Manager - Modules
 
+dependencies[] = message_content_type
 dependencies[] = rules
 
 core = 7.x
