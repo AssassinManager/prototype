@@ -1,0 +1,9 @@
+<?php
+
+require('assassinations_kill_action.inc');
+
+function assassinations_rules_action_info() {
+	return array(
+		'am_kill' =>_create_kill_action(),
+		);
+}

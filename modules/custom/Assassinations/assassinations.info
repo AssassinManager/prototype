@@ -1,0 +1,10 @@
+name = Targetting & Kill System
+description = Actions for Target Assigning and Termination
+package = Assassin Manager - Modules
+
+dependencies[] = rules
+
+core = 7.x
+php = 5.x
+
+version = 7.x-1.0-beta1
