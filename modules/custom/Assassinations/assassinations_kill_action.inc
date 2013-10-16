@@ -33,34 +33,11 @@ function _assassinations_am_kill($assassin, $target) {
     if ($target == null) return false;
     if (!isset($target)) return false;
 
-    if (!module_exists('messaging')) return false;
+    $assassin->field_pending_target['und'][0]['target_id'] = $target->uid;
 
-    messaging_send_message_to_organizers("test", "test");
+    //if (!module_exists('messaging')) return false;
 
-    /*
-    $sender_name = $from->field_first_name['und'][0]['value'] . " " . $from->field_last_name['und'][0]['value'];
-
-    if (!isset($to->field_phone['und'])) return false;
-    $recipient_phone = $to->field_phone['und'][0]['value'];
-
-    $message = $sender_name . " sent you a msg on Assassin Manager: " . $message;
-
-    $file = getcwd() . '/sites/all/libraries/twilio/Twilio.php';
-    if (!is_file($file)) return false;
-
-    require_once $file;
-
-    $sid = variable_get('twilio_sid');
-    $token = variable_get('twilio_auth_token');
-
-    $client = new services_twilio($sid, $token);
-    $sms = $client->account->sms_messages->create(
-        variable_get('twilio_number'),
-        $recipient_phone,
-        $message
-    );
-
-    if($sms->sid > 0) return true;
-    */
+    //messaging_send_message_to_organizers("test", "test");
+    
     return true;
 }
