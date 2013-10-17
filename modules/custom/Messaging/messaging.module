@@ -1,5 +1,7 @@
 <?php
 
+require('messaging_notifier.inc');
+
 require('messaging_email_action.inc');
 require('messaging_recipients.inc');
 require('messaging_rule.inc');
@@ -8,6 +10,7 @@ require('messaging_read.inc');
 require('messaging_sms_action.inc');
 require('messaging_twilio.inc');
 
+
 function messaging_rules_action_info() {
 	return array(
 		'am_mail' =>_create_email_action(),
@@ -15,10 +18,20 @@ function messaging_rules_action_info() {
 		);
 }
 
+
+/*
+ * Send message Notifier
+ */
+function messaging_send_to_notifier($message) {
+	$recipients = _get_recipients_in($message);
+	if (_notifier_get_num_recipients($message) > 2) {
+
+	}
+}
+
 /*
  * Send message API
  */
-
 function _messaging_send_message($subject, $body, $to) {
 	$node = new stdclass();
     $node->type = 'message';
@@ -77,4 +90,38 @@ function messaging_send_message_to_organizers($subject, $body) {
     	array_push($recipients, array('target_id' => $uid));
     }
     _messaging_send_message($subject, $body, $recipients);
+}
+
+/*
+ * Messaging Utilities
+ */
+function _messaging_get_recipients($message) {
+  $recipients = _get_recipients($message);
+  foreach ($recipients as $recipient) {
+    array_push($recipients, $user['target_id']);
+  }
+  return $recipients;
+}
+function _messaging_get_reads($message) {
+  $reads = array();
+  foreach ($message->field_read_by['und'] as $user) {
+    array_push($reads, $user['target_id']);
+  }
+  return $reads;
+}
+function _messaging_get_emails($users) {
+    $emails = array();
+    foreach ($users as $user) {
+        if (!isset($user->mail)) continue;
+        array_push($emails, str_replace(array("\r", "\n"), '', $user->mail));
+    }
+    return $emails;
+}
+function _messaging_get_phones($users) {
+    $phones = array();
+    foreach ($users as $user) {
+        if (!isset($user->field_phone['und'])) continue;
+        array_push($phones, $user->field_phone['und'][0]['value']);
+    }
+    return $phones;
 }

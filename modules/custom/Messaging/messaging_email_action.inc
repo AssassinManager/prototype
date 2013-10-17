@@ -42,17 +42,6 @@ function _is_valid($input) {
 
     return true;
 }
-function _get_email_addresses($email_users) {
-
-    $emails = array();
-
-    foreach ($email_users as $user) {
-        if (!isset($user->mail)) continue;
-        array_push($emails, str_replace(array("\r", "\n"), '', $user->mail));
-    }
-    
-    return implode(", ", $emails);
-}
 function _messaging_am_mail($subject, $message, $from, $to) {
     
     if (!_is_valid($from))  return false;
@@ -60,7 +49,7 @@ function _messaging_am_mail($subject, $message, $from, $to) {
 
     $sender_name = $from->field_first_name['und'][0]['value'] . " " . $from->field_last_name['und'][0]['value'];
     $from = $from->mail;
-    $to = _get_email_addresses($to);
+    $to = implode(", ", _messaging_get_emails($to));
 
     if (!_is_valid($from))  return false;
     if (!_is_valid($to))    return false;
