@@ -51,7 +51,7 @@ function mandrill_activity_entity_form($form, &$form_state, MandrillActivityEnti
   $entity_types = array('' => t('-- Select --'));
   foreach (entity_get_info() as $entity_type => $info) {
     // Ignore Mandrill entity types.
-    if (strpos($entity_type, 'Mandrill') === FALSE) {
+    if (strpos($entity_type, 'mandrill') === FALSE) {
       $entity_types[$entity_type] = $info['label'];
     }
   }
