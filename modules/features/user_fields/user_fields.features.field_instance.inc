@@ -151,7 +151,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 0,
+        'weight' => 3,
       ),
     ),
     'entity_type' => 'user',
@@ -186,7 +186,7 @@ function user_fields_field_default_field_instances() {
           'link' => FALSE,
         ),
         'type' => 'entityreference_label',
-        'weight' => 2,
+        'weight' => 5,
       ),
     ),
     'entity_type' => 'user',
@@ -217,7 +217,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 5,
+        'weight' => 0,
       ),
     ),
     'entity_type' => 'user',
@@ -251,7 +251,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 6,
+        'weight' => 1,
       ),
     ),
     'entity_type' => 'user',
@@ -282,10 +282,9 @@ function user_fields_field_default_field_instances() {
     'display' => array(
       'default' => array(
         'label' => 'above',
-        'module' => 'text',
         'settings' => array(),
-        'type' => 'text_default',
-        'weight' => 7,
+        'type' => 'hidden',
+        'weight' => 9,
       ),
     ),
     'entity_type' => 'user',
@@ -321,7 +320,7 @@ function user_fields_field_default_field_instances() {
           'link' => FALSE,
         ),
         'type' => 'entityreference_label',
-        'weight' => 3,
+        'weight' => 6,
       ),
     ),
     'entity_type' => 'user',
@@ -352,7 +351,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'phone',
         'settings' => array(),
         'type' => 'phone',
-        'weight' => 1,
+        'weight' => 4,
       ),
     ),
     'entity_type' => 'user',
@@ -393,7 +392,7 @@ function user_fields_field_default_field_instances() {
           'thousand_separator' => ' ',
         ),
         'type' => 'number_integer',
-        'weight' => 9,
+        'weight' => 2,
       ),
     ),
     'entity_type' => 'user',
@@ -416,6 +415,36 @@ function user_fields_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'user-user-field_subscriptions'
+  $field_instances['user-user-field_subscriptions'] = array(
+    'bundle' => 'user',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Do you want to be notified of important messages via other means than the Inbox on Assassin Manger?',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 11,
+      ),
+    ),
+    'entity_type' => 'user',
+    'field_name' => 'field_subscriptions',
+    'label' => 'Subscriptions',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => 0,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(),
+      'type' => 'options_buttons',
+      'weight' => 12,
+    ),
+  );
+
   // Exported field_instance: 'user-user-field_suspended'
   $field_instances['user-user-field_suspended'] = array(
     'bundle' => 'user',
@@ -432,7 +461,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 8,
+        'weight' => 10,
       ),
     ),
     'entity_type' => 'user',
@@ -467,7 +496,7 @@ function user_fields_field_default_field_instances() {
           'link' => FALSE,
         ),
         'type' => 'entityreference_label',
-        'weight' => 4,
+        'weight' => 7,
       ),
     ),
     'entity_type' => 'user',
@@ -492,12 +521,14 @@ function user_fields_field_default_field_instances() {
   t('Assassin');
   t('Confirmed');
   t('Current target');
+  t('Do you want to be notified of important messages via other means than the Inbox on Assassin Manger?');
   t('First name');
   t('Last Name');
   t('License code');
   t('Pending target');
   t('Phone');
   t('Rank');
+  t('Subscriptions');
   t('Suspended');
   t('Target');
   t('Terminated targets');

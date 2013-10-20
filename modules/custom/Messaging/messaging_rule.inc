@@ -1,5 +1,6 @@
 <?php
 
+/*
 function messaging_default_rules_configuration() {
   $configs = array();
 
@@ -66,3 +67,4 @@ function messaging_default_rules_configuration() {
 
   return $configs;
 }
+*/

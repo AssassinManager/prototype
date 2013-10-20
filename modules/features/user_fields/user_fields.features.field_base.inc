@@ -296,6 +296,32 @@ function user_fields_field_default_field_bases() {
     'type' => 'number_integer',
   );
 
+  // Exported field_base: 'field_subscriptions'
+  $field_bases['field_subscriptions'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_subscriptions',
+    'foreign keys' => array(),
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => 'Email',
+        1 => 'SMS',
+      ),
+      'allowed_values_function' => '',
+    ),
+    'translatable' => 0,
+    'type' => 'list_integer',
+  );
+
   // Exported field_base: 'field_suspended'
   $field_bases['field_suspended'] = array(
     'active' => 1,

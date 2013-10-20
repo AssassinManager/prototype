@@ -3,6 +3,6 @@
 /**
  *
  */
-function _messaging_notifier() {
+function _messaging_notifier($message, $recipients) {
   return "";
 }

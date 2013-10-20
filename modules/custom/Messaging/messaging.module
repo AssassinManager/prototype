@@ -23,10 +23,8 @@ function messaging_rules_action_info() {
  * Send message Notifier
  */
 function messaging_send_to_notifier($message) {
-	$recipients = _get_recipients_in($message);
-	if (_notifier_get_num_recipients($message) > 2) {
-
-	}
+	$recipients = _get_recipients_raw($message);
+	_messaging_notifier($message, $recipients);
 }
 
 /*
@@ -95,9 +93,16 @@ function messaging_send_message_to_organizers($subject, $body) {
 /*
  * Messaging Utilities
  */
-function _messaging_get_recipients($message) {
-  $recipients = _get_recipients($message);
+function _get_recipients_msg($message) {
+  $recipients = _get_recipients_uids($message);
   foreach ($recipients as $recipient) {
+    array_push($recipients, array('target_id' => $recipient));
+  }
+  return $recipients;
+}
+function _get_recipients_uids($message) {
+  $recipients = array();
+  foreach ($node->field_recipients['und'] as $user) {
     array_push($recipients, $user['target_id']);
   }
   return $recipients;
