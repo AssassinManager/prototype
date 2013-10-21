@@ -41,25 +41,6 @@ function messaging_entity_view($entity, $type, $view_mode, $langcode) {
 }
 
 /*
- * Utilities
- */
-function _messaging_get_recipients($entity) {
-  $recipients = array();
-  foreach ($entity->field_recipients['und'] as $user) {
-    array_push($recipients, $user['target_id']);
-  }
-  return $recipients;
-}
-
-function _messaging_get_reads($entity) {
-  $reads = array();
-  foreach ($entity->field_read_by['und'] as $user) {
-    array_push($reads, $user['target_id']);
-  }
-  return $reads;
-}
-
-/*
  * Sets the message to read if needed
  */
 function _messaging_read_node_by($node, $user) {
