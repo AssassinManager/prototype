@@ -15,15 +15,14 @@ function assassinations_user_view_alter(&$build) {
   	//_assassinations_player_profile($build);
 }
 
-/*
-function my_module_form_alter(&$form, &$form_state, $form_id) {
+function assassinations_form_alter(&$form, &$form_state, $form_id) {
 
 	$form['test'] = array(
                 '#type' => 'button',
                 '#name' => 'Test',
                 '#value' => t('Test'),
                 '#ajax'  => array(
-					'callback' => 'my_module_kill',
+					'callback' => 'assassinations_kill',
 					'wrapper'  => 'the-wrapper-div-field',
 					'method'   => 'replace',
 					'effect'   => 'fade',
@@ -33,7 +32,8 @@ function my_module_form_alter(&$form, &$form_state, $form_id) {
 	return $form;
 }
 
-function my_module_kill() {
-    watchdog("test", "Ajax test");
+function assassinations_kill() {
+	global $user;
+	$user_id=$user->uid;
+    watchdog("test", "Ajax test uid: " . $user_id);
 }
-*/
