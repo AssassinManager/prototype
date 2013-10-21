@@ -19,12 +19,24 @@ function assassinations_user_view_alter(&$build) {
 
 function assassinations_form_alter(&$form, &$form_state, $form_id) {
 
-	$form['test'] = array(
+	$form['test_kill'] = array(
                 '#type' => 'button',
-                '#name' => 'Test',
-                '#value' => t('Test'),
+                '#name' => 'Kill',
+                '#value' => t('Kill'),
                 '#ajax'  => array(
 					'callback' => 'assassinations_kill',
+					'wrapper'  => 'the-wrapper-div-field',
+					'method'   => 'replace',
+					'effect'   => 'fade',
+				),
+            );
+
+	$form['test_deny'] = array(
+                '#type' => 'button',
+                '#name' => 'Deny',
+                '#value' => t('Deny'),
+                '#ajax'  => array(
+					'callback' => 'assassinations_deny',
 					'wrapper'  => 'the-wrapper-div-field',
 					'method'   => 'replace',
 					'effect'   => 'fade',
@@ -34,11 +46,20 @@ function assassinations_form_alter(&$form, &$form_state, $form_id) {
 	return $form;
 }
 
+function assassinations_deny() {
+	global $user;
+	/*
+	$user_id=$user->uid;
+    watchdog("test", "Ajax test uid: " . $user_id);
+    */
+    _assassinations_am_deny(1, 26);
+}
+
 function assassinations_kill() {
 	global $user;
 	/*
 	$user_id=$user->uid;
     watchdog("test", "Ajax test uid: " . $user_id);
     */
-    _assassinations_am_kill(1, 26);
+    _assassinations_am_kill(26, 1);
 }

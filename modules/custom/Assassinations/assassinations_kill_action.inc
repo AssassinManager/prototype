@@ -27,6 +27,14 @@ function _create_kill_action() {
         );
 }
 
+function _assassinations_am_deny($target_uid, $assassin_uid) {
+    
+    if ($assassin_uid == null) return;
+    if ($target_uid == null) return;
+
+    messaging_reply_to_kill($assassin_uid, $target_uid);
+}
+
 function _assassinations_am_kill($assassin_uid, $target_uid) {
     
     if ($assassin_uid == null) return;
@@ -50,17 +58,9 @@ function _assassinations_am_kill($assassin_uid, $target_uid) {
 	user_save($assassin, $edit);
 	*/
 
-    //if (!module_exists('messaging')) return;
     $assassin_name = _get_user_name(user_load($assassin_uid));
     $message = $assassin_name . " said he eliminated you. Do you confirm?";
 
-    /*
-    $organizers = messaging_get_organizers_uid();
-    foreach ($organizers as $num => $uid) {
-    	$recipients[] = array('target_id' => $uid);
-    }
-    */
-
     $recipients[] = array('target_id' => $target_uid);
-    messaging_send_message("Target termination", $message, $recipients)
+    messaging_send_message("Target termination", $message, $recipients);
 }

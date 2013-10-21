@@ -33,6 +33,56 @@ function messaging_send_message($subject, $body, $to) {
 
     node_save($node);
 }
+function messaging_reply_to_message($msg_nid, $new_message) {
+    global $user;
+
+    $comment = (object) array(
+        'nid' => $msg_nid,
+        'cid' => 0,
+        'pid' => 0,
+        'uid' => $user->uid,
+        'mail' => '',
+        'is_anonymous' => 0,
+        'homepage' => '',
+        'status' => COMMENT_PUBLISHED,
+        'subject' => 'challenge',
+        'language' => LANGUAGE_NONE,
+        'comment_body' => array(
+          LANGUAGE_NONE => array(
+            0 => array (
+              'value' => $new_message,
+              'format' => 'filtered_html'
+            )
+          )
+        ),
+    );
+
+    comment_submit($comment);
+    comment_save($comment);
+}
+
+function messaging_reply_to_kill($assassin, $target) {
+    $msg_nid = _messaging_get_message_between($assassin, $target);
+    if ($msg_nid == null) return;
+
+    messaging_reply_to_message($msg_nid, "I did not!");
+}
+
+function _messaging_get_message_between($from, $to) {
+
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'message')
+            ->propertyCondition('status', 1)
+            ->propertyCondition('uid', $from)
+            ->fieldCondition('field_recipients', 'target_id', array($to));
+
+    $msg_nid = $query->execute();
+
+    if (count($msg_nid) < 1) return null;
+    $msg_nid = array_keys($msg_nid['node']);
+    return $msg_nid[0];
+}
 
 function messaging_get_organizers_uid() {
 	$uids = array();
