@@ -97,11 +97,3 @@ function _get_recipients_msg($message) {
   }
   return $recipients;
 }
-
-function _messaging_get_reads($message) {
-  $reads = array();
-  foreach ($message->field_read_by['und'] as $user) {
-    array_push($reads, $user['target_id']);
-  }
-  return $reads;
-}

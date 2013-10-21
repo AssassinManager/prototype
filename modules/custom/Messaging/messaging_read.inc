@@ -10,6 +10,7 @@ function messaging_entity_view($entity, $type, $view_mode, $langcode) {
   if ($type == "node" && $entity->type == "message") {
     global $user;
 
+
     if (!isset($entity->field_recipients['und'])) return;
 
     $recipients = _messaging_get_recipients($entity);
@@ -50,4 +51,25 @@ function _messaging_read_node_by($node, $user) {
 function _messaging_read_comment_by($comment, $user) {
   $comment->field_read_by['und'][] = array('target_id' => $user->uid);
   comment_save($comment);
+}
+
+
+/*
+ * Messaging Utilities
+ */
+
+function _messaging_get_recipients($entity) {
+  $recipients = array();
+  foreach ($entity->field_recipients['und'] as $user) {
+    array_push($recipients, $user['target_id']);
+  }
+  return $recipients;
+}
+
+function _messaging_get_reads($message) {
+  $reads = array();
+  foreach ($message->field_read_by['und'] as $user) {
+    array_push($reads, $user['target_id']);
+  }
+  return $reads;
 }
