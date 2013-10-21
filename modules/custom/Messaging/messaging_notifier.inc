@@ -128,10 +128,3 @@ function _messaging_am_notify($message) {
         }
     }
 }
-
-/**
- * Expert Handler for Notifier
- */
-function _messaging_notifier($message, $recipients) {
-  return "";
-}

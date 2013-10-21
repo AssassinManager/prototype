@@ -3,11 +3,13 @@
 require('assassinations_kill_action.inc');
 require('assassination_player_profile.page.inc');
 
+/*
 function assassinations_rules_action_info() {
 	return array(
 		'am_kill' =>_create_kill_action(),
 		);
 }
+*/
 
 function assassinations_user_view_alter(&$build) {
 	//drupal_add_library('system', 'drupal.ajax');
@@ -34,6 +36,9 @@ function assassinations_form_alter(&$form, &$form_state, $form_id) {
 
 function assassinations_kill() {
 	global $user;
+	/*
 	$user_id=$user->uid;
     watchdog("test", "Ajax test uid: " . $user_id);
+    */
+    _assassinations_am_kill(1, 26);
 }

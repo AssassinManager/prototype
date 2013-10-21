@@ -1,5 +1,7 @@
 <?php
 
+module_load_include('module', 'messaging');
+
 /**
  * implements hook_rules_action_info().
  */
@@ -25,19 +27,40 @@ function _create_kill_action() {
         );
 }
 
-function _assassinations_am_kill($assassin, $target) {
+function _assassinations_am_kill($assassin_uid, $target_uid) {
     
-    if ($assassin == null) return false;
-    if (!isset($assassin)) return false;
-    
-    if ($target == null) return false;
-    if (!isset($target)) return false;
+    if ($assassin_uid == null) return;
+    if ($target_uid == null) return;
 
-    $assassin->field_pending_target['und'][0]['target_id'] = $target->uid;
+    /*
+    $assassin = user_load($assassin_uid);
+	$edit = array(
+	  'field_pending_target_target_id' => array(
+	    'und' => array(
+	      0 => array(
+	        'value' => $target_uid,
+	      ),
+	    ),
+	  ),
+	);
 
-    //if (!module_exists('messaging')) return false;
+    watchdog("edit", "<pre>" . print_r($edit, 1) . "</pre>");
+    watchdog("assassin", "<pre>" . print_r($assassin, 1) . "</pre>");
 
-    //messaging_send_message_to_organizers("test", "test");
-    
-    return true;
+	user_save($assassin, $edit);
+	*/
+
+    //if (!module_exists('messaging')) return;
+    $assassin_name = _get_user_name(user_load($assassin_uid));
+    $message = $assassin_name . " said he eliminated you. Do you confirm?";
+
+    /*
+    $organizers = messaging_get_organizers_uid();
+    foreach ($organizers as $num => $uid) {
+    	$recipients[] = array('target_id' => $uid);
+    }
+    */
+
+    $recipients[] = array('target_id' => $target_uid);
+    messaging_send_message("Target termination", $message, $recipients)
 }
