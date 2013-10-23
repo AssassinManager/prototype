@@ -3,13 +3,11 @@
 require('assassinations_kill_action.inc');
 require('assassination_player_profile.page.inc');
 
-/*
 function assassinations_rules_action_info() {
 	return array(
 		'am_kill' =>_create_kill_action(),
 		);
 }
-*/
 
 function assassinations_user_view_alter(&$build) {
 	//drupal_add_library('system', 'drupal.ajax');

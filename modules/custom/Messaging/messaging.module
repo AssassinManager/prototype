@@ -62,7 +62,7 @@ function messaging_reply_to_message($msg_nid, $new_message) {
 }
 
 function messaging_reply_to_kill($assassin, $target) {
-    $msg_nid = _messaging_get_message_between($assassin, $target);
+    $msg_nid = _messaging_get_message_between($assassin->uid, $target->uid);
     if ($msg_nid == null) return;
 
     messaging_reply_to_message($msg_nid, "I did not!");
