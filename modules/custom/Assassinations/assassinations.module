@@ -41,23 +41,122 @@ function assassinations_form_alter(&$form, &$form_state, $form_id) {
 				),
             );
 
-	return $form;
-}
+	$form['test_accept'] = array(
+                '#type' => 'button',
+                '#name' => 'Accept',
+                '#value' => t('Accept'),
+                '#ajax'  => array(
+					'callback' => 'assassinations_accept',
+					'wrapper'  => 'the-wrapper-div-field',
+					'method'   => 'replace',
+					'effect'   => 'fade',
+				),
+            );
 
-function assassinations_deny() {
-	global $user;
-	/*
-	$user_id=$user->uid;
-    watchdog("test", "Ajax test uid: " . $user_id);
-    */
-    _assassinations_am_deny(1, 26);
+	return $form;
 }
 
 function assassinations_kill() {
 	global $user;
-	/*
-	$user_id=$user->uid;
-    watchdog("test", "Ajax test uid: " . $user_id);
-    */
-    _assassinations_am_kill(26, 1);
+	$user = user_load($user->uid);
+
+	if (!isset($user->field_current_target['und']) || 
+		count($user->field_current_target['und']) < 1) {
+		drupal_set_message("No assigned target!");
+		return;
+	}
+
+	$kills = _assassinations_unconfirmed_kills($user->uid);
+	if (count($kills) > 0) {
+		drupal_set_message("Target still pending elimination confirmation!");
+		return;
+	}
+
+	$target_uid = $user->field_current_target['und'][0]['target_id'];
+    _assassinations_kill($user->uid, $target_uid);
+}
+
+function assassinations_deny() {
+	global $user;
+
+	//MUST RESPOND & PLUG IN ORGANIZER
+
+    watchdog("deny", "<pre>" . print_r($user, 1) . "</pre>");
+}
+
+function assassinations_accept() {
+	global $user;
+
+	$deathWarrants = _assassinations_death_warrant($user->uid);
+	if (count($deathWarrants) < 1) {
+		drupal_set_message("Cannot find your death warrant... /: Please contact the organizer for help.");
+		return;
+	}
+
+	$kill = node_load($deathWarrants[0]);
+	$kill->field_confirmed['und'][0]['value'] = 1;
+	node_save($kill);
+
+	//MUST ASIGN NEW TARGET
+	//MUST SEND NEW TARGET MSG
+}
+
+/**
+ * Create kill node
+ */
+function _assassinations_kill($assassin_uid, $target_uid) {
+	$node = new stdclass();
+    $node->type = 'kill';
+    node_object_prepare($node);
+
+    $node->language = 'und';
+
+    $node->field_confirmed['und'][0]['value'] = 0;
+
+    $node->field_target['und'][0]['target_id'] = $target_uid;
+    $node->field_assassin['und'][0]['target_id'] = $assassin_uid;
+
+    node_save($node);
+}
+
+/**
+ * Utilities
+ */
+function _assassinations_confirmed_kills($uid) {
+	$query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->propertyCondition('uid', $uid)
+            ->fieldCondition('field_confirmed', 'value', array(1));
+
+    $kills = $query->execute();
+
+    if (count($kills) < 1) return array();
+    return array_keys($kills['node']);
+}
+function _assassinations_unconfirmed_kills($uid) {
+	$query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->propertyCondition('uid', $uid)
+            ->fieldCondition('field_confirmed', 'value', array(0));
+
+    $kills = $query->execute();
+
+    if (count($kills) < 1) return array();
+    return array_keys($kills['node']);
+}
+function _assassinations_death_warrant($uid) {
+	$query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->fieldCondition('field_target', 'target_id', array($uid));
+
+    $warrant = $query->execute();
+
+    if (count($warrant) < 1) return array();
+    return array_keys($warrant['node']);
 }
