@@ -1,5 +1,7 @@
 <?php
 
+require('assassinations_targets.inc');
+
 require('assassinations_kill_action.inc');
 require('assassination_player_profile.page.inc');
 
@@ -47,6 +49,18 @@ function assassinations_form_alter(&$form, &$form_state, $form_id) {
                 '#value' => t('Accept'),
                 '#ajax'  => array(
 					'callback' => 'assassinations_accept',
+					'wrapper'  => 'the-wrapper-div-field',
+					'method'   => 'replace',
+					'effect'   => 'fade',
+				),
+            );
+
+	$form['test_assign'] = array(
+                '#type' => 'button',
+                '#name' => 'Assign',
+                '#value' => t('Assign'),
+                '#ajax'  => array(
+					'callback' => 'assassinations_assign_targets',
 					'wrapper'  => 'the-wrapper-div-field',
 					'method'   => 'replace',
 					'effect'   => 'fade',
