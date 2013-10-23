@@ -1,0 +1,44 @@
+/*
+ * outer container
+ */
+.outercontainer{
+	width: 970px;
+	margin: 0 auto; 
+}
+
+@media (max-width: 767px) {
+  /* override bootstrap.css entry */	
+  body {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  .outercontainer {
+    width: auto;
+	margin: 0 auto;
+	padding-left: 10px;
+	padding-right: 10px;
+  }
+}
+@media (max-width: 480px) {
+  .outercontainer {
+    width: auto;
+	margin: 0 auto;
+	padding-left: 10px;
+	padding-right: 10px;
+  }
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  .outercontainer {
+    width: 754px;
+	margin: 0 auto;
+  }
+
+}
+@media (min-width: 1200px) {
+  .outercontainer {
+    width: 1210px;
+	margin: 0 auto;
+  }
+}
+@media (max-width: 979px) {}
+@media (min-width: 980px) {}

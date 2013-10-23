@@ -14,9 +14,9 @@ regions[sidebar_second] = 'Secondary'
 regions[footer]         = 'Footer'
 
 ; Stylesheets
+stylesheets[all][] = css/overrides.css
+stylesheets[all][] = css/red.css
 stylesheets[all][] = css/style.css
-stylesheets[all][] = http://fonts.googleapis.com/css?family=PT+Sans+Narrow
-stylesheets[all][] = http://fonts.googleapis.com/css?family=PT+Sans
 
 ;**********************************
 ; METHOD 1: Bootstrap Source Files
