@@ -95,6 +95,7 @@ function _users_targeted($users) {
  */
 function assassinations_assign_targets() {
 
+  // Get all the players
   $users = _get_users_alive_and_well();
   if (count($users) < 1) {
     drupal_set_message('No users alive or at all!', 'warning');
@@ -109,52 +110,36 @@ function assassinations_assign_targets() {
 
   $users = user_load_multiple($users);
 
+  // Find those without targets
   $users_without_target = _users_without_target($users);
   if (count($users_without_target) < 1) {
     drupal_set_message('All targets already assigned');
     return;
   }
 
+  // Find those untargeted
   $users_targeted = _users_targeted($users);
   $users_not_targeted = array();
-
   foreach ($users as $uid => $user) {
     if (in_array($uid, array_keys($users_targeted))) continue;
     $users_not_targeted[$uid] = $user;
   }
-
-  watchdog("users_without_target", "<pre>" . print_r(array_keys($users_without_target), 1) . "</pre>");
-  watchdog("users_targeted", "<pre>" . print_r(array_keys($users_targeted), 1) . "</pre>");
-  watchdog("users_not_targeted", "<pre>" . print_r(array_keys($users_not_targeted), 1) . "</pre>");
-
-  ///////////////////////
-  return;
-  ///////////////////////
-
-  //assign targets
-  foreach($users_without_target as $user) {
-
-      //player has pending target, skip it
-      if(isset($user->field_pending_target['und'])) continue;
-
-      //if no more targets, pop the first of the targeted ones
-      if (count($users_not_targeted) == 0) array_push($users_not_targeted, array_shift($users_targeted));
-
-      $user->field_current_target['und'][0]['target_id'] = array_pop($users_not_targeted);
-
-      //if user targets himself, change that
-      if ($user->field_current_target['und'][0]['target_id'] == $user->uid) {
-          //if no more targets, pop the first of the targeted ones
-          if (count($users_not_targeted) == 0) array_push($users_not_targeted, array_shift($users_targeted));
-          $user->field_current_target['und'][0]['target_id'] = array_pop($users_not_targeted);
-
-          array_push($users_not_targeted, $user->uid);
-      }
-
-      //add targeted user to targeted list
-      array_push($users_targeted, $user->field_current_target['und'][0]['target_id']);
-
-      user_save($user);
+  if (count($users_not_targeted) < 1) {
+    drupal_set_message('No possible targets');
+    return;
   }
-  drupal_set_message(t('all targets assigned'));
+
+  // Assign targets
+  foreach ($users_without_target as $uid => $user) {
+
+    if (count($users_not_targeted) < 1) {
+      drupal_set_message('No possible targets');
+      return;
+    }
+
+    $target = array_pop($users_not_targeted);
+    $user->field_current_target['und'][0]['target_id'] = $target->uid;
+    user_save($user);
+  }
+  drupal_set_message(t('All targets assigned'));
 }

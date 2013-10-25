@@ -70,6 +70,9 @@ function assassinations_form_alter(&$form, &$form_state, $form_id) {
 	return $form;
 }
 
+/**
+ * User targeting handlers
+ */
 function assassinations_kill() {
 	global $user;
 	$user = user_load($user->uid);
@@ -93,17 +96,25 @@ function assassinations_kill() {
 function assassinations_deny() {
 	global $user;
 
-	//MUST RESPOND & PLUG IN ORGANIZER
+	$user = user_load($user->uid);
+	$target_uid = $user->field_current_target['und'][0]['target_id'];
 
-    watchdog("deny", "<pre>" . print_r($user, 1) . "</pre>");
+	module_load_include('module', 'messaging', 'messaging');
+	messaging_deny_kill($target_uid, $user->uid);
+
+	drupal_set_message("Got that, the organizer was added to the loop to help set this straight.");
+
+    //watchdog("deny", "<pre>" . print_r($user, 1) . "</pre>");
 }
 
 function assassinations_accept() {
 	global $user;
 
 	$deathWarrants = _assassinations_death_warrant($user->uid);
+    watchdog("accept", "<pre>" . print_r($deathWarrants, 1) . "</pre>");
 	if (count($deathWarrants) < 1) {
-		drupal_set_message("Cannot find your death warrant... /: Please contact the organizer for help.");
+		messaging_problem_kill($target_uid, $user->uid);
+		drupal_set_message("Cannot find your death warrant... The organizer was contacted for help.");
 		return;
 	}
 
@@ -111,8 +122,10 @@ function assassinations_accept() {
 	$kill->field_confirmed['und'][0]['value'] = 1;
 	node_save($kill);
 
-	//MUST ASIGN NEW TARGET
-	//MUST SEND NEW TARGET MSG
+	// Assigning new target
+	$user = user_load($user->uid);
+	unset($user->field_current_target['und']);
+	assassinations_assign_targets();
 }
 
 /**
@@ -173,4 +186,29 @@ function _assassinations_death_warrant($uid) {
 
     if (count($warrant) < 1) return array();
     return array_keys($warrant['node']);
+}
+
+/**
+ * Sends new target message to user
+ */
+function assassinations_user_update(&$edit, $account, $category) {
+
+    $original_target = $edit['original']->field_current_target;
+    $new_target = $edit['field_current_target'];
+
+    if ($original_target != $new_target &&
+    	isset($new_target['und']) && 
+    	count($new_target['und']) > 0) {
+
+    	$target = user_load($new_target['und'][0]['target_id']);
+
+		module_load_include('module', 'messaging', 'messaging');
+		module_load_include('inc', 'messaging', 'messaging_notifier');
+
+		$subject = "Assassin Manager job update";
+		$body = "You have a new target: " . _get_user_name($target) . "\n\n-AM";
+		$to = $account->uid;
+
+		messaging_send_message($subject, $body, $to);
+    }
 }

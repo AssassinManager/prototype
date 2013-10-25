@@ -61,11 +61,29 @@ function messaging_reply_to_message($msg_nid, $new_message) {
     comment_save($comment);
 }
 
-function messaging_reply_to_kill($assassin, $target) {
-    $msg_nid = _messaging_get_message_between($assassin->uid, $target->uid);
+function messaging_add_recipient_to($msg_nid) {
+    $msg = node_load($msg_nid);
+    if ($msg == null) return;
+
+    $organizers = messaging_get_organizers_uid();
+    foreach ($organizers as $uid) {
+        $msg->field_recipients['und'][]['target_id'] = $uid;
+    }
+    
+    node_save($msg);
+}
+function messaging_deny_kill($assassin, $target) {
+    $msg_nid = _messaging_get_message_between($assassin, $target);
     if ($msg_nid == null) return;
 
+    messaging_add_recipient_to($msg_nid);
     messaging_reply_to_message($msg_nid, "I did not!");
+}
+function messaging_problem_kill($assassin, $target) {
+    $msg_nid = _messaging_get_message_between($assassin, $target);
+    if ($msg_nid == null) return;
+
+    messaging_reply_to_message($msg_nid, "Could not find kill, contact technical support for help!");
 }
 
 function _messaging_get_message_between($from, $to) {
