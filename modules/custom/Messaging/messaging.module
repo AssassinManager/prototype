@@ -1,15 +1,156 @@
 <?php
 
-require('messaging_email_action.inc');
+require('messaging_notifier.inc');
+require('messaging_twilio.inc');
+
 require('messaging_recipients.inc');
 require('messaging_rule.inc');
+require('messaging_read.inc');
 
-require('messaging_sms_action.inc');
-require('messaging_twilio.inc');
 
 function messaging_rules_action_info() {
 	return array(
-		'am_mail' =>_create_email_action(),
-		'am_sms' => _create_sms_action(),
+		'am_notifier' =>_create_notifier_action(),
 		);
+}
+
+/*
+ * Send message API
+ */
+function messaging_send_message($subject, $body, $to) {
+	$node = new stdclass();
+    $node->type = 'message';
+    node_object_prepare($node);
+
+    $node->language = 'und';
+
+    $node->title = $subject;
+    $node->field_body['und'][0]['value'] = $body;
+    $node->field_body['und'][0]['safe_value'] = "<p>" . $body ."<p>";
+    $node->field_body['und'][0]['format'] = 'filtered_html';
+
+    $node->field_recipients['und'] = $to;
+
+    node_save($node);
+}
+function messaging_reply_to_message($msg_nid, $new_message) {
+    global $user;
+
+    $comment = (object) array(
+        'nid' => $msg_nid,
+        'cid' => 0,
+        'pid' => 0,
+        'uid' => $user->uid,
+        'mail' => '',
+        'is_anonymous' => 0,
+        'homepage' => '',
+        'status' => COMMENT_PUBLISHED,
+        'subject' => 'challenge',
+        'language' => LANGUAGE_NONE,
+        'comment_body' => array(
+          LANGUAGE_NONE => array(
+            0 => array (
+              'value' => $new_message,
+              'format' => 'filtered_html'
+            )
+          )
+        ),
+    );
+
+    comment_submit($comment);
+    comment_save($comment);
+}
+
+function messaging_add_recipient_to($msg_nid) {
+    $msg = node_load($msg_nid);
+    if ($msg == null) return;
+
+    $organizers = messaging_get_organizers_uid();
+    foreach ($organizers as $uid) {
+        $msg->field_recipients['und'][]['target_id'] = $uid;
+    }
+    
+    node_save($msg);
+}
+function messaging_deny_kill($assassin, $target) {
+    $msg_nid = _messaging_get_message_between($assassin, $target);
+    if ($msg_nid == null) return;
+
+    messaging_add_recipient_to($msg_nid);
+    messaging_reply_to_message($msg_nid, "I did not!");
+}
+function messaging_problem_kill($assassin, $target) {
+    $msg_nid = _messaging_get_message_between($assassin, $target);
+    if ($msg_nid == null) return;
+
+    messaging_reply_to_message($msg_nid, "Could not find kill, contact technical support for help!");
+}
+
+function _messaging_get_message_between($from, $to) {
+
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'message')
+            ->propertyCondition('status', 1)
+            ->propertyCondition('uid', $from)
+            ->fieldCondition('field_recipients', 'target_id', array($to));
+
+    $msg_nid = $query->execute();
+
+    if (count($msg_nid) < 1) return null;
+    $msg_nid = array_keys($msg_nid['node']);
+    return $msg_nid[0];
+}
+
+function messaging_get_organizers_uid() {
+	$uids = array();
+
+	$role_result = db_select('role', 'r')
+					->fields('r', array('rid'))
+				    ->condition('name', 'Organizer', '=')
+				    ->range(0,1)
+				    ->execute()
+				    ->fetchAssoc();
+
+	$rid = $role_result['rid'];
+
+	$user_query = db_select('users_roles', 'ur');
+	$user_query->fields('ur', array('uid'));
+	$user_query->condition('rid', $rid, '=');
+	$result = $user_query->execute();
+
+	while($record = $result->fetchAssoc()) {
+		array_push($uids, $record['uid']);
+    }
+
+	return $uids;
+}
+
+/*
+function messaging_send_message_to_player($subject, $body, $to) {
+	
+    $recipients = "";
+    messaging_send_message($subject, $body, $from, $recipients);
+}
+*/
+
+function messaging_send_message_to_organizers($subject, $body) {
+	
+    $recipients_uids = messaging_get_organizers_uid();
+    $recipients = array();
+    foreach ($recipients_uids as $uid) {
+    	array_push($recipients, array('target_id' => $uid));
+    }
+    messaging_send_message($subject, $body, $recipients);
+}
+
+/*
+ * Messaging Utilities
+ */
+function _get_recipients_msg($message) {
+  $recipients = _get_recipients_uids($message);
+  foreach ($recipients as $recipient) {
+    array_push($recipients, array('target_id' => $recipient));
+  }
+  return $recipients;
 }

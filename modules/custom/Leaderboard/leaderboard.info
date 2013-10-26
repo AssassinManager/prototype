@@ -1,0 +1,12 @@
+name = Leaderboard & Prizes
+description = Creates Leaderboard & Prizes views blocks
+package = Assassin Manager - Modules
+
+dependencies[] = views
+dependencies[] = genpass
+dependencies[] = prize_content_type
+
+core = 7.x
+php = 5.x
+
+version = 7.x-1.0-beta1

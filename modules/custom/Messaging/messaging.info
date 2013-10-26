@@ -1,5 +1,5 @@
 name = Messaging System
-description = Actions sending emails for apropriate messages
+description = Notifier, and Actions to send emails & sms for apropriate messages
 package = Assassin Manager - Modules
 
 dependencies[] = message_content_type
@@ -9,4 +9,4 @@ dependencies[] = rules
 core = 7.x
 php = 5.x
 
-version = "1.0"
+version = 7.x-1.0-beta1
