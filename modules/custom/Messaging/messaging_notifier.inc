@@ -25,14 +25,6 @@ function _create_notifier_action() {
         );
 }
 
-function _get_recipients_uids($message) {
-  $recipients = array();
-  foreach ($message->field_recipients['und'] as $user) {
-    array_push($recipients, $user['target_id']);
-  }
-  return $recipients;
-}
-
 function _get_user_subscriptions($user) {
     $subscriptions = array();
 	foreach ($user->field_subscriptions['und'] as $sub) {
@@ -54,7 +46,8 @@ function _messaging_am_notify($message) {
     $from = $message->uid;
     if (!am_tools_valid($from))  return false;
 
-    $to = _get_recipients_uids($message);
+    require('messaging_tools.inc');
+    $to = _recipients_uids($message);
     if (!am_tools_valid($to))    return false;
 
     $subscriptions = array();
@@ -63,8 +56,6 @@ function _messaging_am_notify($message) {
     	$user_info = _get_user_info($user);
     	$subscriptions[$uid] = $user_info;
     }
-
-    watchdog("Subscriptions", "<pre>" . print_r($subscriptions, 1) . "</pre>");
 
     /**
      * More than 2 recipients, only send an email
