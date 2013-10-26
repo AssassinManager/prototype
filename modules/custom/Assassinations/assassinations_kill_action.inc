@@ -1,5 +1,7 @@
 <?php
 
+module_load_include('module', 'messaging');
+
 /**
  * implements hook_rules_action_info().
  */
@@ -21,23 +23,43 @@ function _create_kill_action() {
                 'translatable' => TRUE,
               ),
             ),
-          'base' => '_assassinations_am_kill',
+          'base' => '_assassinations_am_kill_action',
         );
 }
+function _assassinations_am_kill_action($assassin, $target) {
 
-function _assassinations_am_kill($assassin, $target) {
+  if ($assassin == null) return;
+  if ($target == null) return;
+
+    /*
+    $assassin = user_load($assassin_uid);
+	$edit = array(
+	  'field_pending_target_target_id' => array(
+	    'und' => array(
+	      0 => array(
+	        'value' => $target_uid,
+	      ),
+	    ),
+	  ),
+	);
+
+    watchdog("edit", "<pre>" . print_r($edit, 1) . "</pre>");
+    watchdog("assassin", "<pre>" . print_r($assassin, 1) . "</pre>");
+
+	user_save($assassin, $edit);
+	*/
+
+  $assassin_name = _get_user_name($assassin);
+  $message = $assassin_name . " said he eliminated you. Do you confirm?";
+
+  $recipients[] = array('target_id' => $target->uid);
+  messaging_send_message("Target termination", $message, $recipients);
+}
+
+function _assassinations_am_deny($target_uid, $assassin_uid) {
     
-    if ($assassin == null) return false;
-    if (!isset($assassin)) return false;
-    
-    if ($target == null) return false;
-    if (!isset($target)) return false;
+  if ($assassin == null) return;
+  if ($target == null) return;
 
-    $assassin->field_pending_target['und'][0]['target_id'] = $target->uid;
-
-    //if (!module_exists('messaging')) return false;
-
-    //messaging_send_message_to_organizers("test", "test");
-    
-    return true;
+  messaging_reply_to_kill($assassin, $target);
 }

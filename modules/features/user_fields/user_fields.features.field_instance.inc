@@ -42,9 +42,13 @@ function user_fields_field_default_field_instances() {
     ),
     'widget' => array(
       'active' => 1,
-      'module' => 'options',
-      'settings' => array(),
-      'type' => 'options_buttons',
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
       'weight' => 3,
     ),
   );
@@ -306,39 +310,6 @@ function user_fields_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'user-user-field_pending_target'
-  $field_instances['user-user-field_pending_target'] = array(
-    'bundle' => 'user',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 6,
-      ),
-    ),
-    'entity_type' => 'user',
-    'field_name' => 'field_pending_target',
-    'label' => 'Pending target',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => 0,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'options',
-      'settings' => array(),
-      'type' => 'options_select',
-      'weight' => 10,
-    ),
-  );
-
   // Exported field_instance: 'user-user-field_phone'
   $field_instances['user-user-field_phone'] = array(
     'bundle' => 'user',
@@ -420,12 +391,13 @@ function user_fields_field_default_field_instances() {
     'bundle' => 'user',
     'default_value' => NULL,
     'deleted' => 0,
-    'description' => 'Do you want to be notified of important messages via other means than the Inbox on Assassin Manger?',
+    'description' => 'Would you like to be notified of messages?',
     'display' => array(
       'default' => array(
         'label' => 'above',
+        'module' => 'list',
         'settings' => array(),
-        'type' => 'hidden',
+        'type' => 'list_default',
         'weight' => 11,
       ),
     ),
@@ -482,56 +454,21 @@ function user_fields_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'user-user-field_terminated_targets'
-  $field_instances['user-user-field_terminated_targets'] = array(
-    'bundle' => 'user',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 7,
-      ),
-    ),
-    'entity_type' => 'user',
-    'field_name' => 'field_terminated_targets',
-    'label' => 'Terminated targets',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => 0,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'options',
-      'settings' => array(),
-      'type' => 'options_buttons',
-      'weight' => 11,
-    ),
-  );
-
   // Translatables
   // Included for use with string extractors like potx.
   t('Alive');
   t('Assassin');
   t('Confirmed');
   t('Current target');
-  t('Do you want to be notified of important messages via other means than the Inbox on Assassin Manger?');
   t('First name');
   t('Last Name');
   t('License code');
-  t('Pending target');
   t('Phone');
   t('Rank');
   t('Subscriptions');
   t('Suspended');
   t('Target');
-  t('Terminated targets');
+  t('Would you like to be notified of messages?');
 
   return $field_instances;
 }
