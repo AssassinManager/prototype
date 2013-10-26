@@ -1,51 +1,39 @@
 <?php
 
 function _assassinations_player_profile(&$build) {
+  drupal_add_library('system', 'drupal.ajax');
+  drupal_add_library('system', 'jquery.form');
 
   foreach ($build as $key => $value) {
     if (strpos($key, 'field_') !== false) unset($build[$key]);
   }
   unset($build['summary']);
 
-  dsm($build['#account']);
+  //dsm($build['#account']);
 
-  $build['replace_textfield'] = array(
-    '#type' => 'textfield',
-    '#title' => t("The default value will be changed"),
-    '#description' => t("Say something about why you chose") . "'" .
-      (!empty($build['values']['changethis'])
-      ? $build['values']['changethis'] : t("Not changed yet")) . "'",
-    '#prefix' => '<div id="replace_textfield_div">',
-    '#suffix' => '</div>',
-  );
-  $build['button'] = create_button();
-}
-
-function create_button() {
-    $button = array();
-    if (true) {
-        $button['test'] = array(
-          '#type'  => 'button',
-          '#name'  => 'test',
-          '#value' => t('Do Something Awesome!'),
-          '#ajax'  => array(
-            'callback' => 'assassinations_test',
-            'wrapper' => 'replace_textfield_div',
-          ),
-        );
-    } else {
-        $button['test'] = array(
+  $build['test1'] = array(
                 '#type' => 'button',
-                '#disabled' => false,
-                '#name' => 'Test',
-                '#value' => t('Test'),
-                '#button_type' => 'submit',
-                '#executes_submit_callback' => true,
-                '#submit' => array('assassinations_test'),
-            );
-    }
+                '#name' => 'test1',
+                '#value' => t('test2'),
+                '#ajax'  => array(
+                  'callback' => 'assassinations_test',
+                  'wrapper'  => 'the-wrapper-div-field',
+                ),
+              );
 
-    return $button;
+  $build['test2'] = array(
+                '#type' => 'link',
+                '#title' => t('test2'),
+                '#href' => 'http://192.168.226.137/am/',
+                '#ajax' => array(
+                  'callback' => 'assassinations_test',
+                  'wrapper' => 'ajax-response-goes-here',
+                  'method' => 'replace',
+                  'effect' => 'fade',
+                ),
+              );
+    
+  //$output = "<div id='ajax-response-goes-here'></div>Some HTML and stuff" . drupal_render($link);
 }
 
 

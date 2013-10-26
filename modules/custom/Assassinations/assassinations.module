@@ -12,12 +12,12 @@ function assassinations_rules_action_info() {
 }
 
 function assassinations_user_view_alter(&$build) {
-	//drupal_add_library('system', 'drupal.ajax');
-  	//drupal_add_library('system', 'jquery.form');
   	//_assassinations_player_profile($build);
 }
 
 function assassinations_form_alter(&$form, &$form_state, $form_id) {
+
+	return; // Remove the debug buttons from all forms
 
 	$form['test_kill'] = array(
                 '#type' => 'button',
@@ -26,8 +26,6 @@ function assassinations_form_alter(&$form, &$form_state, $form_id) {
                 '#ajax'  => array(
 					'callback' => 'assassinations_kill',
 					'wrapper'  => 'the-wrapper-div-field',
-					'method'   => 'replace',
-					'effect'   => 'fade',
 				),
             );
 
@@ -38,8 +36,6 @@ function assassinations_form_alter(&$form, &$form_state, $form_id) {
                 '#ajax'  => array(
 					'callback' => 'assassinations_deny',
 					'wrapper'  => 'the-wrapper-div-field',
-					'method'   => 'replace',
-					'effect'   => 'fade',
 				),
             );
 
@@ -50,8 +46,6 @@ function assassinations_form_alter(&$form, &$form_state, $form_id) {
                 '#ajax'  => array(
 					'callback' => 'assassinations_accept',
 					'wrapper'  => 'the-wrapper-div-field',
-					'method'   => 'replace',
-					'effect'   => 'fade',
 				),
             );
 
@@ -62,8 +56,6 @@ function assassinations_form_alter(&$form, &$form_state, $form_id) {
                 '#ajax'  => array(
 					'callback' => 'assassinations_assign_targets',
 					'wrapper'  => 'the-wrapper-div-field',
-					'method'   => 'replace',
-					'effect'   => 'fade',
 				),
             );
 
