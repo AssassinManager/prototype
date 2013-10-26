@@ -49,7 +49,8 @@ function _assassinations_am_kill_action($assassin, $target) {
 	user_save($assassin, $edit);
 	*/
 
-  $assassin_name = _get_user_name($assassin);
+  module_load_include('module', 'am_tools', 'am_tools');
+  $assassin_name = am_tools_user_name($assassin);
   $message = $assassin_name . " said he eliminated you. Do you confirm?";
 
   $recipients[] = array('target_id' => $target->uid);

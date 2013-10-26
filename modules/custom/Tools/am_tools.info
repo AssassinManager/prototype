@@ -1,0 +1,8 @@
+name = AM Tools
+description = Various Backend Utilitie
+package = Assassin Manager - Modules
+
+core = 7.x
+php = 5.x
+
+version = 7.x-1.0

@@ -69,8 +69,7 @@ function assassinations_kill() {
 	global $user;
 	$user = user_load($user->uid);
 
-	if (!isset($user->field_current_target['und']) || 
-		count($user->field_current_target['und']) < 1) {
+	if (count($user->field_current_target['und']) < 1) {
 		drupal_set_message("No assigned target!");
 		return;
 	}
@@ -196,9 +195,10 @@ function assassinations_user_update(&$edit, $account, $category) {
 
 		module_load_include('module', 'messaging', 'messaging');
 		module_load_include('inc', 'messaging', 'messaging_notifier');
+		module_load_include('module', 'am_tools', 'am_tools');
 
 		$subject = "Assassin Manager job update";
-		$body = "You have a new target: " . _get_user_name($target) . "\n\n- AM";
+		$body = "You have a new target: " . am_tools_user_name($target) . "\n\n- AM";
 		$to = array(array('target_id' => $account->uid));
 
 		messaging_send_message($subject, $body, $to);
