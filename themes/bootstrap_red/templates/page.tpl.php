@@ -105,7 +105,7 @@
                     </li>
                   <?php } else { ?>
                     <li class="first leaf">
-                      <a href="/">Home</a>
+                      <a href="<?php print $front_page; ?>">Home</a>
                     </li>
                     <li class="last leaf">
                       <a href="?q=user/logout">Logoff</a>
