@@ -12,10 +12,6 @@ function am_get_game_nid() {
 	return $query->nid;
 }
 
-global $gameid;
-$gameid = get_game2();
-
-
 function am_tools_field_val($field) {
 	if (!isset($field['und'])) return "";
 	return $field['und'][0]['value'];
