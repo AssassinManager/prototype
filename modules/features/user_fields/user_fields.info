@@ -1,7 +1,7 @@
 name = User Roles & Player Fields
 core = 7.x
 package = Assassin Manager - Features
-version = 7.x-1.0-alpha1
+version = 7.x-1.0-alpha2
 project = user_fields
 dependencies[] = auto_nodetitle
 dependencies[] = block
