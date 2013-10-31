@@ -63,7 +63,7 @@ function _messaging_am_notify($message) {
      * Test if there are no subscriptions from anyone just return
      */
     foreach ($subscriptions as $subscription) {
-    	if (!empty($subscription["subscriptions"]) || 
+    	if (empty($subscription["subscriptions"]) || 
     		count($subscription["subscriptions"]) < 1) 
     		return true;
     }
