@@ -23,6 +23,7 @@ stylesheets[all][] = css/style.css
 ;**********************************
 ; 
 ; ; Scripts
+scripts[] = 'js/red.js'
 ; scripts[] = 'bootstrap/js/bootstrap-affix.js'
 ; scripts[] = 'bootstrap/js/bootstrap-alert.js'
 ; scripts[] = 'bootstrap/js/bootstrap-button.js'
