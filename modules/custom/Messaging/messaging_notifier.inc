@@ -27,6 +27,8 @@ function _create_notifier_action() {
 
 function _get_user_subscriptions($user) {
     $subscriptions = array();
+    if (!isset($user->field_subscriptions['und'])) return $subscriptions;
+    
 	foreach ($user->field_subscriptions['und'] as $sub) {
 		array_push($subscriptions, $sub['value']);
 	}

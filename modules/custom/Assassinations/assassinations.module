@@ -203,12 +203,9 @@ function assassinations_user_update(&$edit, $account, $category) {
 		module_load_include('module', 'am_tools', 'am_tools');
 
 		$subject = "Assassin Manager job update";
-		$body = "You have a new target: " . am_tools_user_name($target) . "\n\n- AM";
+		$body = "You have a new target: " . am_tools_user_name($target);
 		$to = array($account->uid);
 
-  		//watchdog("msg", "<pre>" . print_r($body, 1) . "</pre>");
-  		watchdog("msg", "here");
-
-		//messaging_send_message($subject, $body, $to);
+		messaging_send_message($subject, $body, $to);
     }
 }
