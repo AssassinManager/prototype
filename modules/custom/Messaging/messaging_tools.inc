@@ -22,6 +22,8 @@ function _recipients_for_msg($uids) {
 }
 function _recipients_uids($message) {
   $recipients = array();
+  if (!isset($message->field_recipients['und'])) return $recipients;
+
   foreach ($message->field_recipients['und'] as $user) {
     array_push($recipients, $user['target_id']);
   }

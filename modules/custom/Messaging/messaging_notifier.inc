@@ -53,11 +53,15 @@ function _messaging_am_notify($message) {
     if (!am_tools_valid($to))    return false;
 
     $subscriptions = array();
+    $gotAtLeastOneSub = false;
     foreach ($to as $uid) {
     	$user = user_load($uid);
     	$user_info = _get_user_info($user);
     	$subscriptions[$uid] = $user_info;
+    	if (!empty($user_info["subscriptions"])) $gotAtLeastOneSub = true;
     }
+
+    if (!$gotAtLeastOneSub) return;
 
     /**
      * More than 2 recipients, only send an email
