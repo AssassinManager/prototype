@@ -18,9 +18,14 @@ function messaging_rules_action_info() {
  * Send message API
  */
 function messaging_send_message($subject, $body, $to) {
+
+    watchdog("test", "here");
+
 	$node = new stdclass();
     $node->type = 'message';
     node_object_prepare($node);
+
+    watchdog("test", "1");
 
     $node->language = 'und';
 
@@ -29,9 +34,13 @@ function messaging_send_message($subject, $body, $to) {
     $node->field_body['und'][0]['safe_value'] = "<p>" . $body ."<p>";
     $node->field_body['und'][0]['format'] = 'filtered_html';
 
+    watchdog("test", "2");
+
     require('messaging_tools.inc');
     $recipients = _recipients_for_msg($to);
     $node->field_recipients['und'] = $to;
+
+    watchdog("test", "3");
 
     node_save($node);
 }

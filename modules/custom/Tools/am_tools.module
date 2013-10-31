@@ -18,9 +18,14 @@ function am_tools_field_val($field) {
 }
 
 function am_tools_user_name($user) {
+	
+	if (!is_object($user)) return "na";
+
 	$name = am_tools_field_val($user->field_first_name);
-	$name += " ";
-	$name += am_tools_field_val($user->field_last_name);
+	$name .= " ";
+	$name .= am_tools_field_val($user->field_last_name);
+
+	if (strlen($name) <= 1) return "na";
 
 	return $name;
 }

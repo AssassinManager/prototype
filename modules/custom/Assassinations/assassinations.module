@@ -189,23 +189,27 @@ function _assassinations_death_warrant($uid) {
  */
 function assassinations_user_update(&$edit, $account, $category) {
 
+	$role = user_role_load_by_name('Player');
+	if (!in_array($role->rid, array_keys($account->roles))) return;
+
     $original_target = $edit['original']->field_current_target;
     $new_target = $edit['field_current_target'];
 
-    if ($original_target != $new_target &&
-    	isset($new_target['und']) && 
-    	count($new_target['und']) > 0) {
+    if (!isset($new_target['und']) || count($new_target['und']) < 1) return;
+
+    if ($original_target != $new_target) {
 
     	$target = user_load($new_target['und'][0]['target_id']);
 
 		module_load_include('module', 'messaging', 'messaging');
-		module_load_include('inc', 'messaging', 'messaging_notifier');
 		module_load_include('module', 'am_tools', 'am_tools');
 
 		$subject = "Assassin Manager job update";
 		$body = "You have a new target: " . am_tools_user_name($target) . "\n\n- AM";
-		$to = array(array('target_id' => $account->uid));
+		$to = array($account->uid);
 
-		messaging_send_message($subject, $body, $to);
+  		watchdog("msg", "<pre>" . print_r($body, 1) . "</pre>");
+
+		//messaging_send_message($subject, $body, $to);
     }
 }
