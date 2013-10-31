@@ -64,7 +64,7 @@ function _messaging_am_notify($message) {
      */
     foreach ($subscriptions as $subscription) {
     	if (!empty($subscription["subscriptions"]) || 
-    		count($subscription"subscriptions") < 1) 
+    		count($subscription["subscriptions"]) < 1) 
     		return true;
     }
 
