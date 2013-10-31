@@ -101,8 +101,6 @@ function assassinations_deny() {
 	messaging_deny_kill($target_uid, $user->uid);
 
 	drupal_set_message("Got that, the organizer was added to the loop to help set this straight.");
-
-    //watchdog("deny", "<pre>" . print_r($user, 1) . "</pre>");
 }
 
 function assassinations_accept() {
@@ -208,7 +206,8 @@ function assassinations_user_update(&$edit, $account, $category) {
 		$body = "You have a new target: " . am_tools_user_name($target) . "\n\n- AM";
 		$to = array($account->uid);
 
-  		watchdog("msg", "<pre>" . print_r($body, 1) . "</pre>");
+  		//watchdog("msg", "<pre>" . print_r($body, 1) . "</pre>");
+  		watchdog("msg", "here");
 
 		//messaging_send_message($subject, $body, $to);
     }

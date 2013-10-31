@@ -131,33 +131,18 @@ function assassinations_assign_targets() {
     return;
   }
 
-  watchdog("users_not_targeted", "<pre>" . print_r($users_not_targeted, 1) . "</pre>");
-  watchdog("users_without_target", "<pre>" . print_r($users_without_target, 1) . "</pre>");
-
-  $user = user_load(1);
-  $user->field_current_target = array('und'=> array(array('target_id' => 1)));
-  watchdog("user", "<pre>" . print_r($user, 1) . "</pre>");
-  //user_save($user);
-
-  return;
-
   // Assign targets
   foreach ($users_without_target as $uid => $user) {
-
-    watchdog("test", "1");
 
     if (count($users_not_targeted) < 1) {
       drupal_set_message('No players left to target, but some players remain without target.', 'warning');
       return;
     }
 
-
     $target = array_pop($users_not_targeted);
-
-    watchdog("test", "<pre>" . print_r($user, 1) . "</pre>");
-
     $user->field_current_target['und'][0]['target_id'] = $target->uid;
-    //user_save($user);
+    user_save($user);
   }
+  
   drupal_set_message('All targets assigned', 'status');
 }
