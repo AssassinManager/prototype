@@ -532,7 +532,24 @@ ul.commentbox .comment:hover .comment:hover {
 /* here you can have your custom css */
 
 
+#block-views-leaderboard-block, #block-views-prizes-block{
+	float: left;
+}
 
+	#block-views-leaderboard-block{
+		width: 52%;
+		margin-right: 2em;
+	}
+
+	#block-views-prizes-block{
+		width: 40%;
+	}
+
+		#block-views-prizes-block:after{
+			content: "";
+		  display: table;
+		  clear: both;
+		}
 
 
 
