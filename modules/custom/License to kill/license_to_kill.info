@@ -5,6 +5,8 @@ package = Assassin Manager - Modules
 dependencies[] = views_data_export
 dependencies[] = genpass
 
+dependencies[] = license_content_type
+
 core = 7.x
 php = 5.x
 

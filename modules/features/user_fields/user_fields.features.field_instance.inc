@@ -148,39 +148,6 @@ function user_fields_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'user-user-field_license_code'
-  $field_instances['user-user-field_license_code'] = array(
-    'bundle' => 'user',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 9,
-      ),
-    ),
-    'entity_type' => 'user',
-    'field_name' => 'field_license_code',
-    'label' => 'License code',
-    'required' => 1,
-    'settings' => array(
-      'text_processing' => 0,
-      'user_register_form' => 1,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'text',
-      'settings' => array(
-        'size' => 60,
-      ),
-      'type' => 'text_textfield',
-      'weight' => 1,
-    ),
-  );
-
   // Exported field_instance: 'user-user-field_phone'
   $field_instances['user-user-field_phone'] = array(
     'bundle' => 'user',
@@ -331,7 +298,6 @@ function user_fields_field_default_field_instances() {
   t('Current target');
   t('First name');
   t('Last Name');
-  t('License code');
   t('Phone');
   t('Rank');
   t('Subscriptions');

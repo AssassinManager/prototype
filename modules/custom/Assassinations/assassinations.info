@@ -3,6 +3,7 @@ description = Targeting and Elimination System
 package = Assassin Manager - Modules
 
 dependencies[] = kill_content_type
+dependencies[] = user_fields
 dependencies[] = rules
 
 core = 7.x
