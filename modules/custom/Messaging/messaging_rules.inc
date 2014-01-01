@@ -45,7 +45,6 @@ function messaging_default_rules_configuration() {
 }
 
 /**
- * Actions for Message creation
  * implements hook_rules_action_info().
  */
 function _create_messages_action() {
@@ -57,7 +56,7 @@ function _create_messages_action() {
               'Player' => array(
                 'type' => 'user',
                 'label' => t('Player'),
-                'translatable' => TRUE,
+                'translatable' => FALSE,
               ),
             ),
         );

@@ -41,7 +41,7 @@ function messaging_send_message($subject, $body, $to) {
 
     node_save($node);
 }
-function messaging_reply_to_message($msg_nid, $msg_body) {
+function messaging_reply_message($msg_nid, $msg_body) {
     global $user;
 
     $comment = (object) array(
@@ -67,42 +67,4 @@ function messaging_reply_to_message($msg_nid, $msg_body) {
 
     comment_submit($comment);
     comment_save($comment);
-}
-
-function messaging_deny_kill($assassin, $target) {
-    $msg_nid = _messaging_get_msg_between($assassin, $target);
-    if ($msg_nid == null) return;
-
-    module_load_include('module', 'am_tools', 'am_tools');
-    $organizers = am_tools_organizer_uids();
-
-    require('messaging_tools.inc');
-    _add_recipients($msg_nid, $organizers);
-
-    messaging_reply_to_message($msg_nid, "I did not!");
-}
-function messaging_problem_kill($assassin, $target) {
-    $msg_nid = _messaging_get_msg_between($assassin, $target);
-    if ($msg_nid == null) return;
-
-    messaging_reply_to_message($msg_nid, "Could not find kill, contact technical support for help!");
-}
-
-/*
- * Messaging Utilities
- */
-function _messaging_get_msg_between($author, $recipient) {
-
-    $query = new EntityFieldQuery();
-    $query->entityCondition('entity_type', 'node')
-            ->entityCondition('bundle', 'message')
-            ->propertyCondition('status', 1)
-            ->propertyCondition('uid', $author)
-            ->fieldCondition('field_recipients', 'target_id', array($recipient));
-
-    $msg_nid = $query->execute();
-
-    if (count($msg_nid) < 1) return null;
-    $msg_nid = array_keys($msg_nid['node']);
-    return $msg_nid[0];
 }
