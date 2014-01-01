@@ -7,3 +7,9 @@
 Kill & Accept & Deny    -   Kill
 Target Assign & Suspend -   User
 Question & News         -   Message
+
+Actions:
+Kill create             -   Create message to target
+Kill update             -   Comment message to assassin/target
+User update             -   Create message to user
+Message creation        -   Send email/sms appropriately 

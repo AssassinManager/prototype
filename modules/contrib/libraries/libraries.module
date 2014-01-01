@@ -166,13 +166,6 @@ function libraries_scan_info_files() {
  *   An array of library information, passed by reference.
  */
 function libraries_invoke($group, &$library) {
-  // When introducing new callback groups in newer versions, stale cached
-  // library information somehow reaches this point during the database update
-  // before clearing the library cache.
-  if (empty($library['callbacks'][$group])) {
-    return;
-  }
-
   foreach ($library['callbacks'][$group] as $callback) {
     libraries_traverse_library($library, $callback);
   }
@@ -348,27 +341,31 @@ function &libraries_info($name = NULL) {
 
   if (!isset($libraries)) {
     $libraries = array();
-    // Gather information from hook_libraries_info().
+
+    // Gather information from hook_libraries_info() in enabled modules.
     foreach (module_implements('libraries_info') as $module) {
       foreach (module_invoke($module, 'libraries_info') as $machine_name => $properties) {
+        $properties['info type'] = 'module';
         $properties['module'] = $module;
         $libraries[$machine_name] = $properties;
       }
     }
+
     // Gather information from hook_libraries_info() in enabled themes.
-    // @see drupal_alter()
-    global $theme, $base_theme_info;
-    if (isset($theme)) {
-      $theme_keys = array();
-      foreach ($base_theme_info as $base) {
-        $theme_keys[] = $base->name;
-      }
-      $theme_keys[] = $theme;
-      foreach ($theme_keys as $theme_key) {
-        $function = $theme_key . '_' . 'libraries_info';
+    $themes = array();
+    foreach (list_themes() as $theme_name => $theme_info) {
+      if ($theme_info->status && file_exists(drupal_get_path('theme', $theme_name) . '/template.php')) {
+        // Collect a list of viable themes for re-use when calling the alter
+        // hook.
+        $themes[] = $theme_name;
+
+        include_once drupal_get_path('theme', $theme_name) . '/template.php';
+
+        $function = $theme_name . '_libraries_info';
         if (function_exists($function)) {
           foreach ($function() as $machine_name => $properties) {
-            $properties['theme'] = $theme_key;
+            $properties['info type'] = 'theme';
+            $properties['theme'] = $theme_name;
             $libraries[$machine_name] = $properties;
           }
         }
@@ -379,6 +376,7 @@ function &libraries_info($name = NULL) {
     // .info files override module definitions.
     foreach (libraries_scan_info_files() as $machine_name => $file) {
       $properties = drupal_parse_info_file($file->uri);
+      $properties['info type'] = 'info file';
       $properties['info file'] = $file->uri;
       $libraries[$machine_name] = $properties;
     }
@@ -388,8 +386,20 @@ function &libraries_info($name = NULL) {
       libraries_info_defaults($properties, $machine_name);
     }
 
-    // Allow modules to alter the registered libraries.
-    drupal_alter('libraries_info', $libraries);
+    // Allow enabled modules and themes to alter the registered libraries.
+    // drupal_alter() only takes the currently active theme into account, not
+    // all enabled themes.
+    foreach (module_implements('libraries_info_alter') as $module) {
+      $function = $module . '_libraries_info_alter';
+      $function($libraries);
+    }
+    foreach ($themes as $theme) {
+      $function = $theme . '_libraries_info_alter';
+      // The template.php file was included above.
+      if (function_exists($function)) {
+        $function($libraries);
+      }
+    }
 
     // Invoke callbacks in the 'info' group.
     foreach ($libraries as &$properties) {
@@ -476,9 +486,11 @@ function libraries_detect($name) {
   // Re-use the statically cached value of libraries_info() to save memory.
   $library = &libraries_info($name);
 
+  // Exit early if the library was not found.
   if ($library === FALSE) {
     return $library;
   }
+
   // If 'installed' is set, library detection ran already.
   if (isset($library['installed'])) {
     return $library;
@@ -615,6 +627,12 @@ function libraries_load($name, $variant = NULL) {
       cache_set($name, $library, 'cache_libraries');
     }
 
+    // Exit early if the library was not found.
+    if ($library === FALSE) {
+      $loaded[$name] = $library;
+      return $loaded[$name];
+    }
+
     // If a variant was specified, override the top-level properties with the
     // variant properties.
     if (isset($variant)) {
@@ -711,7 +729,7 @@ function libraries_load_files($library) {
     foreach ($library['files']['php'] as $file => $array) {
       $file_path = DRUPAL_ROOT . '/' . $path . '/' . $file;
       if (file_exists($file_path)) {
-        require_once $file_path;
+        _libraries_require_once($file_path);
         $count++;
       }
     }
@@ -719,17 +737,49 @@ function libraries_load_files($library) {
 
   // Load integration files.
   if (!empty($library['integration files'])) {
-    foreach ($library['integration files'] as $module => $files) {
-      libraries_load_files(array(
-        'files' => $files,
-        'path' => '',
-        'library path' => drupal_get_path('module', $module),
-      ));
+    $enabled_themes = array();
+    foreach (list_themes() as $theme_name => $theme) {
+      if ($theme->status) {
+        $enabled_themes[] = $theme_name;
+      }
+    }
+    foreach ($library['integration files'] as $provider => $files) {
+      if (module_exists($provider)) {
+        libraries_load_files(array(
+          'files' => $files,
+          'path' => '',
+          'library path' => drupal_get_path('module', $provider),
+        ));
+      }
+      elseif (in_array($provider, $enabled_themes)) {
+        libraries_load_files(array(
+          'files' => $files,
+          'path' => '',
+          'library path' => drupal_get_path('theme', $provider),
+        ));
+      }
     }
   }
 
   return $count;
 }
+
+/**
+ * Wrapper function for require_once.
+ *
+ * A library file could set a $path variable in file scope. Requiring such a
+ * file directly in libraries_load_files() would lead to the local $path
+ * variable being overridden after the require_once statement. This would
+ * break loading further files. Therefore we use this trivial wrapper which has
+ * no local state that can be tampered with.
+ *
+ * @param $file_path
+ *   The file path of the file to require.
+ */
+function _libraries_require_once($file_path) {
+  require_once $file_path;
+}
+
 
 /**
  * Gets the version information from an arbitrary library.

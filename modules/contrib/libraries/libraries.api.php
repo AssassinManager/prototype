@@ -30,7 +30,7 @@
  *     changes of implementing modules and to support different versions of a
  *     library simultaneously (though only one version can be installed per
  *     site). A valid use-case is an external library whose version cannot be
- *     determined programatically.
+ *     determined programmatically.
  *   - version callback: (optional) The name of a function that detects and
  *     returns the full version string of the library. The first argument is
  *     always $library, an array containing all library information as described
@@ -38,16 +38,19 @@
  *     arguments, either as a single $options parameter or as multiple
  *     parameters, which correspond to the two ways to specify the argument
  *     values (see 'version arguments'). Defaults to libraries_get_version().
- *   - version arguments: A list of arguments to pass to the version callback.
- *     Version arguments can be declared either as an associative array whose
- *     keys are the argument names or as an indexed array without specifying
- *     keys. If declared as an associative array, the arguments get passed to
- *     the version callback as a single $options parameter whose keys are the
- *     argument names (i.e. $options is identical to the specified array). If
- *     declared as an indexed array, the array values get passed to the version
- *     callback as seperate arguments in the order they were declared. The
- *     default version callback libraries_get_version() expects a single,
- *     associative array with named keys:
+ *     Unless 'version' is declared or libraries_get_version() is being used as
+ *     a version callback, 'version callback' must be declared. In the latter
+ *     case, however, 'version arguments' must be declared in the specified way.
+ *   - version arguments: (optional) A list of arguments to pass to the version
+ *     callback. Version arguments can be declared either as an associative
+ *     array whose keys are the argument names or as an indexed array without
+ *     specifying keys. If declared as an associative array, the arguments get
+ *     passed to the version callback as a single $options parameter whose keys
+ *     are the argument names (i.e. $options is identical to the specified
+ *     array). If declared as an indexed array, the array values get passed to
+ *     the version callback as separate arguments in the order they were
+ *     declared. The default version callback libraries_get_version() expects a
+ *     single, associative array with named keys:
  *     - file: The filename to parse for the version, relative to the library
  *       path. For example: 'docs/changelog.txt'.
  *     - pattern: A string containing a regular expression (PCRE) to match the
@@ -60,6 +63,10 @@
  *     - cols: (optional) The maximum number of characters per line to take into
  *       account. Defaults to 200. In case of minified or compressed files, this
  *       prevents reading the entire file into memory.
+ *     Defaults to an empty array. 'version arguments' must be specified unless
+ *     'version' is declared or the specified 'version callback' does not
+ *     require any arguments. The latter might be the case with a
+ *     library-specific version callback, for example.
  *   - files: An associative array of library files to load. Supported keys are:
  *     - js: A list of JavaScript files to load, using the same syntax as Drupal
  *       core's hook_library().
@@ -100,10 +107,10 @@
  *       available or not. The first argument is always $library, an array
  *       containing all library information as described here. The second
  *       argument is always a string containing the variant name. There are two
- *       ways to declare the variant callback's additinal arguments, either as a
+ *       ways to declare the variant callback's additional arguments, either as a
  *       single $options parameter or as multiple parameters, which correspond
  *       to the two ways to specify the argument values (see 'variant
- *       arguments'). If ommitted, the variant is expected to always be
+ *       arguments'). If omitted, the variant is expected to always be
  *       available.
  *     - variant arguments: A list of arguments to pass to the variant callback.
  *       Variant arguments can be declared either as an associative array whose
@@ -112,7 +119,7 @@
  *       the variant callback as a single $options parameter whose keys are the
  *       argument names (i.e. $options is identical to the specified array). If
  *       declared as an indexed array, the array values get passed to the
- *       variant callback as seperate arguments in the order they were declared.
+ *       variant callback as separate arguments in the order they were declared.
  *     Variants can be version-specific (see 'versions').
  *   - versions: (optional) An associative array of supported library versions.
  *     Naturally, libraries evolve over time and so do their APIs. In case a
@@ -146,9 +153,23 @@
  *     Valid callback groups are:
  *     - info: Callbacks registered in this group are applied after the library
  *       information has been retrieved via hook_libraries_info() or info files.
+ *       At this point the following additional information is available:
+ *       - $library['info type']: How the library information was obtained. Can
+ *         be 'info file', 'module', or 'theme', depending on whether the
+ *         library information was obtained from an info file, an enabled module
+ *         or an enabled theme, respectively.
+ *       Additionally, one of the following three keys is available, depending
+ *       on the value of $library['info type'].
+ *       - $library['info file']: In case the library information was obtained
+ *         from an info file, the URI of the info file.
+ *       - $library['module']: In case the library was obtained from an enabled
+ *         module, the name of the providing module.
+ *       - $library['theme']: In case the library was obtained from an enabled
+ *         theme, the name of the providing theme.
  *     - pre-detect: Callbacks registered in this group are applied after the
  *       library path has been determined and before the version callback is
- *       invoked. At this point the following additional information is available:
+ *       invoked. At this point the following additional information is
+ *       available:
  *       - $library['library path']: The path on the file system to the library.
  *     - post-detect: Callbacks registered in this group are applied after the
  *       library has been successfully detected. At this point the library
