@@ -6,6 +6,15 @@ function _valid($input) {
 
     return true;
 }
+function _messaging_am_sms_name($message, $name) {
+    if (strlen($message) > 1200)
+        return str_replace("_name_",$name,variable_get('sms_notification'), $from_name);
+
+    $message = str_replace("_name_",$name,variable_get('sms_notification'), $from_name);
+    $message = str_replace("_msg_",$name,variable_get('sms_notification'), $message);
+
+    return $message;
+}
 function _messaging_am_sms($subject, $message, $from, $from_name, $to) {
     
     if (!_valid($to)) return;
@@ -13,9 +22,7 @@ function _messaging_am_sms($subject, $message, $from, $from_name, $to) {
     if (!_valid($subject)) return;
     if (!_valid($message)) return;
 
-    if (strlen($message) > 1200)
-         $message = $from_name . " sent you a msg on Assassin Manager. (Msg too long to send via SMS)";
-    else $message = $from_name . " sent you a msg on Assassin Manager: " . $message;
+    $message = _messaging_am_sms_name($message, $from_name);
 
     $file = getcwd() . '/sites/all/libraries/twilio/Twilio.php';
     if (!is_file($file)) return false;

@@ -12,4 +12,4 @@ dependencies[] = rules
 core = 7.x
 php = 5.x
 
-version = 7.x-1.0-beta1
+version = 7.x-1.0-beta2

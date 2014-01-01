@@ -45,5 +45,23 @@ function messaging_defaults() {
         '#required' => true,
     );
 
+    $form['sms_long_notification'] = array(
+        '#type' => 'textfield',
+        '#title' => t('SMS notification for long messages'),
+        '#default_value' => variable_get('sms_long_notification'),
+        '#size' => 160,
+        '#maxlength' => 160,
+        '#required' => true,
+    );
+
+    $form['sms_notification'] = array(
+        '#type' => 'textfield',
+        '#title' => t('SMS notification messages'),
+        '#default_value' => variable_get('sms_notification'),
+        '#size' => 160,
+        '#maxlength' => 160,
+        '#required' => true,
+    );
+
     return system_settings_form($form);
 }
