@@ -1,6 +1,5 @@
 <?php
 
-require('target_targets.inc');
 require('target_player_profile.page.inc');
 require('target_rules.inc');
 
@@ -8,6 +7,7 @@ require('target_rules.inc');
 function target_rules_action_info() {
 	return array(
 		'am_ranking' =>_update_ranking_action(),
+		'am_targeting' =>_update_targets_action(),
 		);
 }
 
@@ -121,7 +121,6 @@ function target_accept() {
 	// Assigning new target
 	$user = user_load($user->uid);
 	unset($user->field_current_target['und']);
-	target_assign_targets();
 }
 
 /**
