@@ -1,5 +1,7 @@
 <?php
 
+require('messaging_tools.inc');
+
 /*
  * Implements hook_entity_view
  * Responds when the user views a message or a reply (comment)
@@ -10,10 +12,9 @@ function messaging_entity_view($entity, $type, $view_mode, $langcode) {
   if ($type == "node" && $entity->type == "message") {
     global $user;
 
-
     if (!isset($entity->field_recipients['und'])) return;
 
-    $recipients = _messaging_get_recipients($entity);
+    $recipients = _recipients_uids($entity);
     if (!in_array($user->uid, $recipients)) return;
 
     if (isset($entity->field_read_by['und'])) {
@@ -25,12 +26,12 @@ function messaging_entity_view($entity, $type, $view_mode, $langcode) {
   }
   // Otherwise do this for a reply/comment
   else if ($type == "comment" && $entity->node_type == "comment_node_message") {
-    watchdog("Got comment", "<pre>" . print_r($entity, 1) . "<\pre>"); 
+    watchdog("Got comment", "<pre>" . print_r($entity, 1) . "<\pre>");
     global $user;
 
     if (!isset($entity->field_recipients['und'])) return;
 
-    $recipients = _messaging_get_recipients($entity);
+    $recipients = _recipients_uids($entity);
     if (!in_array($user->uid, $recipients)) return;
 
     if (isset($entity->field_read_by['und'])) {
@@ -55,17 +56,8 @@ function _messaging_read_comment_by($comment, $user) {
 
 
 /*
- * Messaging Utilities
+ * Reads Utilities
  */
-
-function _messaging_get_recipients($entity) {
-  $recipients = array();
-  foreach ($entity->field_recipients['und'] as $user) {
-    array_push($recipients, $user['target_id']);
-  }
-  return $recipients;
-}
-
 function _messaging_get_reads($message) {
   $reads = array();
   foreach ($message->field_read_by['und'] as $user) {

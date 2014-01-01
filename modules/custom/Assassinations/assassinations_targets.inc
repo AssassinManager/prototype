@@ -45,6 +45,7 @@ function _get_users_alive_and_well() {
         ->fieldCondition('field_suspended', 'value', array(0))
         ->fieldCondition('field_alive', 'value', array(1));
   $entities = $query->execute();
+
   if (count($entities) < 1) return array();
 
   foreach ($entities['user'] as $key => $value) {
@@ -85,7 +86,8 @@ function _users_targeted($users) {
       continue;
     }
     $newUid = $user->field_current_target['und'][0]['target_id'];
-    $result[$newUid] = user_load($newUid);
+    if (in_array($newUid, array_keys($users))) $result[$newUid] = $users[$newUid];
+    else                                       $result[$newUid] = user_load($newUid);
   }
   return $result;
 }
@@ -113,19 +115,19 @@ function assassinations_assign_targets() {
   // Find those without targets
   $users_without_target = _users_without_target($users);
   if (count($users_without_target) < 1) {
-    drupal_set_message('All targets already assigned');
+    drupal_set_message('All targets already assigned', 'status');
     return;
   }
 
   // Find those untargeted
-  $users_targeted = _users_targeted($users);
+  $users_targeted = _users_targeted($users);  
   $users_not_targeted = array();
   foreach ($users as $uid => $user) {
     if (in_array($uid, array_keys($users_targeted))) continue;
     $users_not_targeted[$uid] = $user;
   }
   if (count($users_not_targeted) < 1) {
-    drupal_set_message('No possible targets');
+    drupal_set_message('No possible targets, all users are already targetted.', 'warning');
     return;
   }
 
@@ -133,7 +135,7 @@ function assassinations_assign_targets() {
   foreach ($users_without_target as $uid => $user) {
 
     if (count($users_not_targeted) < 1) {
-      drupal_set_message('No possible targets');
+      drupal_set_message('No players left to target, but some players remain without target.', 'warning');
       return;
     }
 
@@ -141,5 +143,6 @@ function assassinations_assign_targets() {
     $user->field_current_target['und'][0]['target_id'] = $target->uid;
     user_save($user);
   }
-  drupal_set_message(t('All targets assigned'));
+  
+  drupal_set_message('All targets assigned', 'status');
 }

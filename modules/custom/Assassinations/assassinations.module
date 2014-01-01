@@ -1,15 +1,7 @@
 <?php
 
 require('assassinations_targets.inc');
-
-require('assassinations_kill_action.inc');
 require('assassination_player_profile.page.inc');
-
-function assassinations_rules_action_info() {
-	return array(
-		'am_kill' =>_create_kill_action(),
-		);
-}
 
 function assassinations_user_view_alter(&$build) {
   	//_assassinations_player_profile($build);
@@ -17,7 +9,7 @@ function assassinations_user_view_alter(&$build) {
 
 function assassinations_form_alter(&$form, &$form_state, $form_id) {
 
-	return; // Remove the debug buttons from all forms
+	//return; // Remove the debug buttons from all forms
 
 	$form['test_kill'] = array(
                 '#type' => 'button',
@@ -71,13 +63,13 @@ function assassinations_kill() {
 
 	if (!isset($user->field_current_target['und']) || 
 		count($user->field_current_target['und']) < 1) {
-		drupal_set_message("No assigned target!");
+		drupal_set_message("No assigned target!", 'warning');
 		return;
 	}
 
 	$kills = _assassinations_unconfirmed_kills($user->uid);
 	if (count($kills) > 0) {
-		drupal_set_message("Target still pending elimination confirmation!");
+		drupal_set_message("Target still pending elimination confirmation!", 'warning');
 		return;
 	}
 
@@ -88,6 +80,12 @@ function assassinations_kill() {
 function assassinations_deny() {
 	global $user;
 
+	$deathWarrants = _assassinations_death_warrant($user->uid);
+	if (count($deathWarrants) < 1) {
+		drupal_set_message("Cannot find your death warrant...", 'warning');
+		return;
+	}
+
 	$user = user_load($user->uid);
 	$target_uid = $user->field_current_target['und'][0]['target_id'];
 
@@ -95,18 +93,14 @@ function assassinations_deny() {
 	messaging_deny_kill($target_uid, $user->uid);
 
 	drupal_set_message("Got that, the organizer was added to the loop to help set this straight.");
-
-    //watchdog("deny", "<pre>" . print_r($user, 1) . "</pre>");
 }
 
 function assassinations_accept() {
 	global $user;
 
 	$deathWarrants = _assassinations_death_warrant($user->uid);
-    watchdog("accept", "<pre>" . print_r($deathWarrants, 1) . "</pre>");
 	if (count($deathWarrants) < 1) {
-		messaging_problem_kill($target_uid, $user->uid);
-		drupal_set_message("Cannot find your death warrant... The organizer was contacted for help.");
+		drupal_set_message("Cannot find your death warrant...", 'warning');
 		return;
 	}
 
@@ -185,21 +179,24 @@ function _assassinations_death_warrant($uid) {
  */
 function assassinations_user_update(&$edit, $account, $category) {
 
+	$role = user_role_load_by_name('Player');
+	if (!in_array($role->rid, array_keys($account->roles))) return;
+
     $original_target = $edit['original']->field_current_target;
     $new_target = $edit['field_current_target'];
 
-    if ($original_target != $new_target &&
-    	isset($new_target['und']) && 
-    	count($new_target['und']) > 0) {
+    if (!isset($new_target['und']) || count($new_target['und']) < 1) return;
+
+    if ($original_target != $new_target) {
 
     	$target = user_load($new_target['und'][0]['target_id']);
 
 		module_load_include('module', 'messaging', 'messaging');
-		module_load_include('inc', 'messaging', 'messaging_notifier');
+		module_load_include('module', 'am_tools', 'am_tools');
 
 		$subject = "Assassin Manager job update";
-		$body = "You have a new target: " . _get_user_name($target) . "\n\n- AM";
-		$to = array(array('target_id' => $account->uid));
+		$body = "You have a new target: " . am_tools_user_name($target);
+		$to = array($account->uid);
 
 		messaging_send_message($subject, $body, $to);
     }

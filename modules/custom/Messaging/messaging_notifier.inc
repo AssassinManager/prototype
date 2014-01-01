@@ -2,6 +2,9 @@
 
 require('messaging_email.inc');
 require('messaging_sms.inc');
+
+module_load_include('module', 'am_tools', 'am_tools');
+
 /**
  * Action for Notifier
  * implements hook_rules_action_info().
@@ -22,31 +25,18 @@ function _create_notifier_action() {
         );
 }
 
-function _get_recipients_uids($message) {
-  $recipients = array();
-  foreach ($message->field_recipients['und'] as $user) {
-    array_push($recipients, $user['target_id']);
-  }
-  return $recipients;
-}
-
-function _get_field_value($field) {
-	if (!isset($field['und'])) return "";
-	return $field['und'][0]['value'];
-}
-function _get_user_name($user) {
-	return  _get_field_value($user->field_first_name) . " " . _get_field_value($user->field_last_name);
-}
 function _get_user_subscriptions($user) {
     $subscriptions = array();
+    if (!isset($user->field_subscriptions['und'])) return $subscriptions;
+    
 	foreach ($user->field_subscriptions['und'] as $sub) {
 		array_push($subscriptions, $sub['value']);
 	}
 	return $subscriptions;
 }
 function _get_user_info($user) {
-	return array( 	"name" => _get_user_name($user),
-					"phone" => _get_field_value($user->field_phone),
+	return array( 	"name" => am_tools_user_name($user),
+					"phone" => am_tools_field_val($user->field_phone),
 					"email" => $user->mail,
 					"subscriptions" =>_get_user_subscriptions($user)
 				);
@@ -56,10 +46,11 @@ function _get_user_info($user) {
 function _messaging_am_notify($message) {
     
     $from = $message->uid;
-    if (!_is_valid($from))  return false;
+    if (!am_tools_valid($from))  return false;
 
-    $to = _get_recipients_uids($message);
-    if (!_is_valid($to))    return false;
+    require('messaging_tools.inc');
+    $to = _recipients_uids($message);
+    if (!am_tools_valid($to))    return false;
 
     $subscriptions = array();
     foreach ($to as $uid) {
@@ -68,7 +59,14 @@ function _messaging_am_notify($message) {
     	$subscriptions[$uid] = $user_info;
     }
 
-    watchdog("Subscriptions", "<pre>" . print_r($subscriptions, 1) . "</pre>");
+    /**
+     * Test if there are no subscriptions from anyone just return
+     */
+    foreach ($subscriptions as $subscription) {
+    	if (empty($subscription["subscriptions"]) || 
+    		count($subscription["subscriptions"]) < 1) 
+    		return true;
+    }
 
     /**
      * More than 2 recipients, only send an email
@@ -86,7 +84,7 @@ function _messaging_am_notify($message) {
 	    $emails = implode(", ", $emails);
 	    $from_user = user_load($message->uid);
 	    $from_email = $from_user->mail;
-	    $msg_body = _get_field_value($message->field_body);
+	    $msg_body = am_tools_field_val($message->field_body);
 
 	    _messaging_am_organizer_mail($message->title, $msg_body, $from_email, $emails);
     }
@@ -111,8 +109,8 @@ function _messaging_am_notify($message) {
 	    	array_push($phones, $subscription['phone']);
 	    }
 	    $from_user = user_load($message->uid);
-        $from_name = _get_user_name($from_user);
-        $msg_body = _get_field_value($message->field_body);
+        $from_name = am_tools_user_name($from_user);
+        $msg_body = am_tools_field_val($message->field_body);
 
         if (count($emails > 0)) {
             $from_email = $from_user->mail;
@@ -121,7 +119,7 @@ function _messaging_am_notify($message) {
             _messaging_am_mail($message->title, $msg_body, $from_email, $from_name, $emails);
         }
         if (count($phones > 0)) {
-            $from_phone = _get_field_value($from_user->field_phone);
+            $from_phone = am_tools_field_val($from_user->field_phone);
             if (!$from_phone || $from_phone == null) $from_phone = variable_get('twilio_number');
 
             _messaging_am_sms($message->title, $msg_body, $from_phone, $from_name, $phones);
