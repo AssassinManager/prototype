@@ -4,13 +4,14 @@ require('messaging_notifier.inc');
 require('messaging_config.inc');
 
 require('messaging_recipients.inc');
-require('messaging_rule.inc');
+require('messaging_rules.inc');
 require('messaging_read.inc');
 
 
 function messaging_rules_action_info() {
 	return array(
 		'am_notifier' =>_create_notifier_action(),
+        'am_messages' =>_create_messages_action(),
 		);
 }
 

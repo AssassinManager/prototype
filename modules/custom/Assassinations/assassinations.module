@@ -1,7 +1,6 @@
 <?php
 
 require('assassinations_targets.inc');
-
 require('assassination_player_profile.page.inc');
 
 function assassinations_user_view_alter(&$build) {
