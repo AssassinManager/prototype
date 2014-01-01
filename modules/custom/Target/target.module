@@ -1,0 +1,214 @@
+<?php
+
+require('target_targets.inc');
+require('target_player_profile.page.inc');
+require('target_rules.inc');
+
+
+function target_rules_action_info() {
+	return array(
+		'am_ranking' =>_update_ranking_action(),
+		);
+}
+
+function target_user_view_alter(&$build) {
+  	//_target_player_profile($build);
+}
+
+/*
+function target_form_alter(&$form, &$form_state, $form_id) {
+
+	//return; // Remove the debug buttons from all forms
+
+	$form['test_kill'] = array(
+                '#type' => 'button',
+                '#name' => 'Kill',
+                '#value' => t('Kill'),
+                '#ajax'  => array(
+					'callback' => 'target_kill',
+					'wrapper'  => 'the-wrapper-div-field',
+				),
+            );
+
+	$form['test_deny'] = array(
+                '#type' => 'button',
+                '#name' => 'Deny',
+                '#value' => t('Deny'),
+                '#ajax'  => array(
+					'callback' => 'target_deny',
+					'wrapper'  => 'the-wrapper-div-field',
+				),
+            );
+
+	$form['test_accept'] = array(
+                '#type' => 'button',
+                '#name' => 'Accept',
+                '#value' => t('Accept'),
+                '#ajax'  => array(
+					'callback' => 'target_accept',
+					'wrapper'  => 'the-wrapper-div-field',
+				),
+            );
+
+	$form['test_assign'] = array(
+                '#type' => 'button',
+                '#name' => 'Assign',
+                '#value' => t('Assign'),
+                '#ajax'  => array(
+					'callback' => 'target_assign_targets',
+					'wrapper'  => 'the-wrapper-div-field',
+				),
+            );
+
+	return $form;
+}
+*/
+
+/**
+ * User targeting handlers
+ */
+function target_kill() {
+	global $user;
+	$user = user_load($user->uid);
+
+	if (!isset($user->field_current_target['und']) || 
+		count($user->field_current_target['und']) < 1) {
+		drupal_set_message("No assigned target!", 'warning');
+		return;
+	}
+
+	$kills = _target_unconfirmed_kills($user->uid);
+	if (count($kills) > 0) {
+		drupal_set_message("Target still pending elimination confirmation!", 'warning');
+		return;
+	}
+
+	$target_uid = $user->field_current_target['und'][0]['target_id'];
+    _target_kill($user->uid, $target_uid);
+}
+
+function target_deny() {
+	global $user;
+
+	$deathWarrants = _target_death_warrant($user->uid);
+	if (count($deathWarrants) < 1) {
+		drupal_set_message("Cannot find your death warrant...", 'warning');
+		return;
+	}
+
+	$user = user_load($user->uid);
+	$target_uid = $user->field_current_target['und'][0]['target_id'];
+
+	module_load_include('module', 'messaging', 'messaging');
+	messaging_deny_kill($target_uid, $user->uid);
+
+	drupal_set_message("Got that, the organizer was added to the loop to help set this straight.");
+}
+
+function target_accept() {
+	global $user;
+
+	$deathWarrants = _target_death_warrant($user->uid);
+	if (count($deathWarrants) < 1) {
+		drupal_set_message("Cannot find your death warrant...", 'warning');
+		return;
+	}
+
+	$kill = node_load($deathWarrants[0]);
+	$kill->field_confirmed['und'][0]['value'] = 1;
+	node_save($kill);
+
+	// Assigning new target
+	$user = user_load($user->uid);
+	unset($user->field_current_target['und']);
+	target_assign_targets();
+}
+
+/**
+ * Create kill node
+ */
+function _target_kill($assassin_uid, $target_uid) {
+	$node = new stdclass();
+    $node->type = 'kill';
+    node_object_prepare($node);
+
+    $node->language = 'und';
+
+    $node->field_confirmed['und'][0]['value'] = 0;
+
+    $node->field_target['und'][0]['target_id'] = $target_uid;
+    $node->field_assassin['und'][0]['target_id'] = $assassin_uid;
+
+    node_save($node);
+}
+
+/**
+ * Utilities
+ */
+function _target_confirmed_kills($uid) {
+	$query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->propertyCondition('uid', $uid)
+            ->fieldCondition('field_confirmed', 'value', array(1));
+
+    $kills = $query->execute();
+
+    if (count($kills) < 1) return array();
+    return array_keys($kills['node']);
+}
+function _target_unconfirmed_kills($uid) {
+	$query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->propertyCondition('uid', $uid)
+            ->fieldCondition('field_confirmed', 'value', array(0));
+
+    $kills = $query->execute();
+
+    if (count($kills) < 1) return array();
+    return array_keys($kills['node']);
+}
+function _target_death_warrant($uid) {
+	$query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->fieldCondition('field_target', 'target_id', array($uid));
+
+    $warrant = $query->execute();
+
+    if (count($warrant) < 1) return array();
+    return array_keys($warrant['node']);
+}
+
+/**
+ * Sends new target message to user
+ */
+function target_user_update(&$edit, $account, $category) {
+
+	$role = user_role_load_by_name('Player');
+	if (!in_array($role->rid, array_keys($account->roles))) return;
+
+    if (!isset($edit['original']->field_current_target)) $original_target = 0;
+    else $original_target = $edit['original']->field_current_target;
+
+    if (!isset($edit['field_current_target'])) return;
+    $new_target = $edit['field_current_target'];
+
+    if ($original_target != $new_target) {
+
+    	$target = user_load($new_target['und'][0]['target_id']);
+
+		module_load_include('module', 'messaging', 'messaging');
+		module_load_include('module', 'am_tools', 'am_tools');
+
+		$subject = "Assassin Manager job update";
+		$body = "You have a new target: " . am_tools_user_name($target);
+		$to = array($account->uid);
+
+		messaging_send_message($subject, $body, $to);
+    }
+}

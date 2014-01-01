@@ -3,7 +3,7 @@
 /**
  * Check all kill nodes for users found
  */
-function _assassinations_death_warrants($uids) {
+function _target_death_warrants($uids) {
   $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'node')
             ->entityCondition('bundle', 'kill')
@@ -52,7 +52,7 @@ function _get_users_alive_and_well() {
     $users[] = $key;
   }
 
-  $deathWarrants = _assassinations_death_warrants($users);
+  $deathWarrants = _target_death_warrants($users);
   if (count($deathWarrants) < 1) return $users;
 
   foreach ($users as $key => $uid) {
@@ -75,6 +75,7 @@ function _users_without_target($users) {
   }
   return $result;
 }
+
 /**
  * Filter users to get those targeted
  */
@@ -95,7 +96,7 @@ function _users_targeted($users) {
 /**
  * Main target expert
  */
-function assassinations_assign_targets() {
+function target_assign_targets() {
 
   // Get all the players
   $users = _get_users_alive_and_well();

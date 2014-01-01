@@ -1,6 +1,6 @@
 <?php
 
-function _assassinations_player_profile(&$build) {
+function _target_player_profile(&$build) {
   drupal_add_library('system', 'drupal.ajax');
   drupal_add_library('system', 'jquery.form');
 
@@ -16,7 +16,7 @@ function _assassinations_player_profile(&$build) {
                 '#name' => 'test1',
                 '#value' => t('test2'),
                 '#ajax'  => array(
-                  'callback' => 'assassinations_test',
+                  'callback' => 'target_test',
                   'wrapper'  => 'the-wrapper-div-field',
                 ),
               );
@@ -26,18 +26,18 @@ function _assassinations_player_profile(&$build) {
                 '#title' => t('test2'),
                 '#href' => 'http://192.168.226.137/am/',
                 '#ajax' => array(
-                  'callback' => 'assassinations_test',
+                  'callback' => 'target_test',
                   'wrapper' => 'ajax-response-goes-here',
                   'method' => 'replace',
                   'effect' => 'fade',
                 ),
               );
     
-  //$output = "<div id='ajax-response-goes-here'></div>Some HTML and stuff" . drupal_render($link);
+  $output = "<div id='ajax-response-goes-here'></div>Some HTML and stuff" . drupal_render($link);
 }
 
 
-function assassinations_test() {
+function target_test() {
     watchdog("test", "Ajax test");
     //drupal_set_message("got into test");
 }

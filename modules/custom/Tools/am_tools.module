@@ -37,13 +37,36 @@ function am_tools_valid($input) {
     return true;
 }
 
-
 function am_tools_organizer_uids() {
 	$uids = array();
 
 	$role_result = db_select('role', 'r')
 					->fields('r', array('rid'))
 				    ->condition('name', 'Organizer', '=')
+				    ->range(0,1)
+				    ->execute()
+				    ->fetchAssoc();
+
+	$rid = $role_result['rid'];
+
+	$user_query = db_select('users_roles', 'ur');
+	$user_query->fields('ur', array('uid'));
+	$user_query->condition('rid', $rid, '=');
+	$result = $user_query->execute();
+
+	while($record = $result->fetchAssoc()) {
+		array_push($uids, $record['uid']);
+    }
+
+	return $uids;
+}
+
+function am_tools_players_uids() {
+	$uids = array();
+
+	$role_result = db_select('role', 'r')
+					->fields('r', array('rid'))
+				    ->condition('name', 'Player', '=')
 				    ->range(0,1)
 				    ->execute()
 				    ->fetchAssoc();
