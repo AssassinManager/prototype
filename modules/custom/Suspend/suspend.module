@@ -37,7 +37,6 @@ function suspend_am_custom_profile_alter(&$data) {
 	module_load_include('module', 'am_tools', 'am_tools');
 
 	$viewed_player = array($data['#account']->uid);
-	watchdog('$viewed', "<pre>" . print_r($viewed_player, 1) . "</pre>");
 
 	if (count(am_tools_players_status($viewed_player)) > 0) {
 		$data['suspend_button_suspend'] = drupal_get_form('suspend_button_suspend');
@@ -96,6 +95,14 @@ function _suspend_suspend() {
 }
 
 function _suspend_unsuspend() {
+
+	$players = am_tools_players_uids();
+	$players = am_tools_players_status($players);
+
+	if (count($players) <= 3) {
+		drupal_set_message("Cannot unsuspend player when only 3 are left in game.", 'error');
+		return;
+	}
 
 	// Get the user based on the calling form url
 	list($form, $form_state) = ajax_get_form();

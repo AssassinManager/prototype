@@ -27,20 +27,30 @@ function target_assign_targets() {
 		return;
 	}
 
-	$valid_players = am_tools_players_status($players);
-	if (count($valid_players) < 1) {
+	$players = am_tools_players_status($players);
+	if (count($players) < 1) {
 		drupal_set_message('No users left! (Are they all gone, eliminated or suspended?)', 'warning');
 		return;
 	}
 
-	if (count($valid_players) == 1) {
-		$user = user_load($valid_players[0]);
+	if (count($players) == 1) {
+		$user = user_load($players[0]);
 		module_load_include('module', 'am_tools', 'am_tools');
 		drupal_set_message(t('Only 1 player left, is he the winner? (' . am_tools_user_name($user) . ')'), 'warning');
 		return;
 	}
 
 	$players = user_load_multiple($players);
+
+	// Check that the players that already have targets have valid targets
+	foreach ($players as $uid => $user) {
+		if (count($user->field_current_target) < 1) continue;
+		$target_id = $user->field_current_target['und'][0]['target_id'];
+		if (_check_player_valid($target_id) && $target_id != $uid) continue;
+
+		$user->field_current_target = array();
+		user_save($user);
+	}
 
 	// Find those without targets
 	$users_without_target = _users_without_target($players);
@@ -63,6 +73,7 @@ function target_assign_targets() {
 	}
 
 	// Assign targets
+	$previous_target = 0;
 	foreach ($users_without_target as $uid => $user) {
 
 		if (count($users_not_targeted) < 1) {
@@ -72,7 +83,20 @@ function target_assign_targets() {
 
 		$target = array_pop($users_not_targeted);
 		$user->field_current_target['und'][0]['target_id'] = $target->uid;
+
+		//if user targets himself, change that
+        if ($user->field_current_target['und'][0]['target_id'] == $user->uid) {
+        	 //if no more targets, use the previous target and add this one back into the array
+            if (count($users_not_targeted) == 0) 
+            	$user->field_current_target['und'][0]['target_id'] = $previous_target;
+            else 
+            	$user->field_current_target['und'][0]['target_id'] = array_pop($users_not_targeted);
+
+            array_push($users_not_targeted, $user->uid);
+        }
+
 		user_save($user);
+		$previous_target = $target->uid;
 	}
 
 	drupal_set_message('All targets assigned', 'status');

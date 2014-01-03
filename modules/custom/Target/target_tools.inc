@@ -60,6 +60,25 @@ function _check_player_status($uid) {
 }
 
 /**
+ * Check if players is alive and not suspended
+ * and return true if valid, false if not
+ */
+function _check_player_valid($uid) {
+
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'user')
+        ->propertyCondition('uid', $uid, '=')
+        ->propertyCondition('status', 1)
+        ->fieldCondition('field_suspended', 'value', array(0))
+        ->fieldCondition('field_alive', 'value', array(1));
+  $entities = $query->execute();
+
+  if (count($entities) < 1) return false;
+
+  return true;
+}
+
+/**
  * Check if player has unconfirmed kill
  * and return true if at least 1 was found
  */
