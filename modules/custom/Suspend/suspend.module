@@ -63,8 +63,7 @@ function _suspend_suspend() {
 	}
 
 	// Remove the user current target
-	//if (isset($user->field_current_target['und'])) $user->field_current_target = array();
-	$user->field_current_target['und'][0]['target_id'] = 2;
+	if (isset($user->field_current_target['und'])) $user->field_current_target = array();
 
 	// Make the user suspended
 	$user->field_suspended['und'][0]['value'] = 1;

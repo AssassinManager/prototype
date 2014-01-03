@@ -3,34 +3,37 @@
 function target_default_rules_configuration() {
     $configs = array();
 
-    $am_rankings = '{ "rules_rankings" : {
-                       "LABEL" : "Rankings",
-                       "PLUGIN" : "reaction rule",
-                       "OWNER" : "rules",
-                       "TAGS" : [ "Assassin Manager" ],
-                       "REQUIRES" : [ "rules", "target" ],
-                       "ON" : { "node_update--kill" : { "bundle" : "kill" } },
-                       "IF" : [ { "data_is" : { "data" : [ "node:field-confirmed" ], "value" : 1 } } ],
-                       "DO" : [ { "am_ranking" : [] } ]
-                       }
-                    }';
-
-    $am_targets = '{ "rules_assign_targets" : {
-                      "LABEL" : "Assign Targets",
+    $am_rankings = '{ "rules_update_rankings" : {
+                      "LABEL" : "Rankings",
                       "PLUGIN" : "reaction rule",
                       "OWNER" : "rules",
                       "TAGS" : [ "Assassin Manager" ],
                       "REQUIRES" : [ "rules", "target" ],
                       "ON" : { "node_update--kill" : { "bundle" : "kill" } },
                       "IF" : [
-                        { "NOT data_is_empty" : { "data" : [ "node:field-target" ] } },
-                        { "AND" : [] },
                         { "data_is" : { "data" : [ "node:field-confirmed" ], "value" : 1 } },
-                        { "OR" : [] }
+                        { "AND" : [] },
+                        { "data_is" : { "data" : [ "node:field-confirmed" ], "value" : 1 } }
                       ],
                       "DO" : [ { "am_ranking" : [] } ]
-                      }
-                    }';
+                    }
+                  }';
+
+    $am_targets = '{ "rules_assign_targets" : {
+                     "LABEL" : "Assign Targets",
+                     "PLUGIN" : "reaction rule",
+                     "OWNER" : "rules",
+                     "TAGS" : [ "Assassin Manager" ],
+                     "REQUIRES" : [ "rules", "target" ],
+                     "ON" : { "node_update--kill" : { "bundle" : "kill" } },
+                     "IF" : [
+                       { "NOT data_is_empty" : { "data" : [ "node:field-target" ] } },
+                       { "AND" : [] },
+                       { "data_is" : { "data" : [ "node:field-confirmed" ], "value" : 1 } }
+                     ],
+                     "DO" : [ { "am_targeting" : [] } ]
+                    }
+                 }';
 
   $configs['rules_am_rankings'] = rules_import($am_rankings);
   $configs['rules_am_targets'] = rules_import($am_targets);
