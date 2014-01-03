@@ -30,6 +30,10 @@ function suspend_default_rules_configuration() {
  */
 function suspend_am_custom_profile_alter(&$data) {
 	if (!in_array('Player', $data['#account']->roles)) return;
+	
+	global $user;
+	if (!in_array('Organizer', $user->roles)) return;
+
 	$data['suspend_suspend_form'] = drupal_get_form('suspend_suspend_form');
 }
 
