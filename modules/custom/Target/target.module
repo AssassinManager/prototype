@@ -1,7 +1,9 @@
 <?php
 
-require('target_targets.inc');
+require('target_connectors.inc');
+require('target_targeting.inc');
 require('target_rules.inc');
+require('target_tools.inc');
 
 
 function target_rules_action_info() {
@@ -12,122 +14,123 @@ function target_rules_action_info() {
 }
 
 /**
- * User targeting handlers
+ * Main target expert
  */
-function target_kill() {
+function target_assign_targets() {
 
-	global $user;
-	$user = user_load($user->uid);
+	module_load_include('module', 'am_tools', 'am_tools');
 
-	if (!isset($user->field_current_target['und']) || 
-		count($user->field_current_target['und']) < 1) {
-		drupal_set_message("No assigned target!", 'warning');
+	// Get all the players
+	$players = am_tools_players_uids();
+	if (count($players) < 1) {
+		drupal_set_message('No players at all!', 'warning');
 		return;
 	}
 
-	$kills = _target_unconfirmed_kills($user->uid);
-	if (count($kills) > 0) {
-		drupal_set_message("Target still pending elimination confirmation!", 'warning');
+	$valid_players = am_tools_players_status($players);
+	if (count($valid_players) < 1) {
+		drupal_set_message('No users left! (Are they all gone, eliminated or suspended?)', 'warning');
 		return;
 	}
 
-	$target_uid = $user->field_current_target['und'][0]['target_id'];
-    _target_create_kill($user->uid, $target_uid);
-}
-
-function target_deny() {
-	global $user;
-
-	$deathWarrants = _target_death_warrant($user->uid);
-	if (count($deathWarrants) < 1) {
-		drupal_set_message("Cannot find your death warrant...", 'warning');
+	if (count($valid_players) == 1) {
+		$user = user_load($valid_players[0]);
+		module_load_include('module', 'am_tools', 'am_tools');
+		drupal_set_message(t('Only 1 player left, is he the winner? (' . am_tools_user_name($user) . ')'), 'warning');
 		return;
 	}
 
-	$user = user_load($user->uid);
-	$target_uid = $user->field_current_target['und'][0]['target_id'];
+	$players = user_load_multiple($players);
 
-	module_load_include('module', 'messaging', 'messaging');
-	messaging_deny_kill($target_uid, $user->uid);
+	// Find those without targets
+	$users_without_target = _users_without_target($players);
 
-	drupal_set_message("Got that, the organizer was added to the loop to help set this straight.");
-}
-
-function target_accept() {
-	global $user;
-
-	$deathWarrants = _target_death_warrant($user->uid);
-	if (count($deathWarrants) < 1) {
-		drupal_set_message("Cannot find your death warrant...", 'warning');
+	if (count($users_without_target) < 1) {
+		drupal_set_message('All targets already assigned', 'status');
 		return;
 	}
 
-	$kill = node_load($deathWarrants[0]);
-	$kill->field_confirmed['und'][0]['value'] = 1;
-	node_save($kill);
+	// Find those untargeted
+	$users_targeted = _users_targeted($players);  
+	$users_not_targeted = array();
+	foreach ($players as $uid => $user) {
+		if (in_array($uid, array_keys($users_targeted))) continue;
+		$users_not_targeted[$uid] = $user;
+	}
+	if (count($users_not_targeted) < 1) {
+		drupal_set_message('No possible targets, all users are already targetted.', 'warning');
+		return;
+	}
 
-	// Assigning new target
-	$user = user_load($user->uid);
-	unset($user->field_current_target['und']);
+	// Assign targets
+	foreach ($users_without_target as $uid => $user) {
+
+		if (count($users_not_targeted) < 1) {
+		  drupal_set_message('No players left to target, but some players remain without target.', 'warning');
+		  return;
+		}
+
+		$target = array_pop($users_not_targeted);
+		$user->field_current_target['und'][0]['target_id'] = $target->uid;
+		user_save($user);
+	}
+
+	drupal_set_message('All targets assigned', 'status');
 }
 
 /**
- * Create kill node
+ * Main ranking expert
  */
-function _target_create_kill($assassin_uid, $target_uid) {
-	$node = new stdclass();
-    $node->type = 'kill';
-    node_object_prepare($node);
+function target_update_rankings() {
 
-    $node->language = 'und';
+  module_load_include('module', 'am_tools', 'am_tools');
+  $player_uids = am_tools_players_uids();
 
-    $node->title = 'Kill-' . $assassin_uid . "vs" . $target_uid;
-    $node->field_confirmed['und'][0]['value'] = 0;
+  $query = db_select('node', 'n')
+          ->fields('n', array('uid'))
+          ->condition('type', 'kill')
+          ->condition('uid', $player_uids, 'IN')
+          ->groupBy('n.uid');
+  $query->addExpression('COUNT(nid)', 'kill_count');
+  $result = $query->execute();
 
-    $node->field_target['und'][0]['target_id'] = $target_uid;
-    $node->field_assassin['und'][0]['target_id'] = $assassin_uid;
+  $usersKills = array();
+  while($record = $result->fetchAssoc()) {
+      $usersKills[$record['uid']] = $record["kill_count"];
+  }
+  if(count($usersKills) == 0) return;
 
-    node_save($node);
+  ksort($usersKills, SORT_NUMERIC);
+
+  $counter = 0;
+  foreach ($usersKills as $key => $value) {
+      $counter++;
+
+      $user = user_load($key);
+      $user->field_rank['und'][0]['value'] = $counter;
+      user_save($user);
+      unset($user);
+  }
+
+  foreach ($player_uids as $value) {
+      if (array_key_exists($value, $usersKills)) continue;
+
+      $counter++;
+      $user = user_load($value);
+      $user->field_rank['und'][0]['value'] = $counter;
+      user_save($user);
+      unset($user);
+  }
 }
 
 /**
- * Utilities
+ * implements hook_user_insert().
  */
-function _target_confirmed_kills($uid) {
-	$query = new EntityFieldQuery();
-    $query->entityCondition('entity_type', 'node')
-            ->entityCondition('bundle', 'kill')
-            ->propertyCondition('status', 1)
-            ->propertyCondition('uid', $uid)
-            ->fieldCondition('field_confirmed', 'value', array(1));
+function target_user_insert(&$edit, $account, $category) {
 
-    $kills = $query->execute();
+  module_load_include('module', 'am_tools', 'am_tools');
+  $player_uids = am_tools_players_uids();
 
-    if (count($kills) < 1) return array();
-    return array_keys($kills['node']);
-}
-function _target_unconfirmed_kills($uid) {
-	$query = new EntityFieldQuery();
-    $query->entityCondition('entity_type', 'node')
-            ->entityCondition('bundle', 'kill')
-            ->propertyCondition('status', 1)
-            ->propertyCondition('uid', $uid)
-            ->fieldCondition('field_confirmed', 'value', array(0));
-
-    $kills = $query->execute();
-
-    if (count($kills) < 1) return array();
-    return array_keys($kills['node']);
-}
-function _target_death_warrant($uid) {
-	$query = new EntityFieldQuery();
-    $query->entityCondition('entity_type', 'node')
-            ->entityCondition('bundle', 'kill')
-            ->propertyCondition('status', 1)
-            ->fieldCondition('field_target', 'target_id', array($uid));
-
-    $warrant = $query->execute();
-
-    if (count($warrant) < 1) return array();
-    return array_keys($warrant['node']);
+  $edit->field_rank['und'][0]['value'] = count($player_uids);
+  //user_save($account);
 }

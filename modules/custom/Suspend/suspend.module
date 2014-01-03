@@ -34,15 +34,35 @@ function suspend_am_custom_profile_alter(&$data) {
 	global $user;
 	if (!in_array('Organizer', $user->roles)) return;
 
-	$data['suspend_suspend_form'] = drupal_get_form('suspend_suspend_form');
+	module_load_include('module', 'am_tools', 'am_tools');
+
+	$viewed_player = array($data['#account']->uid);
+	watchdog('$viewed', "<pre>" . print_r($viewed_player, 1) . "</pre>");
+
+	if (count(am_tools_players_status($viewed_player)) > 0) {
+		$data['suspend_button_suspend'] = drupal_get_form('suspend_button_suspend');
+	} else {
+		$data['suspend_button_unsuspend'] = drupal_get_form('suspend_button_unsuspend');
+	}
 }
 
-function suspend_suspend_form($form, &$form_state) {
+function suspend_button_suspend($form, &$form_state) {
   	$form['suspend'] = array(
                 '#type' => 'button',
                 '#name' => 'Suspend',
                 '#value' => t('Suspend'),
                 '#ajax'  => array('callback' => '_suspend_suspend'),
+            );
+
+	return $form;
+}
+
+function suspend_button_unsuspend($form, &$form_state) {
+  	$form['suspend'] = array(
+                '#type' => 'button',
+                '#name' => 'Unsuspend',
+                '#value' => t('Unsuspend'),
+                '#ajax'  => array('callback' => '_suspend_unsuspend'),
             );
 
 	return $form;
@@ -69,19 +89,27 @@ function _suspend_suspend() {
 		}
 	}
 
-	// Remove the user current target
-	if (isset($user->field_current_target['und'])) $user->field_current_target = array();
-
-	// Make the user suspended
+	// Remove the current target and suspend the player
+	$user->field_current_target = array();
 	$user->field_suspended['und'][0]['value'] = 1;
 	user_save($user);
 }
 
-/*
-function suspend_user_update(&$edit, $account, $category) {
-	watchdog("User", "<pre>" . print_r($account, 1) . "</pre>");
+function _suspend_unsuspend() {
+
+	// Get the user based on the calling form url
+	list($form, $form_state) = ajax_get_form();
+  	drupal_process_form($form['#form_id'], $form, $form_state);
+
+  	$path = parse_url($form["#action"], PHP_URL_PATH);
+	$pathFragments = explode('/', $path);
+	$user_name = end($pathFragments);
+  	$user = user_load_by_name($user_name);
+
+	// Remove the current target and suspend the player
+	$user->field_suspended['und'][0]['value'] = 0;
+	user_save($user);
 }
-*/
 
 function _suspend_unconfirmed_kills($uid) {
 	$query = new EntityFieldQuery();
