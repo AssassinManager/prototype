@@ -51,7 +51,7 @@ function _create_messages_action() {
   return array(
           'label' => t('New Target Message'),
           'group' => t('Assassin Manager'),
-          'base' => '_messaging_am_create_org_msg',
+          'base' => '_messaging_am_target_msg',
           'parameter' => array(
               'Player' => array(
                 'type' => 'user',
@@ -62,11 +62,22 @@ function _create_messages_action() {
         );
 }
 
-function _messaging_am_create_org_msg($player) {
+function _messaging_am_target_msg($player) {
 
-  $target = user_load($player->field_current_target['und'][0]['target_id']);
+  if (!isset($player->field_current_target['und'])) return;
+  if (count($player->field_current_target['und']) < 1) return;
 
-  module_load_include('module', 'messaging', 'messaging');
+  if (!isset($player->original->field_current_target))          $original_target = 0;
+  else if (count($player->original->field_current_target) < 1)  $original_target = 0;
+
+  else $original_target = $player->original->field_current_target;
+
+  $new_target = $player->field_current_target;
+
+  if ($original_target == $new_target) return;
+
+  $target = user_load($new_target['und'][0]['target_id']);
+
   module_load_include('module', 'am_tools', 'am_tools');
 
   $subject = "Assassin Manager job update";

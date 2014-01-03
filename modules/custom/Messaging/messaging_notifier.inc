@@ -43,13 +43,25 @@ function _get_user_info($user) {
 
 }
 
+/*
+ * Messaging Recipients Utilities
+ */
+function _recipients_uids_notifier($message) {
+  $recipients = array();
+  if (!isset($message->field_recipients['und'])) return $recipients;
+
+  foreach ($message->field_recipients['und'] as $user) {
+    array_push($recipients, $user['target_id']);
+  }
+  return $recipients;
+}
+
 function _messaging_am_notify($message) {
     
     $from = $message->uid;
     if (!am_tools_valid($from))  return false;
 
-    require('messaging_tools.inc');
-    $to = _recipients_uids($message);
+    $to = _recipients_uids_notifier($message);
     if (!am_tools_valid($to))    return false;
 
     $subscriptions = array();

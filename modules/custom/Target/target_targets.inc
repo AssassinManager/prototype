@@ -101,13 +101,14 @@ function target_assign_targets() {
   // Get all the players
   $users = _get_users_alive_and_well();
   if (count($users) < 1) {
-    drupal_set_message('No users alive or at all!', 'warning');
+    drupal_set_message('No users left! (Are they all gone, eliminated or suspended?)', 'warning');
     return;
   } 
   else if (count($users) == 1) {
     $theUser = user_load(array_shift(array_values($users)));
-    $name = $theUser->field_first_name['und'][0]['value'] . ' ' . $theUser->field_last_name['und'][0]['value'];
-    drupal_set_message(t('Only 1 player (' . $name . ') left alive!'), 'warning');
+
+    module_load_include('module', 'am_tools', 'am_tools');
+    drupal_set_message(t('Only 1 player left! (' . am_tools_user_name($theUser) . ')'), 'warning');
     return;
   }
 

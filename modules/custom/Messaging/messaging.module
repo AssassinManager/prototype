@@ -16,11 +16,20 @@ function messaging_rules_action_info() {
 }
 
 /*
+ * Messaging Recipients Utilities
+ */
+function _recipients_for_msg($uids) {
+  $recipients = array();
+  foreach ($uids as $uid) {
+    array_push($recipients, array('target_id' => $uid));
+  }
+  return $recipients;
+}
+
+/*
  * Send message API
  */
 function messaging_send_message($subject, $body, $to) {
-
-    //global $user;
 
 	$node = new StdClass();
     $node->type = 'message';
@@ -35,12 +44,12 @@ function messaging_send_message($subject, $body, $to) {
     $node->field_body['und'][0]['value'] = $body;
     $node->field_body['und'][0]['safe_value'] = "<p>" . $body ."<p>";
 
-    require('messaging_tools.inc');
     $recipients = _recipients_for_msg($to);
     $node->field_recipients['und'] = $recipients;
 
     node_save($node);
 }
+
 function messaging_reply_message($msg_nid, $msg_body) {
     global $user;
 

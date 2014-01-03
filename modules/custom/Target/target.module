@@ -182,32 +182,3 @@ function _target_death_warrant($uid) {
     if (count($warrant) < 1) return array();
     return array_keys($warrant['node']);
 }
-
-/**
- * Sends new target message to user
- */
-function target_user_update(&$edit, $account, $category) {
-
-	$role = user_role_load_by_name('Player');
-	if (!in_array($role->rid, array_keys($account->roles))) return;
-
-    if (!isset($edit['original']->field_current_target)) $original_target = 0;
-    else $original_target = $edit['original']->field_current_target;
-
-    if (!isset($edit['field_current_target'])) return;
-    $new_target = $edit['field_current_target'];
-
-    if ($original_target != $new_target) {
-
-    	$target = user_load($new_target['und'][0]['target_id']);
-
-		module_load_include('module', 'messaging', 'messaging');
-		module_load_include('module', 'am_tools', 'am_tools');
-
-		$subject = "Assassin Manager job update";
-		$body = "You have a new target: " . am_tools_user_name($target);
-		$to = array($account->uid);
-
-		messaging_send_message($subject, $body, $to);
-    }
-}

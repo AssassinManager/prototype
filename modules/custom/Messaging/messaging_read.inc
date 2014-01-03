@@ -1,6 +1,17 @@
 <?php
 
-require('messaging_tools.inc');
+/*
+ * Messaging Recipients Utilities
+ */
+function _recipients_uids_read($message) {
+  $recipients = array();
+  if (!isset($message->field_recipients['und'])) return $recipients;
+
+  foreach ($message->field_recipients['und'] as $user) {
+    array_push($recipients, $user['target_id']);
+  }
+  return $recipients;
+}
 
 /*
  * Implements hook_entity_view
@@ -14,7 +25,7 @@ function messaging_entity_view($entity, $type, $view_mode, $langcode) {
 
     if (!isset($entity->field_recipients['und'])) return;
 
-    $recipients = _recipients_uids($entity);
+    $recipients = _recipients_uids_read($entity);
     if (!in_array($user->uid, $recipients)) return;
 
     if (isset($entity->field_read_by['und'])) {
@@ -31,7 +42,7 @@ function messaging_entity_view($entity, $type, $view_mode, $langcode) {
 
     if (!isset($entity->field_recipients['und'])) return;
 
-    $recipients = _recipients_uids($entity);
+    $recipients = _recipients_uids_read($entity);
     if (!in_array($user->uid, $recipients)) return;
 
     if (isset($entity->field_read_by['und'])) {

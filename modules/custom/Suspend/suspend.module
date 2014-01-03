@@ -28,16 +28,13 @@ function suspend_default_rules_configuration() {
 /**
  * User suspension handlers
  */
-function suspend_form_alter(&$form, &$form_state, $form_id) {
-	if ($form_id != "user_profile_form") return;
+function suspend_am_custom_profile_alter(&$data) {
+	if (!in_array('Player', $data['#account']->roles)) return;
+	$data['suspend_suspend_form'] = drupal_get_form('suspend_suspend_form');
+}
 
-	/*
-	watchdog("form", "<pre>" . print_r($form, 1) . "</pre>");
-	watchdog("form_state", "<pre>" . print_r($form_state, 1) . "</pre>");
-	watchdog("form_id", "<pre>" . print_r($form_id, 1) . "</pre>");
-	*/
-
-	$form['suspend'] = array(
+function suspend_suspend_form($form, &$form_state) {
+  	$form['suspend'] = array(
                 '#type' => 'button',
                 '#name' => 'Suspend',
                 '#value' => t('Suspend'),
@@ -46,41 +43,39 @@ function suspend_form_alter(&$form, &$form_state, $form_id) {
 
 	return $form;
 }
-function suspend_user_view_alter(&$build) {
-	/*
-	 * THIS WAS FOR TESTING, DOESNT WORK
-	 *
-  	$build['suspend'] = array(
-                '#type' => 'button',
-                '#name' => 'Suspend',
-                '#value' => t('Suspend'),
-                '#ajax'  => array('callback' => '_suspend_suspend'),
-            );
-
-	return $build;
-	*/
-}
 
 function _suspend_suspend() {
-	//####-- MUST BE CHANGED -- ####//
-	/*
-	 * This must be changed to use the the correct user, not the current
-	 * but the one which's profile is being looked at.
-	 */
-	global $user;
-	$user = user_load($user->uid);
-	//####-- MUST BE CHANGED -- ####//
 
+	// Get the user based on the calling form url
+	list($form, $form_state) = ajax_get_form();
+  	drupal_process_form($form['#form_id'], $form, $form_state);
+
+  	$path = parse_url($form["#action"], PHP_URL_PATH);
+	$pathFragments = explode('/', $path);
+	$user_name = end($pathFragments);
+  	$user = user_load_by_name($user_name);
+
+  	// Check if the user has any unfinished business
 	$kills = _suspend_unconfirmed_kills($user->uid);
 	if (count($kills) > 0) {
 		drupal_set_message("Target still pending elimination confirmation!", 'warning');
 		return;
 	}
 
-	unset($user->field_current_target['und']);
+	// Remove the user current target
+	//if (isset($user->field_current_target['und'])) $user->field_current_target = array();
+	$user->field_current_target['und'][0]['target_id'] = 2;
+
+	// Make the user suspended
 	$user->field_suspended['und'][0]['value'] = 1;
 	user_save($user);
 }
+
+/*
+function suspend_user_update(&$edit, $account, $category) {
+	watchdog("User", "<pre>" . print_r($account, 1) . "</pre>");
+}
+*/
 
 function _suspend_unconfirmed_kills($uid) {
 	$query = new EntityFieldQuery();

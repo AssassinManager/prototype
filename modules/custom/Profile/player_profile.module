@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * Implements hook_user_view_alter
+ */
+function player_profile_user_view_alter(&$build) {
+
+	unset($build['summary']);
+  drupal_alter('am_custom_profile', $build);
+}
+
+/*
+ * Example of the connector
+ */
+/*
+function player_profile_am_custom_profile_alter(&$data) {
+  $data['_profile_form'] = drupal_get_form('_profile_form');
+}
+
+function _profile_form($form, &$form_state) {
+  $form['profile'] = array(
+                '#type' => 'button',
+                '#name' => 'profile',
+                '#value' => t('profile'),
+                '#ajax'  => array('callback' => '_do_stuff'),
+            );
+
+  return $form;
+}
+
+function _do_stuff() {
+  echo 1;
+}
+*/
