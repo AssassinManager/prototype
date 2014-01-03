@@ -52,7 +52,7 @@
                   <span class="icon-bar"></span>
               </a>
           
-          <div class="padding5 hidden-phone"></div> 
+          <div class="padding5 hidden-phone"></div>
           
           <?php if (!empty($primary_nav) || !empty($secondary_nav) || !empty($page['navigation'])): ?>
             <div class="nav-collapse collapse">

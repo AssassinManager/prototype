@@ -73,9 +73,10 @@ function am_tools_players_uids() {
 
 	$rid = $role_result['rid'];
 
-	$user_query = db_select('users_roles', 'ur');
-	$user_query->fields('ur', array('uid'));
-	$user_query->condition('rid', $rid, '=');
+	$user_query = db_select('users_roles', 'ur')
+				->fields('ur', array('uid'))
+				->condition('uid', 0, '!=')
+				->condition('rid', $rid, '=');
 	$result = $user_query->execute();
 
 	while($record = $result->fetchAssoc()) {
@@ -83,4 +84,23 @@ function am_tools_players_uids() {
     }
 
 	return $uids;
+}
+
+/**
+ * Check if players are alive and not suspended
+ * and return the uids of the ones that are good
+ */
+function am_tools_players_status($uids) {
+
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'user')
+        ->propertyCondition('uid', $uids, 'IN')
+        ->propertyCondition('status', 1)
+        ->fieldCondition('field_suspended', 'value', array(0))
+        ->fieldCondition('field_alive', 'value', array(1));
+  $entities = $query->execute();
+
+  if (count($entities) < 1) return array();
+
+  return array_keys($entities['user']);
 }
