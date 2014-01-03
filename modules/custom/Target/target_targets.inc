@@ -116,6 +116,7 @@ function target_assign_targets() {
 
   // Find those without targets
   $users_without_target = _users_without_target($users);
+
   if (count($users_without_target) < 1) {
     drupal_set_message('All targets already assigned', 'status');
     return;
