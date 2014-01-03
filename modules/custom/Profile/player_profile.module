@@ -1,5 +1,7 @@
 <?php
 
+require("player_profile_kill_button.inc");
+
 /**
  * Implements hook_user_view_alter
  */

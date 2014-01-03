@@ -22,6 +22,91 @@ function _target_death_warrants($uids) {
 }
 
 /**
+ * Look for kills which target the given users
+ * and return a list of users which are targeted.
+ */
+function _target_users_death_warrants($uids) {
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1);
+
+    $kills = $query->execute();
+
+    if (count($kills) < 1) return array();
+    $kills = node_load_multiple(array_keys($kills['node']));
+    $targeted_players = array();
+    foreach ($kills as $key => $value) {
+      $uid = $value->field_target['und'][0]['target_id'];
+      if (in_array($uid, $uids)) $targeted_players[] = $uid;
+    }
+    return $targeted_players;
+}
+
+/**
+ * Look for kills of a specific assassin and return the targets
+ */
+function _target_users_kill_warrants($uid) {
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->fieldCondition('field_assassin', 'target_id', $uid);
+
+    $kills = $query->execute();
+
+    if (count($kills) < 1) return array();
+    $kills = node_load_multiple(array_keys($kills['node']));
+    $targeted_players = array();
+    foreach ($kills as $key => $value) {
+      $targeted_players[] = $value->field_target['und'][0]['target_id'];
+    }
+    return $targeted_players;
+}
+
+/**
+ * Check if players is alive, not suspended & not targeted
+ * and return true if valid, false if not
+ */
+function _check_player_status($uid) {
+
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'user')
+        ->propertyCondition('uid', $uid, '=')
+        ->propertyCondition('status', 1)
+        ->fieldCondition('field_suspended', 'value', array(0))
+        ->fieldCondition('field_alive', 'value', array(1));
+  $entities = $query->execute();
+
+  if (count($entities) < 1) return false;
+
+  $deathWarrants = _target_users_death_warrants(array($uid));
+  if (count($deathWarrants) > 0) return false;
+
+  return true;
+}
+
+/**
+ * Check if player has unconfirmed kill
+ * and return true if at least 1 was found
+ */
+function _check_player_unconfirmed_kill($uid) {
+
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->fieldCondition('field_confirmed', 'value', 0)
+            ->fieldCondition('field_assassin', 'target_id', $uid);
+
+    $unconfirmedKills = $query->execute();
+
+    if (count($unconfirmedKills) > 0) return true;
+
+    return false;
+}
+
+/**
  * Get all users who are Players and alive (& not suspended)
  */
 function _get_users_alive_and_well() {

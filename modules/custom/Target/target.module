@@ -1,6 +1,6 @@
 <?php
 
-require('target_player_profile.page.inc');
+require('target_targets.inc');
 require('target_rules.inc');
 
 
@@ -11,63 +11,11 @@ function target_rules_action_info() {
 		);
 }
 
-function target_user_view_alter(&$build) {
-  	//_target_player_profile($build);
-}
-
-/*
-function target_form_alter(&$form, &$form_state, $form_id) {
-
-	//return; // Remove the debug buttons from all forms
-
-	$form['test_kill'] = array(
-                '#type' => 'button',
-                '#name' => 'Kill',
-                '#value' => t('Kill'),
-                '#ajax'  => array(
-					'callback' => 'target_kill',
-					'wrapper'  => 'the-wrapper-div-field',
-				),
-            );
-
-	$form['test_deny'] = array(
-                '#type' => 'button',
-                '#name' => 'Deny',
-                '#value' => t('Deny'),
-                '#ajax'  => array(
-					'callback' => 'target_deny',
-					'wrapper'  => 'the-wrapper-div-field',
-				),
-            );
-
-	$form['test_accept'] = array(
-                '#type' => 'button',
-                '#name' => 'Accept',
-                '#value' => t('Accept'),
-                '#ajax'  => array(
-					'callback' => 'target_accept',
-					'wrapper'  => 'the-wrapper-div-field',
-				),
-            );
-
-	$form['test_assign'] = array(
-                '#type' => 'button',
-                '#name' => 'Assign',
-                '#value' => t('Assign'),
-                '#ajax'  => array(
-					'callback' => 'target_assign_targets',
-					'wrapper'  => 'the-wrapper-div-field',
-				),
-            );
-
-	return $form;
-}
-*/
-
 /**
  * User targeting handlers
  */
 function target_kill() {
+
 	global $user;
 	$user = user_load($user->uid);
 
@@ -84,7 +32,7 @@ function target_kill() {
 	}
 
 	$target_uid = $user->field_current_target['und'][0]['target_id'];
-    _target_kill($user->uid, $target_uid);
+    _target_create_kill($user->uid, $target_uid);
 }
 
 function target_deny() {
@@ -126,13 +74,14 @@ function target_accept() {
 /**
  * Create kill node
  */
-function _target_kill($assassin_uid, $target_uid) {
+function _target_create_kill($assassin_uid, $target_uid) {
 	$node = new stdclass();
     $node->type = 'kill';
     node_object_prepare($node);
 
     $node->language = 'und';
 
+    $node->title = 'Kill-' . $assassin_uid . "vs" . $target_uid;
     $node->field_confirmed['und'][0]['value'] = 0;
 
     $node->field_target['und'][0]['target_id'] = $target_uid;

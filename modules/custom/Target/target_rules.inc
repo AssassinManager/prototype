@@ -4,7 +4,7 @@ function target_default_rules_configuration() {
     $configs = array();
 
     $am_rankings = '{ "rules_update_rankings" : {
-                      "LABEL" : "Rankings",
+                      "LABEL" : "Update Rankings",
                       "PLUGIN" : "reaction rule",
                       "OWNER" : "rules",
                       "TAGS" : [ "Assassin Manager" ],
@@ -20,7 +20,7 @@ function target_default_rules_configuration() {
                   }';
 
     $am_targets = '{ "rules_assign_targets" : {
-                     "LABEL" : "Assign Targets",
+                     "LABEL" : "Assign Targets After Kill Confirmed",
                      "PLUGIN" : "reaction rule",
                      "OWNER" : "rules",
                      "TAGS" : [ "Assassin Manager" ],
@@ -113,11 +113,6 @@ function _update_targets_action() {
   return array(
           'label' => t('Update Targets'),
           'group' => t('Assassin Manager'),
-          'base' => '_am_update_targets',
+          'base' => 'target_assign_targets',
         );
-}
-
-function _am_update_targets() {
-    require('target_targets.inc');
-    target_assign_targets();
 }

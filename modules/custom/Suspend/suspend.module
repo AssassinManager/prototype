@@ -60,10 +60,13 @@ function _suspend_suspend() {
   	$user = user_load_by_name($user_name);
 
   	// Check if the user has any unfinished business
-	$kills = _suspend_unconfirmed_kills($user->uid);
-	if (count($kills) > 0) {
-		drupal_set_message("Target still pending elimination confirmation!", 'warning');
-		return;
+	if (module_exists('target')) {
+
+	  	module_load_include('module', 'target', 'target');
+		if (_check_player_unconfirmed_kill($user->uid)) {
+			drupal_set_message("Target still pending elimination confirmation!", 'warning');
+			return;
+		}
 	}
 
 	// Remove the user current target

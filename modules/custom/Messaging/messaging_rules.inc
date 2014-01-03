@@ -4,7 +4,7 @@ function messaging_default_rules_configuration() {
   $configs = array();
 
   $am_notify = '{ "rules_message_notify" : {
-                  "LABEL" : "Message Notify",
+                  "LABEL" : "Message Notifier",
                   "PLUGIN" : "reaction rule",
                   "TAGS" : [ "Assassin Manager" ],
                   "REQUIRES" : [ "messaging", "rules", "comment" ],
@@ -17,7 +17,7 @@ function messaging_default_rules_configuration() {
               }';
 
   $am_org_msg = '{ "rules_new_target_message" : {
-                          "LABEL" : "New Target Message",
+                          "LABEL" : "Create New Target Message",
                           "PLUGIN" : "reaction rule",
                           "OWNER" : "rules",
                           "TAGS" : [ "Messaging" ],
@@ -69,17 +69,13 @@ function _messaging_am_target_msg($player) {
 
   if (!isset($player->original->field_current_target))          $original_target = 0;
   else if (count($player->original->field_current_target) < 1)  $original_target = 0;
-
   else $original_target = $player->original->field_current_target;
 
   $new_target = $player->field_current_target;
-
   if ($original_target == $new_target) return;
-
   $target = user_load($new_target['und'][0]['target_id']);
 
   module_load_include('module', 'am_tools', 'am_tools');
-
   $subject = "Assassin Manager job update";
   $body = "You have a new target: " . am_tools_user_name($target);
   $to = array($player->uid);
