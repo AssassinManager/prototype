@@ -1,1 +1,0 @@
-REMOVE_ONE_THEME_COPIED - This document is here to make sure the directory is included

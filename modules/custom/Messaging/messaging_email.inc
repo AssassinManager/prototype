@@ -1,16 +1,11 @@
 <?php
 
-function _is_valid($input) {
-    if ($input == null) return false;
-    if (!isset($input)) return false;
-
-    return true;
-}
-
 function _messaging_am_mail($subject, $message, $from, $from_name, $to) {
 
-    if (!_is_valid($from))  return;
-    if (!_is_valid($to))    return;
+    module_load_include('module', 'am_tools', 'am_tools');
+
+    if (!am_tools_valid($from))  return;
+    if (!am_tools_valid($to))    return;
 
     $to = implode(", ", $to);
 
@@ -38,8 +33,10 @@ function _messaging_am_mail($subject, $message, $from, $from_name, $to) {
 
 function _messaging_am_organizer_mail($subject, $message, $from, $to) {
 
-    if (!_is_valid($from))  return;
-    if (!_is_valid($to))    return;
+    module_load_include('module', 'am_tools', 'am_tools');
+    
+    if (!am_tools_valid($from))  return;
+    if (!am_tools_valid($to))    return;
     
     $message = "Hi,\n\n Your organizer sent you a message on Assassin Manager: \n\n" . $message;
 

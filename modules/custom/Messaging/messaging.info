@@ -4,9 +4,12 @@ package = Assassin Manager - Modules
 
 dependencies[] = message_content_type
 dependencies[] = email_registration
+dependencies[] = user_fields
+
+dependencies[] = mandrill
 dependencies[] = rules
 
 core = 7.x
 php = 5.x
 
-version = 7.x-1.0-beta1
+version = 7.x-1.0-beta2

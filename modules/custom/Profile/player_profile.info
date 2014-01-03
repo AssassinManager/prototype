@@ -1,0 +1,8 @@
+name = Player profile
+description = Layout & items for player profile page
+package = Assassin Manager - Modules
+
+core = 7.x
+php = 5.x
+
+version = 7.x-1.0
