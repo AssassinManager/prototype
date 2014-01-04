@@ -12,6 +12,7 @@ function messaging_rules_action_info() {
 	return array(
 		'am_notifier' =>_create_notifier_action(),
         'am_messages' =>_create_messages_action(),
+        'am_kill_message' =>_create_kill_message_action(),
 		);
 }
 
@@ -29,7 +30,7 @@ function _recipients_for_msg($uids) {
 /*
  * Send message API
  */
-function messaging_send_message($subject, $body, $to) {
+function messaging_send_message($subject, $body, $to, $from = 0) {
 
 	$node = new StdClass();
     $node->type = 'message';
@@ -39,6 +40,8 @@ function messaging_send_message($subject, $body, $to) {
     unset($node->menu);
 
     $node->language = 'und';
+
+    if ($from > 0) $node->uid = $from;
 
     $node->title = $subject;
     $node->field_body['und'][0]['value'] = $body;

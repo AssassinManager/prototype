@@ -1,5 +1,7 @@
 <?php
 
+require('suspend_config.inc');
+
 function suspend_default_rules_configuration() {
     $configs = array();
 
@@ -83,7 +85,7 @@ function _suspend_suspend() {
 
 	  	module_load_include('module', 'target', 'target');
 		if (_check_player_unconfirmed_kill($user->uid)) {
-			drupal_set_message("Target still pending elimination confirmation!", 'warning');
+			drupal_set_message(variable_get('player_pending_elimination'), 'warning');
 			return;
 		}
 	}
@@ -99,8 +101,8 @@ function _suspend_unsuspend() {
 	$players = am_tools_players_uids();
 	$players = am_tools_players_status($players);
 
-	if (count($players) <= 3) {
-		drupal_set_message("Cannot unsuspend player when only 3 are left in game.", 'error');
+	if (count($players) < 3) {
+		drupal_set_message(variable_get('unsuspension_3_rule'), 'error');
 		return;
 	}
 

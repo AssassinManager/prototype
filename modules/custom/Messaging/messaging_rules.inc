@@ -62,6 +62,24 @@ function _create_messages_action() {
         );
 }
 
+/**
+ * implements hook_rules_action_info().
+ */
+function _create_kill_message_action() {
+  return array(
+          'label' => t('Send Kill Message'),
+          'group' => t('Assassin Manager'),
+          'base' => '_messaging_am_kill_msg',
+          'parameter' => array(
+              'Player' => array(
+                'type' => 'node',
+                'label' => t('Kill'),
+                'translatable' => FALSE,
+              ),
+            ),
+        );
+}
+
 function _messaging_am_target_msg($player) {
 
   if (!isset($player->field_current_target['und'])) return;
@@ -81,4 +99,21 @@ function _messaging_am_target_msg($player) {
   $to = array($player->uid);
 
   messaging_send_message($subject, $body, $to);
+}
+
+function _messaging_am_kill_msg($kill) {
+
+  watchdog("kill", "<pre>" . print_r($kill, 1) . "</pre>");
+
+  $assassin = $kill->field_assassin['und'][0]['target_id'];
+  $assassin = user_load($assassin);
+
+  $target_uid = $kill->field_target['und'][0]['target_id'];
+
+  module_load_include('module', 'am_tools', 'am_tools');
+  $subject = "Assassin Manager elimination notice";
+  $body = am_tools_user_name($assassin) . " claims to have eliminated you. Please confirm on your profile page.";
+  $to = array($target_uid);
+
+  messaging_send_message($subject, $body, $to, $assassin->uid);
 }
