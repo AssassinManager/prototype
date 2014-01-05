@@ -76,39 +76,6 @@ function message_content_type_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'comment-comment_node_message-field_recipients'
-  $field_instances['comment-comment_node_message-field_recipients'] = array(
-    'bundle' => 'comment_node_message',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'inline',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 2,
-      ),
-    ),
-    'entity_type' => 'comment',
-    'field_name' => 'field_recipients',
-    'label' => 'Recipients',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'options',
-      'settings' => array(),
-      'type' => 'options_select',
-      'weight' => 1,
-    ),
-  );
-
   // Exported field_instance: 'node-message-field_body'
   $field_instances['node-message-field_body'] = array(
     'bundle' => 'message',

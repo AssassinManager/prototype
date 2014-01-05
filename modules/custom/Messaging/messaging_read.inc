@@ -19,50 +19,26 @@ function _recipients_uids_read($message) {
  */
 function messaging_entity_view($entity, $type, $view_mode, $langcode) {
 
-  // Check if this is a message
-  if ($type == "node" && $entity->type == "message") {
-    global $user;
+  // Check if this is a message or a reply
+  if (!($type == "node" && $entity->type == "message") &&
+      !($type == "comment" && $entity->node_type == "comment_node_message")) 
+    return;
 
-    if (!isset($entity->field_recipients['und'])) return;
+  global $user;
 
-    $recipients = _recipients_uids_read($entity);
-    if (!in_array($user->uid, $recipients)) return;
+  $recipients = array();
+  if (isset($entity->comment_body)) 
+       $recipients = _get_all_recipients($entity->uid, node_load($entity->nid));
+  else $recipients = _get_all_recipients($entity->uid, $entity);
+  if (count($recipients) < 1) return;
 
-    if (isset($entity->field_read_by['und'])) {
-      $readBy = _messaging_get_reads($entity);
-      if (in_array($user->uid, $readBy)) return;
-    }
-    _messaging_read_node_by(node_load($entity->nid), $user);
+  if (isset($entity->field_read_by['und']) && 
+    in_array(array('target_id' => $user->uid), $entity->field_read_by['und'])) return; 
 
-  }
-  // Otherwise do this for a reply/comment
-  else if ($type == "comment" && $entity->node_type == "comment_node_message") {
-    watchdog("Got comment", "<pre>" . print_r($entity, 1) . "<\pre>");
-    global $user;
+  $entity->field_read_by['und'][] = array('target_id' => $user->uid);
 
-    if (!isset($entity->field_recipients['und'])) return;
-
-    $recipients = _recipients_uids_read($entity);
-    if (!in_array($user->uid, $recipients)) return;
-
-    if (isset($entity->field_read_by['und'])) {
-      $readBy = _messaging_get_reads($entity);
-      if (in_array($user->uid, $readBy)) return;
-    }
-    _messaging_read_comment_by(comment_load($entity->cid), $user);
-  }
-}
-
-/*
- * Sets the message to read if needed
- */
-function _messaging_read_node_by($node, $user) {
-  $node->field_read_by['und'][] = array('target_id' => $user->uid);
-  node_save($node);
-}
-function _messaging_read_comment_by($comment, $user) {
-  $comment->field_read_by['und'][] = array('target_id' => $user->uid);
-  comment_save($comment);
+  if (isset($entity->comment_body))  comment_save($entity);
+  else                      node_save($entity);
 }
 
 

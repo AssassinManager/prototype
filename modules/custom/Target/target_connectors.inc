@@ -11,7 +11,7 @@ function target_kill() {
   }
 
   if (_check_player_unconfirmed_kill($user->uid)) {
-    drupal_set_message("Target still pending elimination confirmation!", 'warning');
+    drupal_set_message(variable_get('target_pending_elimination'), 'warning');
     return;
   }
 
@@ -22,8 +22,14 @@ function target_kill() {
 function target_deny() {
   global $user;
 
-  if (count(_target_death_warrant($user->uid)) < 1) {
-    drupal_set_message("Cannot find your death warrant... something must have went wrong. Please contact our staff for help.", 'warning');
+  $deathWarrants = _target_death_warrant($user->uid);
+  if (count($deathWarrants) < 1) {
+    drupal_set_message(variable_get('cannot_find_death_warrant'), 'error');
+    return;
+  }
+
+  if (!module_exists('messaging')) {
+    drupal_set_message("Cannot find messaging module, you cannot challenge a kill without communication!", 'error');
     return;
   }
 
@@ -31,9 +37,9 @@ function target_deny() {
   $target_uid = $user->field_current_target['und'][0]['target_id'];
 
   module_load_include('module', 'messaging', 'messaging');
-  messaging_deny_kill($target_uid, $user->uid);
+  _messaging_am_deny_kill($user->uid, $target_uid);
 
-  drupal_set_message("Got that, the organizer was added to the loop to help set this straight.");
+  drupal_set_message(variable_get('kill_deny_confirmation'), 'status');
 }
 
 function target_accept() {
@@ -41,15 +47,25 @@ function target_accept() {
 
   $deathWarrants = _target_death_warrant($user->uid);
   if (count($deathWarrants) < 1) {
-    drupal_set_message("Cannot find your death warrant... something must have went wrong. Please contact our staff for help.", 'warning');
+    drupal_set_message(variable_get('cannot_find_death_warrant'), 'error');
     return;
   }
 
+  // Remove current target
+  $user = user_load($user->uid);
+  $user->field_current_target = array();
+  user_save($user);
+
+  // Remove current target
+  $kill = node_load($deathWarrants[0]);
+  $target_uid = $kill->field_target['und'][0]['target_id'];
+  $target = user_load($target_uid);
+  $target->field_alive['und'][0]['value'] = 0;
+  $target->field_current_target = array();
+  user_save($target);
+
+  // Update the kill node
   $kill = node_load($deathWarrants[0]);
   $kill->field_confirmed['und'][0]['value'] = 1;
   node_save($kill);
-
-  // Assigning new target
-  $user = user_load($user->uid);
-  unset($user->field_current_target['und']);
 }

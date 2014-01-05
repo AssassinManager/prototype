@@ -1,5 +1,7 @@
 <?php
 
+require('suspend_config.inc');
+
 function suspend_default_rules_configuration() {
     $configs = array();
 
@@ -34,11 +36,11 @@ function suspend_am_custom_profile_alter(&$data) {
 	global $user;
 	if (!in_array('Organizer', $user->roles)) return;
 
-	module_load_include('module', 'am_tools', 'am_tools');
+	$player = user_load($data['#account']->uid);
 
-	$viewed_player = array($data['#account']->uid);
+	if ($player->field_alive['und'][0]['value'] == 0) return;
 
-	if (count(am_tools_players_status($viewed_player)) > 0) {
+	else if ($player->field_suspended['und'][0]['value'] == 0) {
 		$data['suspend_button_suspend'] = drupal_get_form('suspend_button_suspend');
 	} else {
 		$data['suspend_button_unsuspend'] = drupal_get_form('suspend_button_unsuspend');
@@ -83,7 +85,7 @@ function _suspend_suspend() {
 
 	  	module_load_include('module', 'target', 'target');
 		if (_check_player_unconfirmed_kill($user->uid)) {
-			drupal_set_message("Target still pending elimination confirmation!", 'warning');
+			drupal_set_message(variable_get('player_pending_elimination'), 'warning');
 			return;
 		}
 	}
@@ -96,11 +98,12 @@ function _suspend_suspend() {
 
 function _suspend_unsuspend() {
 
+	module_load_include('module', 'am_tools', 'am_tools');
 	$players = am_tools_players_uids();
 	$players = am_tools_players_status($players);
 
-	if (count($players) <= 3) {
-		drupal_set_message("Cannot unsuspend player when only 3 are left in game.", 'error');
+	if (count($players) < 3) {
+		drupal_set_message(variable_get('unsuspension_3_rule'), 'error');
 		return;
 	}
 

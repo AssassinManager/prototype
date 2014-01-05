@@ -3,15 +3,16 @@
 require('messaging_notifier.inc');
 require('messaging_config.inc');
 
-require('messaging_recipients.inc');
 require('messaging_rules.inc');
 require('messaging_read.inc');
 
 
 function messaging_rules_action_info() {
 	return array(
-		'am_notifier' =>_create_notifier_action(),
+        'am_notifier' =>_create_notifier_action(),
+        'am_notifier_reply' =>_create_notifier_reply_action(),
         'am_messages' =>_create_messages_action(),
+        'am_kill_message' =>_create_kill_message_action(),
 		);
 }
 
@@ -29,7 +30,7 @@ function _recipients_for_msg($uids) {
 /*
  * Send message API
  */
-function messaging_send_message($subject, $body, $to) {
+function messaging_send_message($subject, $body, $to, $from = 0) {
 
 	$node = new StdClass();
     $node->type = 'message';
@@ -39,6 +40,8 @@ function messaging_send_message($subject, $body, $to) {
     unset($node->menu);
 
     $node->language = 'und';
+
+    if ($from > 0) $node->uid = $from;
 
     $node->title = $subject;
     $node->field_body['und'][0]['value'] = $body;
@@ -62,7 +65,7 @@ function messaging_reply_message($msg_nid, $msg_body) {
         'is_anonymous' => 0,
         'homepage' => '',
         'status' => COMMENT_PUBLISHED,
-        'subject' => 'challenge',
+        'subject' => variable_get('challenge_title'),
         'language' => LANGUAGE_NONE,
         'comment_body' => array(
           LANGUAGE_NONE => array(
@@ -76,4 +79,50 @@ function messaging_reply_message($msg_nid, $msg_body) {
 
     comment_submit($comment);
     comment_save($comment);
+}
+
+function _messaging_am_deny_kill($target, $assassin) {
+
+    $target = user_load($target);
+    module_load_include('module', 'am_tools', 'am_tools');
+    $body = am_tools_user_name($target) . " is challenging your elimination claim, the organizer has been added in the loop to help set things straight.";
+
+    $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'message', '=')
+        ->condition('n.uid', $assassin, '=')
+        ->execute()
+        ->fetch();
+
+    if (!isset($query->nid)) {
+        drupal_set_message('There was a problem finding the kill message, please contact our staff to fix this problem.', 'error');
+        return;
+    }
+
+    messaging_reply_message($query->nid, $body);
+}
+
+
+function _messaging_am_find_reply($from, $to) {
+
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+        ->propertyCondition('uid', $to, '=')
+        ->propertyCondition('type', 'message', '=')
+        ->fieldCondition('field_recipients', 'target_id', array($from));
+    $entities = $query->execute();
+
+    if (count($entities) < 1) return false;
+
+    $msg_uid = key($entities['node']);
+    
+    $query = db_select('comment', 'cm')
+        ->fields('cm', array('cid'))
+        ->condition('nid', $msg_uid, '=')
+        ->execute()
+        ->fetch();
+
+    if (!isset($query->cid)) return false;
+
+    return true;
 }

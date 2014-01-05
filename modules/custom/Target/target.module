@@ -1,9 +1,9 @@
 <?php
 
 require('target_connectors.inc');
-require('target_targeting.inc');
 require('target_rules.inc');
 require('target_tools.inc');
+require('target_config.inc');
 
 
 function target_rules_action_info() {
@@ -23,20 +23,19 @@ function target_assign_targets() {
 	// Get all the players
 	$players = am_tools_players_uids();
 	if (count($players) < 1) {
-		drupal_set_message('No players at all!', 'warning');
+		drupal_set_message(variable_get('no_valid_users'), 'warning');
 		return;
 	}
 
 	$players = am_tools_players_status($players);
 	if (count($players) < 1) {
-		drupal_set_message('No users left! (Are they all gone, eliminated or suspended?)', 'warning');
+		drupal_set_message(variable_get('no_valid_players'), 'warning');
 		return;
 	}
 
 	if (count($players) == 1) {
 		$user = user_load($players[0]);
-		module_load_include('module', 'am_tools', 'am_tools');
-		drupal_set_message(t('Only 1 player left, is he the winner? (' . am_tools_user_name($user) . ')'), 'warning');
+		drupal_set_message(variable_get('one_assassin_left') . ' (' . am_tools_user_name($user) . ')', 'warning');
 		return;
 	}
 
@@ -56,20 +55,27 @@ function target_assign_targets() {
 	$users_without_target = _users_without_target($players);
 
 	if (count($users_without_target) < 1) {
-		drupal_set_message('All targets already assigned', 'status');
+		drupal_set_message(variable_get('targets_already_assigned'), 'status');
 		return;
 	}
 
 	// Find those untargeted
-	$users_targeted = _users_targeted($players);  
+	$users_targeted = _users_targeted($players);
+
 	$users_not_targeted = array();
 	foreach ($players as $uid => $user) {
 		if (in_array($uid, array_keys($users_targeted))) continue;
 		$users_not_targeted[$uid] = $user;
 	}
 	if (count($users_not_targeted) < 1) {
-		drupal_set_message('No possible targets, all users are already targetted.', 'warning');
+		drupal_set_message(variable_get('targets_already_assigned'), 'warning');
 		return;
+	}
+
+	if (count($users_without_target) == 1 && count($users_not_targeted) ==1 &&
+		key($users_without_target) == key($users_not_targeted)) {
+		  drupal_set_message(variable_get('assassin_singled_out'), 'warning');
+		  return;
 	}
 
 	// Assign targets
@@ -77,7 +83,7 @@ function target_assign_targets() {
 	foreach ($users_without_target as $uid => $user) {
 
 		if (count($users_not_targeted) < 1) {
-		  drupal_set_message('No players left to target, but some players remain without target.', 'warning');
+		  drupal_set_message(variable_get('not_enough_targets'), 'warning');
 		  return;
 		}
 
@@ -89,17 +95,19 @@ function target_assign_targets() {
         	 //if no more targets, use the previous target and add this one back into the array
             if (count($users_not_targeted) == 0) 
             	$user->field_current_target['und'][0]['target_id'] = $previous_target;
-            else 
-            	$user->field_current_target['und'][0]['target_id'] = array_pop($users_not_targeted);
+            else {
+            	$target = array_pop($users_not_targeted);
+            	$user->field_current_target['und'][0]['target_id'] = $target->uid;
+            }
 
-            array_push($users_not_targeted, $user->uid);
+            $users_not_targeted[$uid] = $user;
         }
 
 		user_save($user);
 		$previous_target = $target->uid;
 	}
 
-	drupal_set_message('All targets assigned', 'status');
+	drupal_set_message(variable_get('all_targets_assigned'), 'status');
 }
 
 /**
@@ -122,7 +130,17 @@ function target_update_rankings() {
   while($record = $result->fetchAssoc()) {
       $usersKills[$record['uid']] = $record["kill_count"];
   }
-  if(count($usersKills) == 0) return;
+
+  if(count($usersKills) == 0) {
+  	$counter = 1;
+  	foreach ($player_uids as $uid) {
+      $user = user_load($uid);
+      $user->field_rank['und'][0]['value'] = $counter;
+      user_save($user);
+      $counter++;
+  	}
+  	return;
+  }
 
   ksort($usersKills, SORT_NUMERIC);
 
@@ -145,16 +163,4 @@ function target_update_rankings() {
       user_save($user);
       unset($user);
   }
-}
-
-/**
- * implements hook_user_insert().
- */
-function target_user_insert(&$edit, $account, $category) {
-
-  module_load_include('module', 'am_tools', 'am_tools');
-  $player_uids = am_tools_players_uids();
-
-  $edit->field_rank['und'][0]['value'] = count($player_uids);
-  //user_save($account);
 }

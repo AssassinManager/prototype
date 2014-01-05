@@ -2,10 +2,8 @@
 
 function _messaging_am_mail($subject, $message, $from, $from_name, $to) {
 
-    module_load_include('module', 'am_tools', 'am_tools');
-
-    if (!am_tools_valid($from))  return;
-    if (!am_tools_valid($to))    return;
+    if (!isset($from))  return;
+    if (!isset($to))    return;
 
     $to = implode(", ", $to);
 
@@ -32,11 +30,9 @@ function _messaging_am_mail($subject, $message, $from, $from_name, $to) {
 }
 
 function _messaging_am_organizer_mail($subject, $message, $from, $to) {
-
-    module_load_include('module', 'am_tools', 'am_tools');
     
-    if (!am_tools_valid($from))  return;
-    if (!am_tools_valid($to))    return;
+    if (!isset($from))  return;
+    if (!isset($to))    return;
     
     $message = "Hi,\n\n Your organizer sent you a message on Assassin Manager: \n\n" . $message;
 
