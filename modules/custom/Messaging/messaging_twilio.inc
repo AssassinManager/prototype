@@ -5,7 +5,7 @@ function messaging_twilio() {
 
     $form['twilio_sid'] = array(
         '#type' => 'textfield',
-        '#title' => t('account sid'),
+        '#title' => t('Account sid'),
         '#default_value' => variable_get('twilio_sid'),
         '#size' => 40,
         '#maxlength' => 255,
@@ -14,7 +14,7 @@ function messaging_twilio() {
     );
     $form['twilio_auth_token'] = array(
         '#type' => 'textfield',
-        '#title' => t('auth token'),
+        '#title' => t('Auth token'),
         '#default_value' => variable_get('twilio_auth_token'),
         '#size' => 40,
         '#maxlength' => 255,
@@ -23,7 +23,7 @@ function messaging_twilio() {
     );
     $form['twilio_number'] = array(
         '#type' => 'textfield',
-        '#title' => t('twilio number'),
+        '#title' => t('Twilio number'),
         '#default_value' => variable_get('twilio_number'),
         '#size' => 40,
         '#maxlength' => 255,
