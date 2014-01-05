@@ -1,127 +1,100 @@
 <?php
 
-function pp_table_form($form, &$form_state) {
+function _game_table_form($form, &$form_state) {
+ 
+    $headers = array(
+        'alive' => t('Alive'),
+        'no_target' => t('No target'),
+        'eliminated' => t('Eliminated'),
+        'suspended' => t('Suspended'),
+    );
 
-  $path = explode ('/', current_path());
-  if (count($path) < 2) {
-    drupal_set_message("There was a problem building your profile. Please contact our staff for help.", "error");
-    return;
-  }
-  $player = user_load($path[1]);
+    module_load_include('module', 'am_tools', 'am_tools');
+    $players = am_tools_players_uids();
+    $rows = create_table_content($players);
 
-  $current_target = array();
-  $pending_target = array();
-  $killed_targets = _get_targets_killed($player);
-
-  // test if the user is suspended
-  if ($player->field_suspended['und'][0]['value'] != 1) {
-      $pending_target = _get_target_pending($player);
-      $current_target = _get_target_current($player);
-  }
-
-  module_load_include('module', 'am_tools', 'am_tools');
-  foreach ($killed_targets as $idx => $uid) {
-    $killed_targets[$idx] = am_tools_user_name(user_load($uid));
-  }
-  if (count($current_target) > 0) 
-    $current_target[0] = am_tools_user_name(user_load($current_target[0]));
-  if (count($pending_target) > 0) 
-    $pending_target[0] = am_tools_user_name(user_load($pending_target[0]));
-
-  // create table
-  $headers = array(
-      'current' => t('Current target'),
-      'pending' => t('Pending kill'),
-      'killed' => t('killed targets'),
-  );
-
-  $rows = populate_pp_table($current_target,
-                            $pending_target,
-                            $killed_targets);
-
-  $form_targets['table'] = array(
-      '#theme' => 'table',
-      '#header' => $headers,
-      '#rows' => $rows,
-      '#empty' => t('No users found'),
-  );
-  return $form_targets;
+    $form['table'] = array(
+        '#theme' => 'table',
+        '#header' => $headers,
+        '#rows' => $rows,
+        '#empty' => t('No players yet'),
+    );
+    return $form;
 }
+function create_table_content($users) {
+    $cols['alive'] = array();
+    $cols['no_target'] = array();
+    $cols['eliminated'] = array();
+    $cols['suspended'] = array();
 
-function populate_pp_table($current_target, $pending_target, $killed_targets) {
-  $cols['current'] = $current_target;
-  $cols['pending'] = $pending_target;
-  $cols['killed'] = $killed_targets;
+    global $user;
+    global $base_url;
+    $url = $base_url . '/';
+    if(variable_get('clean_url', 0) != 1) $url = $url . '?q=';
 
-  $max_rows = count($cols['current']);
+    foreach($users as $uid){
 
-  if ($max_rows < count($cols['pending'])) $max_rows = count($cols['pending']);
-  if ($max_rows < count($cols['killed']))  $max_rows = count($cols['killed']);
+        $player = user_load($uid);
+        $name = am_tools_user_name($player);
 
-  $must_balance = true;
-  while ($must_balance) {
-      if (count($cols['current']) < $max_rows) array_push($cols['current'], '');
-      if (count($cols['pending']) < $max_rows) array_push($cols['pending'], '');
-      if (count($cols['killed']) < $max_rows)  array_push($cols['killed'], '');
+        // get the user's profile url
+        $url = $url . 'user/' . $uid;
+        $name_url = $name;
+        if (in_array('Organizer', $user->roles)) $name_url = '<a href="' . $url . '">' . $name . '</a>';
+        
+        // user is dead
+        if ($player->field_alive['und'][0]['value'] == 0) {
+            array_push($cols['eliminated'], $name_url);
+            continue;
+        }
 
-      if (count($cols['current']) == $max_rows &&
-          count($cols['pending']) == $max_rows &&
-          count($cols['killed']) == $max_rows) {
-          $must_balance = false;
-      }
-  }
+        // user is suspended
+        if ($player->field_suspended['und'][0]['value'] == 1) {
+            array_push($cols['suspended'], $name_url);
+            continue;
+        }
 
-  $rows = array();
-  for($counter=0; $counter<$max_rows; $counter++) {
-      $new_row = array (  
-                          'current' => $cols['current'][$counter],
-                          'pending' => $cols['pending'][$counter],
-                          'killed' => $cols['killed'][$counter],
-                      );
-      array_push($rows, $new_row);
-  }
+        // user has no target
+        if (!isset($player->field_current_target['und']) || count($player->field_current_target['und']) < 1) {
+            array_push($cols['no_target'], $name_url);
+            continue;
+        }
 
-  return $rows;
-}
+        // user is all good!
+        array_push($cols['alive'], $name_url);
+    }
 
-function _get_targets_killed($player) {
-  $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', 'node')
-          ->entityCondition('bundle', 'kill')
-          ->propertyCondition('status', 1)
-          ->fieldCondition('field_confirmed', 'value', 1)
-          ->fieldCondition('field_assassin', 'target_id', $player->uid);
+    $max_rows =count($cols['alive']);
 
-  $kills = $query->execute();
-  
-  if (count($kills) < 1) return;
-  $targets = array();
-  foreach($kills['node'] as $nid => $kill) {
-    $kill = node_load($nid);
-    array_push($targets, $kill->field_target['und'][0]['target_id']);
-  }
-  return $targets;
-}
+    if ($max_rows < count($cols['eliminated'])) $max_rows = count($cols['eliminated']);
+    if ($max_rows < count($cols['suspended']))  $max_rows = count($cols['suspended']);
+    if ($max_rows < count($cols['no_target']))  $max_rows = count($cols['no_target']);
 
-function _get_target_current($player) {
-  if (!isset($player->field_current_target['und']))     return array();
-  if (count($player->field_current_target['und']) < 1)  return array();
-  
-  return array($player->field_current_target['und'][0]['target_id']);
-}
+    $must_balance = true;
+    while ($must_balance) {
+        if (count($cols['eliminated']) < $max_rows) array_push($cols['eliminated'], '');
+        if (count($cols['suspended']) < $max_rows)  array_push($cols['suspended'], '');
+        if (count($cols['no_target']) < $max_rows)  array_push($cols['no_target'], '');
+        if (count($cols['alive']) < $max_rows)      array_push($cols['alive'], '');
 
-function _get_target_pending($player) {
-  $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', 'node')
-          ->entityCondition('bundle', 'kill')
-          ->propertyCondition('status', 1)
-          ->fieldCondition('field_confirmed', 'value', 0)
-          ->fieldCondition('field_assassin', 'target_id', $player->uid);
+        if (count($cols['eliminated']) == $max_rows &&
+            count($cols['suspended']) == $max_rows  &&
+            count($cols['no_target']) == $max_rows &&
+            count($cols['alive']) == $max_rows) {
+            $must_balance = false;
+        }
+    }
 
-  $unconfirmed = $query->execute();
-  
-  if (count($unconfirmed) < 1) return array();
+    $rows = array();
+    for($counter=0; $counter<$max_rows; $counter++) {
+        $new_row = array (  
+                            'alive' => $cols['alive'][$counter],
+                            'no_target' => $cols['no_target'][$counter],
+                            'eliminated' => $cols['eliminated'][$counter],
+                            'suspended' => $cols['suspended'][$counter],
+                        );
+        array_push($rows, $new_row);
+    }
 
-  $pending = node_load(key($unconfirmed['node']));
-  return array($pending->field_target['und'][0]['target_id']);
+    return $rows;
 }
