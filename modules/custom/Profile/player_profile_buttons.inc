@@ -13,6 +13,8 @@ function player_profile_am_custom_profile_alter(&$data) {
       drupal_set_message("Targeting module not found, could not display kill button.", "warning");
       return;
   }
+  module_load_include('module', 'am_tools', 'am_tools');
+  if (!am_check_game_started()) return;
 
   module_load_include('module', 'target', 'target');
 

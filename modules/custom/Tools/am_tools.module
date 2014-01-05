@@ -12,6 +12,18 @@ function am_get_game_nid() {
 	return $query->nid;
 }
 
+function am_check_game_started() {
+	$game_nid = am_get_game_nid();
+	if ($game_nid > 0) {
+		$game = node_load($game_nid);
+		$start_date = $game->field_time['und'][0]['value'];
+		$start_date = strtotime($start_date);
+
+		if ($start_date < time()) return true;
+	}
+	return false;
+}
+
 function am_tools_field_val($field) {
 	if (!isset($field['und'])) return "";
 	return $field['und'][0]['value'];
