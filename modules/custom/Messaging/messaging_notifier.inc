@@ -170,15 +170,15 @@ function _messaging_am_notify($message) {
         $msg_body = am_tools_field_val($message->field_body);
       }
 
-      if (count($emails > 0)) {
+      if (count($emails) > 0) {
           $from_email = $from_user->mail;
           if (!$from_email || $from_email == null) continue;
 
           _messaging_am_mail($msg_subject, $msg_body, $from_email, $from_name, $emails);
       }
-      if (count($phones > 0)) {
+      if (count($phones) > 0) {
           $from_phone = am_tools_field_val($from_user->field_phone);
-          if (!$from_phone || $from_phone == null) $from_phone = variable_get('twilio_number');
+          if (!isset($from_phone) || strlen($from_phone) < 1) $from_phone = variable_get('twilio_number');
 
           _messaging_am_sms($msg_subject, $msg_body, $from_phone, $from_name, $phones);
       }

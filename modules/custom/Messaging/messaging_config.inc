@@ -38,28 +38,28 @@ function messaging_defaults() {
 
     $form['suspension_msg'] = array(
         '#type' => 'textfield',
-        '#title' => t('Suspension message'),
-        '#default_value' => variable_get('suspension_msg'),
-        '#size' => 160,
-        '#maxlength' => 160,
+        '#title' => t('The message a player receives notifying him of his suspension:'),
+        '#default_value' => variable_get('suspension_msg', 'Your license to kill has been revoked. If you have any questions, please contact your organizer.'),
+        '#size' => 100,
+        '#maxlength' => 100,
         '#required' => true,
     );
 
     $form['sms_long_notification'] = array(
         '#type' => 'textfield',
-        '#title' => t('SMS notification for long messages'),
-        '#default_value' => variable_get('sms_long_notification'),
-        '#size' => 160,
-        '#maxlength' => 160,
+        '#title' => t('The SMS a player will receive when the message to be sent is over the SMS size limit:'),
+        '#default_value' => variable_get('sms_long_notification', '_name_ sent you a message on Assassin Manager. Please log in to view this message.'),
+        '#size' => 100,
+        '#maxlength' => 100,
         '#required' => true,
     );
 
     $form['sms_notification'] = array(
         '#type' => 'textfield',
-        '#title' => t('SMS notification messages'),
-        '#default_value' => variable_get('sms_notification'),
-        '#size' => 160,
-        '#maxlength' => 160,
+        '#title' => t('The prefix for all sms:'),
+        '#default_value' => variable_get('sms_notification', '_name_ sent you a msg on Assassin Manager: _msg_'),
+        '#size' => 100,
+        '#maxlength' => 100,
         '#required' => true,
     );
 

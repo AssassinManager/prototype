@@ -13,6 +13,8 @@ function player_profile_am_custom_profile_alter(&$data) {
       drupal_set_message("Targeting module not found, could not display kill button.", "warning");
       return;
   }
+  module_load_include('module', 'am_tools', 'am_tools');
+  if (!am_check_game_started()) return;
 
   module_load_include('module', 'target', 'target');
 
@@ -26,12 +28,11 @@ function player_profile_am_custom_profile_alter(&$data) {
     $target_uid = $data['#account']->field_current_target['und'][0]['target_id'];
     if (_messaging_am_find_reply($user->uid, $target_uid)) {
       $data['_profile_deny_button'] = drupal_get_form('_profile_deny_button_disabled');
-      $data['_profile_accept_button'] = drupal_get_form('_profile_accept_button_disabled');
     }
     else {
       $data['_profile_deny_button'] = drupal_get_form('_profile_deny_button_enabled');
-      $data['_profile_accept_button'] = drupal_get_form('_profile_accept_button_enabled');
     }
+    $data['_profile_accept_button'] = drupal_get_form('_profile_accept_button_enabled');
   } 
 
   else {
@@ -70,18 +71,6 @@ function _profile_accept_button_enabled($form, &$form_state) {
                 '#name' => 'accept_button',
                 '#value' => t('I Confirm I was eliminated'),
                 '#ajax'  => array('callback' => 'target_accept'),
-            );
-
-  return $form;
-}
-
-function _profile_accept_button_disabled($form, &$form_state) {
-
-  $form['accept_button'] = array(
-                '#type' => 'button',
-                '#name' => 'accept_button',
-                '#disabled' => true,
-                '#value' => t('I Confirm I was eliminated'),
             );
 
   return $form;

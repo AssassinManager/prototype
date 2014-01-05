@@ -16,7 +16,7 @@ function pp_table_form($form, &$form_state) {
   // test if the user is suspended
   if ($player->field_suspended['und'][0]['value'] != 1) {
       $pending_target = _get_target_pending($player);
-      $current_target = _get_target_current($player);
+      if (count($pending_target) < 1) $current_target = _get_target_current($player);
   }
 
   module_load_include('module', 'am_tools', 'am_tools');
@@ -35,6 +35,10 @@ function pp_table_form($form, &$form_state) {
       'killed' => t('killed targets'),
   );
 
+  if (!is_array($current_target)) $current_target = array();
+  if (!is_array($pending_target)) $pending_target = array();
+  if (!is_array($killed_targets)) $killed_targets = array();
+
   $rows = populate_pp_table($current_target,
                             $pending_target,
                             $killed_targets);
@@ -43,7 +47,7 @@ function pp_table_form($form, &$form_state) {
       '#theme' => 'table',
       '#header' => $headers,
       '#rows' => $rows,
-      '#empty' => t('No users found'),
+      '#empty' => t('-'),
   );
   return $form_targets;
 }
@@ -94,7 +98,8 @@ function _get_targets_killed($player) {
 
   $kills = $query->execute();
   
-  if (count($kills) < 1) return;
+  if (count($kills) < 1) return array();
+  
   $targets = array();
   foreach($kills['node'] as $nid => $kill) {
     $kill = node_load($nid);

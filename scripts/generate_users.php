@@ -1,6 +1,6 @@
 <?php
 
-_create_players(1, array($rid));
+_create_players(5, array($rid));
 
 function _create_license($number) {
     $node = new stdClass();

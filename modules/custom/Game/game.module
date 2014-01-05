@@ -1,0 +1,38 @@
+<?php
+
+require("game_table.inc");
+
+/**
+ * Implements hook_user_view_alter
+ */
+function game_node_view_alter(&$build) {
+
+  if ($build['#bundle'] != 'game') return;
+  drupal_alter('am_custom_game', $build);
+
+  $build['game_table_form'] = drupal_get_form('_game_table_form');
+}
+
+/*
+ * Example of the connector
+ */
+/*
+function game_am_custom_game_alter(&$data) {
+  $data['_profile_form'] = drupal_get_form('_profile_form');
+}
+
+function _profile_form($form, &$form_state) {
+  $form['profile'] = array(
+                '#type' => 'button',
+                '#name' => 'profile',
+                '#value' => t('profile'),
+                '#ajax'  => array('callback' => '_do_stuff'),
+            );
+
+  return $form;
+}
+
+function _do_stuff() {
+  echo 1;
+}
+*/

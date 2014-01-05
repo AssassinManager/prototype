@@ -12,6 +12,18 @@ function am_get_game_nid() {
 	return $query->nid;
 }
 
+function am_check_game_started() {
+	$game_nid = am_get_game_nid();
+	if ($game_nid > 0) {
+		$game = node_load($game_nid);
+		$start_date = $game->field_time['und'][0]['value'];
+		$start_date = strtotime($start_date);
+
+		if ($start_date < time()) return true;
+	}
+	return false;
+}
+
 function am_tools_field_val($field) {
 	if (!isset($field['und'])) return "";
 	return $field['und'][0]['value'];
@@ -35,9 +47,10 @@ function am_tools_organizer_uids() {
 
 	$rid = array_search('Organizer', user_roles());
 
-	$user_query = db_select('users_roles', 'ur');
-	$user_query->fields('ur', array('uid'));
-	$user_query->condition('rid', $rid, '=');
+	$user_query = db_select('users_roles', 'ur')
+				->fields('ur', array('uid'))
+				->condition('uid', 0, '!=')
+				->condition('rid', $rid, '=');
 	$result = $user_query->execute();
 
 	while($record = $result->fetchAssoc()) {
