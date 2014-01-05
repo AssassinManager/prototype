@@ -29,7 +29,7 @@ function player_profile_am_custom_profile_alter(&$data) {
       $data['_profile_accept_button'] = drupal_get_form('_profile_accept_button_disabled');
     }
     else {
-     $data['_profile_deny_button'] = drupal_get_form('_profile_deny_button_enabled');
+      $data['_profile_deny_button'] = drupal_get_form('_profile_deny_button_enabled');
       $data['_profile_accept_button'] = drupal_get_form('_profile_accept_button_enabled');
     }
   } 
