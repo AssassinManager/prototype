@@ -8,7 +8,7 @@ function target_am_custom_game_alter(&$data) {
   global $user;
   if (!in_array('Organizer',$user->roles)) return;
 
-  $data['_assign_targets_button'] = drupal_get_form('assign_targets_button');
+  $data['assign_targets_button'] = drupal_get_form('assign_targets_button');
 }
 
 

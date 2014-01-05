@@ -22,9 +22,9 @@ function license_to_kill_node_presave($node) {
     if ($node->type != 'license_to_kill') return;
 
     $code = module_invoke(genpass_algorithm_module(), 'password');
+    while(strlen($code) < 8) $code = module_invoke(genpass_algorithm_module(), 'password');
 
-    if (!isset($node->field_license['und']) ||
-        $node->field_license['und'][0]['value'] == "0") 
+    if (!isset($node->field_license['und']) || $node->field_license['und'][0]['value'] == "0") 
     {
         $node->field_license['und'][0]['value'] = $code;
     }
