@@ -7,6 +7,7 @@
  */
 function game_node_view_alter(&$build) {
 
+  if ($build['#bundle'] != 'game') return;
   drupal_alter('am_custom_game', $build);
 
   //$build['player_profile_table'] = drupal_get_form('pp_table_form');

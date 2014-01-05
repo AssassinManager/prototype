@@ -2,9 +2,9 @@
 
 require('messaging_notifier.inc');
 require('messaging_config.inc');
-
 require('messaging_rules.inc');
 require('messaging_read.inc');
+require('messaging_form.inc');
 
 
 function messaging_rules_action_info() {

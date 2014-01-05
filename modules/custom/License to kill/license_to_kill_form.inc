@@ -4,11 +4,10 @@
 * Adds the "Assign All Targets" button to the game page
 */
 function license_to_kill_am_custom_game_alter(&$data) {
+  global $user;
+  if (!in_array('Organizer',$user->roles)) return;
 
-global $user;
-if (!in_array('Organizer',$user->roles)) return;
-
-$data['manage_licenses_button'] = drupal_get_form('manage_licenses_button');
+  $data['manage_licenses_button'] = drupal_get_form('manage_licenses_button');
 }
 
 /**
