@@ -1,6 +1,5 @@
 <?php
 
-//require("game_buttons.inc");
 //require("game_table.inc");
 
 /**
@@ -8,8 +7,7 @@
  */
 function game_node_view_alter(&$build) {
 
-	//unset($build['summary']);
-  //drupal_alter('am_custom_profile', $build);
+  drupal_alter('am_custom_game', $build);
 
   //$build['player_profile_table'] = drupal_get_form('pp_table_form');
 }

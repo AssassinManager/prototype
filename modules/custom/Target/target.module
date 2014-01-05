@@ -4,6 +4,7 @@ require('target_connectors.inc');
 require('target_rules.inc');
 require('target_tools.inc');
 require('target_config.inc');
+require('target_button.inc');
 
 
 function target_rules_action_info() {
