@@ -1,6 +1,7 @@
 <?php
 
 require("player_profile_buttons.inc");
+require("player_profile_table.inc");
 
 /**
  * Implements hook_user_view_alter
@@ -9,6 +10,8 @@ function player_profile_user_view_alter(&$build) {
 
 	unset($build['summary']);
   drupal_alter('am_custom_profile', $build);
+
+  $build['player_profile_table'] = drupal_get_form('pp_table_form');
 }
 
 /*

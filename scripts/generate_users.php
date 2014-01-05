@@ -79,6 +79,10 @@ function _create_players($num) {
     $account = user_save(drupal_anonymous_user(), $edit);
     node_delete($license_code->nid);
   }
+
+	module_load_include('module', 'target', 'target');
+	target_assign_targets();
+	target_update_rankings();
 }
 
 ?>
