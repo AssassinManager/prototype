@@ -16,7 +16,7 @@ function pp_table_form($form, &$form_state) {
   // test if the user is suspended
   if ($player->field_suspended['und'][0]['value'] != 1) {
       $pending_target = _get_target_pending($player);
-      $current_target = _get_target_current($player);
+      if (count($pending_target) < 1) $current_target = _get_target_current($player);
   }
 
   module_load_include('module', 'am_tools', 'am_tools');
@@ -47,7 +47,7 @@ function pp_table_form($form, &$form_state) {
       '#theme' => 'table',
       '#header' => $headers,
       '#rows' => $rows,
-      '#empty' => t('No users found'),
+      '#empty' => t('-'),
   );
   return $form_targets;
 }

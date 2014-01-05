@@ -47,9 +47,10 @@ function am_tools_organizer_uids() {
 
 	$rid = array_search('Organizer', user_roles());
 
-	$user_query = db_select('users_roles', 'ur');
-	$user_query->fields('ur', array('uid'));
-	$user_query->condition('rid', $rid, '=');
+	$user_query = db_select('users_roles', 'ur')
+				->fields('ur', array('uid'))
+				->condition('uid', 0, '!=')
+				->condition('rid', $rid, '=');
 	$result = $user_query->execute();
 
 	while($record = $result->fetchAssoc()) {

@@ -99,6 +99,16 @@ function _messaging_am_deny_kill($target, $assassin) {
         return;
     }
 
+    // Add the organizers in the loop
+    $organizer_uids = am_tools_organizer_uids();
+    $original_msg = node_load($query->nid);
+
+    foreach ($organizer_uids as $uid) {
+        $original_msg->field_recipients['und'][] = array('target_id' => $uid);
+    }
+    node_save($original_msg);
+
+    // reply
     messaging_reply_message($query->nid, $body);
 }
 

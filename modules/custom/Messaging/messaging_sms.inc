@@ -7,16 +7,19 @@ function _valid($input) {
     return true;
 }
 function _messaging_am_sms_name($message, $name) {
-    if (strlen($message) > 1200)
-        return str_replace("_name_",$name,variable_get('sms_notification'), $from_name);
 
-    $message = str_replace("_name_",$name,variable_get('sms_notification'), $from_name);
-    $message = str_replace("_msg_",$name,variable_get('sms_notification'), $message);
+    if (strlen($message) > 1200) {
+      $message = str_replace("_msg_",$message,variable_get('sms_long_notification'));
+      $message = str_replace("_name_",$name,$message);
+    } else {
+      $message = str_replace("_msg_",$message,variable_get('sms_notification'));
+      $message = str_replace("_name_",$name,$message);
+    }
 
     return $message;
 }
 function _messaging_am_sms($subject, $message, $from, $from_name, $to) {
-    
+
     if (!_valid($to)) return;
     if (!_valid($from)) return;
     if (!_valid($subject)) return;
