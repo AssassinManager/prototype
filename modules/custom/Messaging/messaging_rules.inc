@@ -3,42 +3,64 @@
 function messaging_default_rules_configuration() {
   $configs = array();
 
-  $am_notify = '{ "rules_message_notify" : {
-                  "LABEL" : "Message Notifier",
-                  "PLUGIN" : "reaction rule",
-                  "TAGS" : [ "Assassin Manager" ],
-                  "REQUIRES" : [ "messaging", "rules", "comment" ],
-                  "ON" : {
-                    "node_insert--message" : { "bundle" : "message" },
-                    "comment_insert--comment_node_message" : { "bundle" : "comment_node_message" }
-                  },
-                  "DO" : [ { "am_notifier" : { "message" : [ "node" ] } } ]
-                }
-              }';
+  $am_notify_msg = '{ "rules_message_notify" : {
+                      "LABEL" : "Message Notifier - Msg",
+                      "PLUGIN" : "reaction rule",
+                      "OWNER" : "rules",
+                      "TAGS" : [ "Assassin Manager" ],
+                      "REQUIRES" : [ "messaging", "rules" ],
+                      "ON" : { "node_insert--message" : { "bundle" : "message" } },
+                      "DO" : [ { "am_notifier" : { "message" : [ "node" ] } } ]
+                    }
+                  }';
+
+  $am_notify_reply = '{ "rules_message_notifier_reply" : {
+                        "LABEL" : "Message Notifier - Reply",
+                        "PLUGIN" : "reaction rule",
+                        "OWNER" : "rules",
+                        "TAGS" : [ "Assassin Manager" ],
+                        "REQUIRES" : [ "messaging", "comment" ],
+                        "ON" : { "comment_insert--comment_node_message" : { "bundle" : "comment_node_message" } },
+                        "DO" : [ { "am_notifier_reply" : { "message" : [ "comment" ] } } ]
+                      }
+                    }';
+
+  $am_kill_message = '{ "rules_create_kill_message" : {
+                        "LABEL" : "Create Kill Message",
+                        "PLUGIN" : "reaction rule",
+                        "OWNER" : "rules",
+                        "TAGS" : [ "Assassin Manager" ],
+                        "REQUIRES" : [ "messaging", "rules" ],
+                        "ON" : { "node_insert--kill" : { "bundle" : "kill" } },
+                        "DO" : [ { "am_kill_message" : { "Player" : [ "node" ] } } ]
+                      }
+                    }';
 
   $am_org_msg = '{ "rules_new_target_message" : {
-                          "LABEL" : "Create New Target Message",
-                          "PLUGIN" : "reaction rule",
-                          "OWNER" : "rules",
-                          "TAGS" : [ "Messaging" ],
-                          "REQUIRES" : [ "rules", "messaging" ],
-                          "ON" : { "user_update" : [] },
-                          "IF" : [
-                            { "user_has_role" : { "account" : [ "account" ], "roles" : { "value" : { "5" : "5" } } } },
-                            { "AND" : [] },
-                            { "NOT data_is_empty" : { "data" : [ "account:field-current-target" ] } },
-                            { "AND" : [] },
-                            { "NOT data_is" : {
-                                "data" : [ "account-unchanged:field-current-target" ],
-                                "value" : [ "account:field-current-target" ]
-                              }
-                            }
-                          ],
-                          "DO" : [ { "am_messages" : { "Player" : [ "account" ] } } ]
-                        }
-                      }';
+                   "LABEL" : "Create New Target Message",
+                   "PLUGIN" : "reaction rule",
+                   "OWNER" : "rules",
+                   "TAGS" : [ "Messaging" ],
+                   "REQUIRES" : [ "rules", "messaging" ],
+                   "ON" : { "user_update" : [] },
+                   "IF" : [
+                     { "user_has_role" : { "account" : [ "account" ], "roles" : { "value" : { "5" : "5" } } } },
+                     { "AND" : [] },
+                     { "NOT data_is_empty" : { "data" : [ "account:field-current-target" ] } },
+                     { "AND" : [] },
+                     { "NOT data_is" : {
+                         "data" : [ "account-unchanged:field-current-target" ],
+                         "value" : [ "account:field-current-target" ]
+                       }
+                     }
+                   ],
+                   "DO" : [ { "am_messages" : { "Player" : [ "account" ] } } ]
+                 }
+              }';
 
-  $configs['rules_message_notify'] = rules_import($am_notify);
+  $configs['rules_message_notify_msg'] = rules_import($am_notify_msg);
+  $configs['rules_message_notify_reply'] = rules_import($am_notify_reply);
+  $configs['rules_message_kill_msg'] = rules_import($am_kill_message);
   $configs['rules_message_org_msg'] = rules_import($am_org_msg);
 
   return $configs;

@@ -1,7 +1,7 @@
 name = Message Content Type
 core = 7.x
 package = Assassin Manager - Features
-version = 7.x-1.0-beta5
+version = 7.x-1.0-beta6
 project = message_content_type
 dependencies[] = entityreference
 dependencies[] = features
@@ -17,7 +17,6 @@ features[field_base][] = field_read_by
 features[field_base][] = field_recipients
 features[field_instance][] = comment-comment_node_message-comment_body
 features[field_instance][] = comment-comment_node_message-field_read_by
-features[field_instance][] = comment-comment_node_message-field_recipients
 features[field_instance][] = node-message-field_body
 features[field_instance][] = node-message-field_read_by
 features[field_instance][] = node-message-field_recipients
