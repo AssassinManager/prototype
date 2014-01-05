@@ -14,7 +14,7 @@ $am_modules = array("game",
                     "player_profile",
                     "suspend",
                     "target",
-                    "tools");
+                    "am_tools");
 
 $dev_modules = array( "admin_menu",
                       "devel",
@@ -23,5 +23,7 @@ $dev_modules = array( "admin_menu",
 module_enable($am_features);
 module_enable($am_modules);
 module_enable($dev_modules);
+
+drupal_flush_all_caches();
 
 ?>

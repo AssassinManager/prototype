@@ -19,4 +19,6 @@ $am_modules = array("game",
 module_enable($am_features);
 module_enable($am_modules);
 
+drupal_flush_all_caches();
+
 ?>
