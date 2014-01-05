@@ -35,6 +35,10 @@ function pp_table_form($form, &$form_state) {
       'killed' => t('killed targets'),
   );
 
+  if (!is_array($current_target)) $current_target = array();
+  if (!is_array($pending_target)) $pending_target = array();
+  if (!is_array($killed_targets)) $killed_targets = array();
+
   $rows = populate_pp_table($current_target,
                             $pending_target,
                             $killed_targets);
@@ -94,7 +98,8 @@ function _get_targets_killed($player) {
 
   $kills = $query->execute();
   
-  if (count($kills) < 1) return;
+  if (count($kills) < 1) return array();
+  
   $targets = array();
   foreach($kills['node'] as $nid => $kill) {
     $kill = node_load($nid);
