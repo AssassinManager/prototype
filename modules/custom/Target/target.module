@@ -24,7 +24,7 @@ function target_assign_targets() {
 	// Get all the players
 	$players = am_tools_players_uids();
 	if (count($players) < 1) {
-		drupal_set_message(variable_get('no_valid_users'), 'warning');
+		drupal_set_message(variable_get('no_valid_players'), 'warning');
 		return;
 	}
 
@@ -75,7 +75,7 @@ function target_assign_targets() {
 
 	if (count($users_without_target) == 1 && count($users_not_targeted) ==1 &&
 		key($users_without_target) == key($users_not_targeted)) {
-		  drupal_set_message(variable_get('assassin_singled_out'), 'warning');
+		  drupal_set_message(variable_get('not_enough_targets'), 'warning');
 		  return;
 	}
 
