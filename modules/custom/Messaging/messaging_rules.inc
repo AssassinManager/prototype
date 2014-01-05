@@ -103,8 +103,6 @@ function _messaging_am_target_msg($player) {
 
 function _messaging_am_kill_msg($kill) {
 
-  watchdog("kill", "<pre>" . print_r($kill, 1) . "</pre>");
-
   $assassin = $kill->field_assassin['und'][0]['target_id'];
   $assassin = user_load($assassin);
 

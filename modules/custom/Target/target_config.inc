@@ -83,5 +83,41 @@ function target_defaults() {
         '#required' => true,
     );
 
+    $form['challenge_title'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Challenge message title'),
+        '#default_value' => variable_get('challenge_title'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#required' => true,
+    );
+
+    $form['cannot_find_death_warrant'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Cannot find death warrant (message)'),
+        '#default_value' => variable_get('cannot_find_death_warrant'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#required' => true,
+    );
+
+    $form['target_pending_elimination'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Target still pending elimination (message)'),
+        '#default_value' => variable_get('target_pending_elimination'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#required' => true,
+    );
+
+    $form['kill_deny_confirmation'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Kill deny confirmation (message)'),
+        '#default_value' => variable_get('kill_deny_confirmation'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#required' => true,
+    );
+
     return system_settings_form($form);
 }

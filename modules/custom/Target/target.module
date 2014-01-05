@@ -35,7 +35,6 @@ function target_assign_targets() {
 
 	if (count($players) == 1) {
 		$user = user_load($players[0]);
-		module_load_include('module', 'am_tools', 'am_tools');
 		drupal_set_message(variable_get('one_assassin_left') . ' (' . am_tools_user_name($user) . ')', 'warning');
 		return;
 	}
@@ -56,7 +55,6 @@ function target_assign_targets() {
 	$users_without_target = _users_without_target($players);
 
 	if (count($users_without_target) < 1) {
-		//str_replace("_name_",$name,variable_get('no_valid_users'), $from_name)
 		drupal_set_message(variable_get('targets_already_assigned'), 'status');
 		return;
 	}
@@ -73,9 +71,6 @@ function target_assign_targets() {
 		drupal_set_message(variable_get('targets_already_assigned'), 'warning');
 		return;
 	}
-
-	//watchdog("users_without_target", "<pre>" . print_r($users_without_target, 1) . "</pre>");
-	//watchdog("users_not_targeted", "<pre>" . print_r($users_not_targeted, 1) . "</pre>");
 
 	if (count($users_without_target) == 1 && count($users_not_targeted) ==1 &&
 		key($users_without_target) == key($users_not_targeted)) {

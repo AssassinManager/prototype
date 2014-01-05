@@ -36,11 +36,11 @@ function suspend_am_custom_profile_alter(&$data) {
 	global $user;
 	if (!in_array('Organizer', $user->roles)) return;
 
-	module_load_include('module', 'am_tools', 'am_tools');
+	$player = user_load($data['#account']->uid);
 
-	$viewed_player = array($data['#account']->uid);
+	if ($player->field_alive['und'][0]['value'] == 0) return;
 
-	if (count(am_tools_players_status($viewed_player)) > 0) {
+	else if ($player->field_suspended['und'][0]['value'] == 0) {
 		$data['suspend_button_suspend'] = drupal_get_form('suspend_button_suspend');
 	} else {
 		$data['suspend_button_unsuspend'] = drupal_get_form('suspend_button_unsuspend');
@@ -98,6 +98,7 @@ function _suspend_suspend() {
 
 function _suspend_unsuspend() {
 
+	module_load_include('module', 'am_tools', 'am_tools');
 	$players = am_tools_players_uids();
 	$players = am_tools_players_status($players);
 

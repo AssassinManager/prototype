@@ -24,6 +24,21 @@ function _create_notifier_action() {
           'base' => '_messaging_am_notify',
         );
 }
+function _create_notifier_reply_action() {
+  return array(
+          'label' => t('Send AM Reply Notification'),
+          'group' => t('Assassin Manager'),
+          'parameter' => array(
+              'message' => array(
+                'type' => 'comment',
+                'label' => t('Reply'),
+                'description' => t("The message."),
+                'translatable' => TRUE,
+              ),
+            ),
+          'base' => '_messaging_am_reply_notify',
+        );
+}
 
 function _get_user_subscriptions($user) {
     $subscriptions = array();
@@ -55,14 +70,17 @@ function _recipients_uids_notifier($message) {
   }
   return $recipients;
 }
+function _messaging_am_reply_notify($message) {
+  // TODO
+}
 
 function _messaging_am_notify($message) {
     
     $from = $message->uid;
-    if (!am_tools_valid($from))  return false;
+    if (!isset($from))  return false;
 
     $to = _recipients_uids_notifier($message);
-    if (!am_tools_valid($to))    return false;
+    if (!isset($to))    return false;
 
     $subscriptions = array();
     foreach ($to as $uid) {

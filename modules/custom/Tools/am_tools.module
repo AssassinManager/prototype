@@ -30,13 +30,6 @@ function am_tools_user_name($user) {
 	return $name;
 }
 
-function am_tools_valid($input) {
-    if ($input == null) return false;
-    if (!isset($input)) return false;
-
-    return true;
-}
-
 function am_tools_organizer_uids() {
 	$uids = array();
 
@@ -73,20 +66,19 @@ function am_tools_players_uids() {
 }
 
 /**
- * Check if players are alive and not suspended
- * and return the uids of the ones that are good
+ * Check if players is alive and not suspended
+ * and return the ones that are not
  */
 function am_tools_players_status($uids) {
 
-  $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', 'user')
-        ->propertyCondition('uid', $uids, 'IN')
-        ->propertyCondition('status', 1)
-        ->fieldCondition('field_suspended', 'value', array(0))
-        ->fieldCondition('field_alive', 'value', array(1));
-  $entities = $query->execute();
+	$query = new EntityFieldQuery();
+	$query->entityCondition('entity_type', 'user')
+	    ->propertyCondition('uid', $uids, 'IN')
+	    ->propertyCondition('status', 1)
+	    ->fieldCondition('field_suspended', 'value', array(0))
+	    ->fieldCondition('field_alive', 'value', array(1));
+	$entities = $query->execute();
 
-  if (count($entities) < 1) return array();
-
-  return array_keys($entities['user']);
+	if (count($entities) < 1) return array();
+	return array_keys($entities['user']);
 }

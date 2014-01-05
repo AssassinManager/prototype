@@ -40,6 +40,24 @@ function _target_death_warrant($uid) {
 }
 
 /**
+ * Look for an uncofirmed kill which targets the 
+ * given user and return true if one is found
+ */
+function _target_pending_death_warrant($uid) {
+  $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->fieldCondition('field_confirmed', 'value', 0)
+            ->fieldCondition('field_target', 'target_id', array($uid));
+
+    $warrant = $query->execute();
+
+    if (count($warrant) < 1) return false;
+    return true;
+}
+
+/**
  * Check if players is alive, not suspended & not targeted
  * and return true if valid, false if not
  */
