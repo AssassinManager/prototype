@@ -27,6 +27,16 @@ function game_page_time($build) {
   $start_time = strtotime($start_time);
   $end_time = strtotime($end_time);
 
+  if ($end_time < time()) { 
+    return $form['game_page_time'] = array(
+                                            '#type' => 'item',
+                                            '#title' => t('Game Time:'),
+                                            '#markup' => 'Game is over.',
+                                          );
+  }
+
+  ////////////////////////////////////////////////
+
   $duration = $end_time-$start_time;
   if ($duration > 604800) { // 1 Week
     $duration = $duration / 604800;
