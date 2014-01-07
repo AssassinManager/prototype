@@ -16,6 +16,22 @@ function game_node_view_alter(&$build) {
   unset($build['field_time']);
 }
 
+
+/**
+ * Implements hook_form_alter().
+ */
+function game_form_alter(&$form, $form_state, $form_id) {
+
+	if ($form_id != 'game_node_form') return;
+	
+	global $user;
+	if (!in_array('Organizer', $user->roles)) return;
+
+	$start_time = $form['#entity']->field_time['und'][0]['value'];
+	if ($start_time < time()) $form['field_time']['#disabled'] = true;
+}
+
+
 function game_page_time($build) {
 
   $game = $build['#node'];
