@@ -33,11 +33,22 @@ function player_profile_am_custom_profile_alter(&$data) {
       $data['_profile_deny_button'] = drupal_get_form('_profile_deny_button_enabled');
     }
     $data['_profile_accept_button'] = drupal_get_form('_profile_accept_button_enabled');
+    $data['_profile_kill_notice'] = drupal_get_form('_profile_kill_notice');
   } 
 
   else {
     $data['_profile_kill_button'] = drupal_get_form('_profile_kill_button_enabled');
   }
+}
+
+function _profile_kill_notice($form, &$form_state) {
+
+  $form['kill_notice'] = array(
+					'#type' => 'item',
+					'#title' => t('Your assassin claims to have eliminated you:'),
+            );
+
+  return $form;
 }
 
 function _profile_kill_button_enabled($form, &$form_state) {
