@@ -87,6 +87,8 @@ function player_profile_preprocess_page(&$vars) {
   }
   
   if(arg(0) =='user' && arg($num_arg-1) != 'edit') {
+  	if (!isset($vars['page']['content']['system_main']['#account'])) return;
+  	
     $user = $vars['page']['content']['system_main']['#account'];
     $name = $user->field_first_name['und'][0]['value'];
     $name .= " ";

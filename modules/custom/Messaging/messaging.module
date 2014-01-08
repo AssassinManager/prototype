@@ -36,8 +36,6 @@ function messaging_send_message($subject, $body, $to, $from = 0) {
     $node->type = 'message';
 
     node_object_prepare($node);
-    unset($node->comment);
-    unset($node->menu);
 
     $node->language = 'und';
 

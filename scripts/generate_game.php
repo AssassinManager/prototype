@@ -6,7 +6,7 @@ function _create_game() {
 
 	$node = new stdClass();
 	$node->type = 'game';
-	$node->title = 'The awesome game!';
+	$node->title = 'game';
 	node_object_prepare($node);
 
 	$node->field_time['und'][0]['value'] = date('Y-m-d H:i:s',time());

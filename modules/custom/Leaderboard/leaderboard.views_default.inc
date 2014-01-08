@@ -145,7 +145,7 @@ function leaderboard_views_default_views() {
 	/* Display: Block */
 	$handler = $leaderboard_view->new_display('block', 'Block', 'block');
 	$handler->display->display_options['block_description'] = 'Top 10';
-
+	
 	/*
 	 * Array saving
 	 */
