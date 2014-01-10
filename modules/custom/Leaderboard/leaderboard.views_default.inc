@@ -18,7 +18,7 @@ function leaderboard_views_default_views() {
 	$prize_view->human_name = 'Prizes';
 	$prize_view->core = 7;
 	$prize_view->api_version = '3.0';
-	$prize_view->disabled = FALSE; 
+	$prize_view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
 
 	/* Display: Master */
 	$handler = $prize_view->new_display('default', 'Master', 'default');
@@ -30,16 +30,6 @@ function leaderboard_views_default_views() {
 	$handler->display->display_options['exposed_form']['type'] = 'basic';
 	$handler->display->display_options['pager']['type'] = 'none';
 	$handler->display->display_options['style_plugin'] = 'table';
-	/* Field: Content: Required Rank */
-	$handler->display->display_options['fields']['field_required_rank']['id'] = 'field_required_rank';
-	$handler->display->display_options['fields']['field_required_rank']['table'] = 'field_data_field_required_rank';
-	$handler->display->display_options['fields']['field_required_rank']['field'] = 'field_required_rank';
-	$handler->display->display_options['fields']['field_required_rank']['label'] = '';
-	$handler->display->display_options['fields']['field_required_rank']['element_label_colon'] = FALSE;
-	$handler->display->display_options['fields']['field_required_rank']['settings'] = array(
-	  'thousand_separator' => ' ',
-	  'prefix_suffix' => 1,
-	);
 	/* Field: Content: Title */
 	$handler->display->display_options['fields']['title']['id'] = 'title';
 	$handler->display->display_options['fields']['title']['table'] = 'node';
@@ -54,10 +44,6 @@ function leaderboard_views_default_views() {
 	$handler->display->display_options['fields']['field_prize_description']['field'] = 'field_prize_description';
 	$handler->display->display_options['fields']['field_prize_description']['label'] = '';
 	$handler->display->display_options['fields']['field_prize_description']['element_label_colon'] = FALSE;
-	/* Sort criterion: Content: Required Rank (field_required_rank) */
-	$handler->display->display_options['sorts']['field_required_rank_value']['id'] = 'field_required_rank_value';
-	$handler->display->display_options['sorts']['field_required_rank_value']['table'] = 'field_data_field_required_rank';
-	$handler->display->display_options['sorts']['field_required_rank_value']['field'] = 'field_required_rank_value';
 	/* Filter criterion: Content: Published */
 	$handler->display->display_options['filters']['status']['id'] = 'status';
 	$handler->display->display_options['filters']['status']['table'] = 'node';

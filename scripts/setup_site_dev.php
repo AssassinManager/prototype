@@ -21,12 +21,21 @@ print("Starting site setup\n");
 
 ////// * Enabling features & modules * //////
 
+$disabled_modules = array( "dashboard",
+	                       "help",
+	                       "overlay",
+	                       "shortcut",
+	                       "search",
+	                       "toolbar",
+	                     );
+
 $am_features = array( "game_content_type",
                       "kill_content_type",
                       "license_content_type",
                       "message_content_type",
                       "prize_content_type",
-                      "user_fields");
+                      "user_fields",
+                    );
 
 $am_modules = array("game",
                     "leaderboard",
@@ -36,22 +45,37 @@ $am_modules = array("game",
                     "suspend",
                     "target",
                     "am_tools",
-                    "site_disclaimer",
-                    "registration_role",
-                    "front_page",
-                    "login_redirect");
+                   );
 
-$dev_modules = array( "admin_menu",
+$contrib_modules = array("site_disclaimer",
+	                     "registration_role",
+	                     "front_page",
+	                     "login_destination",
+	                     "strongarm",
+	                     "date_popup",
+	                     "registration_role",
+	                    );
+
+$dev_modules = array( "admin_menu_toolbar",
                       "devel",
-                      "module_filter");
+                      "module_filter",
+                      "rules_admin",
+                      "views_ui",
+                      "update",
+                    );
 
-module_enable(array('features'));
+print("Disabling Shit Modules\n");
+module_disable($disabled_modules);
 
 print("Enabling Features\n");
+module_enable(array('features'));
 module_enable($am_features);
 
 print("Enabling AM Modules\n");
 module_enable($am_modules);
+
+print("Enabling Contrib Modules\n");
+module_enable($contrib_modules);
 
 print("Enabling Dev Modules\n");
 module_enable($dev_modules);
@@ -76,11 +100,11 @@ _ss_basic_page($terms_title, $terms_body);
 _ss_basic_page($disclaimer_title, $disclaimer_body);
 _ss_basic_page($registration_title, $registration_body);
 _ss_basic_page($rankings_leaderboard_title, '');
-_ss_setup_blocks();
+//_ss_setup_blocks();
 
 
 ////// * Variables setting for modules * //////
-
+/*
 print("Configuring Modules and Pages\n");
 
 variable_set('theme_default','bootstrap_red');
@@ -91,7 +115,7 @@ variable_set('login_redirect_status', 1);
 variable_set('login_redirect_parameter_name', "/");
 
 _ss_front_page();
-
+*/
 print("Setup Complete\n");
 
 ////// * Pages creation & config functions * //////
