@@ -35,6 +35,7 @@ $am_features = array( "game_content_type",
                       "message_content_type",
                       "prize_content_type",
                       "user_fields",
+                      "site_configurations",
                     );
 
 $am_modules = array("game",
@@ -80,8 +81,6 @@ module_enable($contrib_modules);
 print("Enabling Dev Modules\n");
 module_enable($dev_modules);
 
-drupal_flush_all_caches();
-
 
 ////// * Pages configs * //////
 
@@ -116,6 +115,8 @@ variable_set('login_redirect_parameter_name', "/");
 
 _ss_front_page();
 */
+
+drupal_flush_all_caches();
 print("Setup Complete\n");
 
 ////// * Pages creation & config functions * //////
@@ -130,17 +131,17 @@ function _ss_basic_page($title, $body) {
   $node->language = 'und';
 
   $node->title = $title;
-  $node->field_body['und'][0]['format'] = 'filtered_html';
-  $node->field_body['und'][0]['value'] = $body;
-  if (strlen($body) > 0)
-    $node->field_body['und'][0]['safe_value'] = "<p>" . $body ."<p>";
+  $node->body['und'][0]['format'] = 'filtered_html';
+  $node->body['und'][0]['value'] = $body;
+  $node->body['und'][0]['safe_value'] = "<p>" . $body ."<p>";
 
   node_save($node);
 }
 
 function _ss_setup_blocks() {
 
-  $result = db_update('block')
+	global $rankings_leaderboard_title;
+  	$result = db_update('block')
             ->fields(array(
                             'region' => 'content',
                             'pages' => str_replace(' ' , '-', strtolower($rankings_leaderboard_title)),
