@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the Prize Content Type feature.
- */
-
-include_once 'prize_content_type.features.inc';
