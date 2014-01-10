@@ -38,7 +38,8 @@ $am_modules = array("game",
                     "am_tools",
                     "site_disclaimer",
                     "registration_role",
-                    "front_page");
+                    "front_page",
+                    "login_redirect");
 
 $dev_modules = array( "admin_menu",
                       "devel",
@@ -83,12 +84,11 @@ _ss_setup_blocks();
 print("Configuring Modules and Pages\n");
 
 variable_set('theme_default','bootstrap_red');
-
 variable_set('site_disclaimer_node_title', $registration_title);
-
 variable_set('registration_role_roles', array_search('Player', $roles));
-
 variable_set('mandrill_api_key', $mandrill_api_key);
+variable_set('login_redirect_status', 1);
+variable_set('login_redirect_parameter_name', "/");
 
 _ss_front_page();
 
