@@ -30,6 +30,17 @@ function leaderboard_views_default_views() {
 	$handler->display->display_options['exposed_form']['type'] = 'basic';
 	$handler->display->display_options['pager']['type'] = 'none';
 	$handler->display->display_options['style_plugin'] = 'table';
+	/* Field: Content: Icon */
+	$handler->display->display_options['fields']['field_icon']['id'] = 'field_icon';
+	$handler->display->display_options['fields']['field_icon']['table'] = 'field_data_field_icon';
+	$handler->display->display_options['fields']['field_icon']['field'] = 'field_icon';
+	$handler->display->display_options['fields']['field_icon']['label'] = '';
+	$handler->display->display_options['fields']['field_icon']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['field_icon']['click_sort_column'] = 'fid';
+	$handler->display->display_options['fields']['field_icon']['settings'] = array(
+	  'image_style' => 'icon',
+	  'image_link' => 'file',
+	);
 	/* Field: Content: Title */
 	$handler->display->display_options['fields']['title']['id'] = 'title';
 	$handler->display->display_options['fields']['title']['table'] = 'node';
