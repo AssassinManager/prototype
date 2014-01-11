@@ -12,6 +12,7 @@ function game_node_view_alter(&$build) {
 
   $build['game_table_form'] = drupal_get_form('_game_table_form');
   $build['game_page_time'] = game_page_time($build);
+  $build['game_page_count'] = game_page_count($build);
 
   unset($build['field_time']);
 }
@@ -105,6 +106,25 @@ function game_page_time($build) {
                 '#title' => t('Game Time:'),
                 '#markup' => $duration . $status,
             );
+}
+
+function game_page_count($build) {
+
+	$query = new EntityFieldQuery();
+	$query->entityCondition('entity_type', 'node')
+            ->fieldCondition('field_confirmed', 'value', 1)
+	        ->entityCondition('bundle', 'kill')
+	        ->propertyCondition('status', 1);
+
+	$kills = $query->execute();
+
+	////////////////////////////////////////////////
+
+	return $form['game_page_count'] = array(
+	            '#type' => 'item',
+	            '#title' => t('Number of kills:'),
+	            '#markup' => count($kills),
+	        );
 }
 
 /*
