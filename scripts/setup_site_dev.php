@@ -2,7 +2,11 @@
 
 $mandrill_api_key = 'gaJNp0umNNprQZSVpiHAEQ';
 
-$rankings_leaderboard_title = 'Rankings and Leaderboard';
+function _get_r_l_title() {
+  $rankings_leaderboard_title = 'Rankings and Leaderboard';
+  return $rankings_leaderboard_title;
+}
+
 $terms_title = 'Terms of use';
 $terms_body = 'We no liable eyo!';
 
@@ -98,8 +102,8 @@ $registration_body = '<a href="' . $disclaimer_url . '" target="_blank">Disclaim
 _ss_basic_page($terms_title, $terms_body);
 _ss_basic_page($disclaimer_title, $disclaimer_body);
 _ss_basic_page($registration_title, $registration_body);
-_ss_basic_page($rankings_leaderboard_title, '');
-//_ss_setup_blocks();
+_ss_basic_page(_get_r_l_title(), '');
+_ss_setup_blocks();
 
 
 ////// * Variables setting for modules * //////
@@ -140,11 +144,12 @@ function _ss_basic_page($title, $body) {
 
 function _ss_setup_blocks() {
 
-	global $rankings_leaderboard_title;
+  $page = 'content/' . str_replace(' ' , '-', strtolower(_get_r_l_title()));
   	$result = db_update('block')
             ->fields(array(
                             'region' => 'content',
-                            'pages' => str_replace(' ' , '-', strtolower($rankings_leaderboard_title)),
+                            'status' => 1,
+                            'pages' => $page,
                             'visibility' => 1
                           )
                         )
