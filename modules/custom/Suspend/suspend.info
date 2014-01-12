@@ -2,7 +2,8 @@ name = Suspension System
 description = Button & mechanism for organizers to suspend players.
 package = Assassin Manager - Modules
 
-dependencies[] = target
+dependencies[] = user_fields
+dependencies[] = am_tools
 
 core = 7.x
 php = 5.x

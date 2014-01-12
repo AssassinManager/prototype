@@ -2,10 +2,11 @@ name = License to kill
 description = Autogenerate codes for licenses, forces users to register with one
 package = Assassin Manager - Modules
 
+dependencies[] = license_content_type
+dependencies[] = kill_content_type
 dependencies[] = views_data_export
 dependencies[] = genpass
 
-dependencies[] = license_content_type
 
 core = 7.x
 php = 5.x

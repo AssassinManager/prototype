@@ -24,39 +24,17 @@ function am_check_game_started() {
 	return false;
 }
 
-function am_tools_field_val($field) {
-	if (!isset($field['und'])) return "";
-	return $field['und'][0]['value'];
-}
-
 function am_tools_user_name($user) {
 	
 	if (!is_object($user)) return "na";
 
-	$name = am_tools_field_val($user->field_first_name);
+	$name = $user->field_first_name['und'][0]['value'];
 	$name .= " ";
-	$name .= am_tools_field_val($user->field_last_name);
+	$name .= $user->field_last_name['und'][0]['value'];
 
 	if (strlen($name) <= 1) return "na";
 
 	return $name;
-}
-
-function am_tools_organizer_uids() {
-	$uids = array();
-
-	$rid = array_search('Organizer', user_roles());
-	$user_query = db_select('users_roles', 'ur')
-				->fields('ur', array('uid'))
-				->condition('uid', 0, '!=')
-				->condition('rid', $rid, '=');
-	$result = $user_query->execute();
-
-	while($record = $result->fetchAssoc()) {
-		array_push($uids, $record['uid']);
-    }
-
-	return $uids;
 }
 
 function am_tools_players_uids() {

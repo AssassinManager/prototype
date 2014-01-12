@@ -79,6 +79,24 @@ function messaging_reply_message($msg_nid, $msg_body) {
     comment_save($comment);
 }
 
+
+
+function _messaging_organizer_uids() {
+    $uids = array();
+
+    $rid = array_search('Organizer', user_roles());
+    $user_query = db_select('users_roles', 'ur')
+                ->fields('ur', array('uid'))
+                ->condition('uid', 0, '!=')
+                ->condition('rid', $rid, '=');
+    $result = $user_query->execute();
+
+    while($record = $result->fetchAssoc()) {
+        array_push($uids, $record['uid']);
+    }
+
+    return $uids;
+}
 function _messaging_am_deny_kill($target, $assassin) {
 
     $target = user_load($target);
@@ -98,7 +116,7 @@ function _messaging_am_deny_kill($target, $assassin) {
     }
 
     // Add the organizers in the loop
-    $organizer_uids = am_tools_organizer_uids();
+    $organizer_uids = _messaging_organizer_uids();
     $original_msg = node_load($query->nid);
 
     foreach ($organizer_uids as $uid) {
