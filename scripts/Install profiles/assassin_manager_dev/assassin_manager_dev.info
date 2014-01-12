@@ -1,0 +1,121 @@
+; Packaging information for assassin_manager
+name = "Assassin Manager Dev"
+description = "Installs the base for an Assassin Manager Site."
+core = "7.x"
+
+; Information added by Geoffroy Lesage
+version = "0.1"
+project = "Assassin Manager"
+datestamp = "1389495146"
+
+; ----------
+; Dependencies
+; ----------
+
+; Core
+dependencies[] = block
+dependencies[] = color
+dependencies[] = comment
+dependencies[] = contextual
+dependencies[] = field
+dependencies[] = field_sql_storage
+dependencies[] = field_ui
+dependencies[] = file
+dependencies[] = filter
+dependencies[] = image
+dependencies[] = list
+dependencies[] = menu
+dependencies[] = node
+dependencies[] = number
+dependencies[] = options
+dependencies[] = path
+dependencies[] = system
+dependencies[] = text
+dependencies[] = user
+
+; Date/Time
+dependencies[] = date
+dependencies[] = date_api
+dependencies[] = date_popup
+
+; Fields
+dependencies[] = entityreference
+dependencies[] = phone
+
+; Views
+dependencies[] = views
+dependencies[] = views_data_export
+
+; Other
+dependencies[] = auto_nodetitle
+dependencies[] = email_registration
+dependencies[] = entity
+dependencies[] = entity_token
+dependencies[] = genpass
+dependencies[] = libraries
+dependencies[] = login_destination
+dependencies[] = pathauto
+dependencies[] = site_disclaimer
+dependencies[] = strongarm
+dependencies[] = token
+dependencies[] = registration_role
+dependencies[] = mailsystem
+dependencies[] = mandrill
+dependencies[] = rules
+dependencies[] = ctools
+dependencies[] = front_page
+dependencies[] = features
+
+; Dev
+dependencies[] = dblog
+dependencies[] = rules_admin
+dependencies[] = views_ui
+dependencies[] = admin_menu
+dependencies[] = admin_menu_toolbar
+dependencies[] = module_filter
+
+
+; ----------
+; Variables
+; ----------
+
+variables[anonymous] = 'Anonymous'
+
+; Date
+variables[date_api_version] = '7.2'
+variables[date_first_day] = '0'
+
+; Pathauto
+variables[pathauto_node_pattern] = 'content/[node:title]'
+variables[pathauto_user_pattern] = 'users/[user:name]'
+variables[pathauto_punctuation_hyphen] = 1
+
+; Twilio
+variables[twilio_auth_token] = '53f8ccd5ac0279f4572960728ba8eeb4'
+variables[twilio_sid] = 'AC0dcbcc04c0625c2cbabff0fe47084fb4'
+variables[twilio_number] = '6304057181'
+
+; Mail
+variables[mail_system][mandrill_test] = 'MandrillMailSystem'
+variables[mail_system][default-system] = 'MandrillMailSystem'
+variables[mandrill_api_key] = '_UTJ31fDBBtLL6q_MPut2Q'
+
+; Messages
+variables[all_targets_assigned] = 'All assassins have been assigned targets.'
+variables[assassin_singled_out] = '1 Player left to target himself... the others are busy...'
+variables[cannot_find_death_warrant] = 'Cannot find your death warrant... something must have went wrong. Please contact our staff for help'
+variables[cannot_find_messaging] = 'Cannot find messaging module, you cannot challenge a kill without communication!'
+variables[challenge_title] = 'Elimination challenge'
+variables[not_enough_targets] = 'No players left for an assassin without target.'
+variables[no_valid_players] = 'No available players.'
+variables[no_valid_users] = 'No players at all!'
+variables[one_assassin_left] = 'Only 1 player left, could he be THE winner?'
+variables[kill_deny_confirmation] = 'Got that. The assassin was notified, and the organizer was added to the loop to help settle this.'
+variables[player_pending_elimination] = 'Player is still pending elimination!'
+variables[registration_role_roles] = '5'
+variables[sms_long_notification] = '_name_ sent you a message on Assassin Manager. Please log in to view this message.'
+variables[sms_notification] = '_name_ sent you a msg on Assassin Manager: _msg_'
+variables[suspension_msg] = 'Your license to kill has been revoked. If you have any questions, please contact your organizer.'
+variables[targets_already_assigned] = 'All targets already assigned'
+variables[target_pending_elimination] = 'Illegal action, please first accept or deny having been killed!'
+variables[unsuspension_3_rule] = 'Cannot unsuspend player when only 3 remain alive!'

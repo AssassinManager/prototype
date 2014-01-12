@@ -1,0 +1,30 @@
+
+; Twilio
+variables[twilio_auth_token] = '53f8ccd5ac0279f4572960728ba8eeb4'
+variables[twilio_sid] = 'AC0dcbcc04c0625c2cbabff0fe47084fb4'
+variables[twilio_number] = '6304057181'
+
+; Mail
+variables[mail_system][mandrill_test] = 'MandrillMailSystem'
+variables[mail_system][default-system] = 'MandrillMailSystem'
+variables[mandrill_api_key] = '_UTJ31fDBBtLL6q_MPut2Q'
+
+; Messages
+variables[all_targets_assigned] = 'All assassins have been assigned targets.'
+variables[assassin_singled_out] = '1 Player left to target himself... the others are busy...'
+variables[cannot_find_death_warrant] = 'Cannot find your death warrant... something must have went wrong. Please contact our staff for help'
+variables[cannot_find_messaging] = 'Cannot find messaging module, you cannot challenge a kill without communication!'
+variables[challenge_title] = 'Elimination challenge'
+variables[not_enough_targets] = 'No players left for an assassin without target.'
+variables[no_valid_players] = 'No available players.'
+variables[no_valid_users] = 'No players at all!'
+variables[one_assassin_left] = 'Only 1 player left, could he be THE winner?'
+variables[kill_deny_confirmation] = 'Got that. The assassin was notified, and the organizer was added to the loop to help settle this.'
+variables[player_pending_elimination] = 'Player is still pending elimination!'
+variables[registration_role_roles] = '5'
+variables[sms_long_notification] = '_name_ sent you a message on Assassin Manager. Please log in to view this message.'
+variables[sms_notification] = '_name_ sent you a msg on Assassin Manager: _msg_'
+variables[suspension_msg] = 'Your license to kill has been revoked. If you have any questions, please contact your organizer.'
+variables[targets_already_assigned] = 'All targets already assigned'
+variables[target_pending_elimination] = 'Illegal action, please first accept or deny having been killed!'
+variables[unsuspension_3_rule] = 'Cannot unsuspend player when only 3 remain alive!
