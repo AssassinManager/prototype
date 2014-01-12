@@ -1,5 +1,6 @@
 <?php
 
+print("Creating Game\n");
 _create_game();
 
 function _create_game() {

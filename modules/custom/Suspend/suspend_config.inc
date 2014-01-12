@@ -23,7 +23,7 @@ function suspend_defaults() {
     $form['player_pending_elimination'] = array(
         '#type' => 'textfield',
         '#title' => t('When an organizer tries to suspend a player which has yet to "accept" having been killed:'),
-        '#default_value' => variable_get('player_pending_elimination', 'Player is still pending elimination!'),
+        '#default_value' => variable_get('player_pending_elimination', ''),
         '#size' => 100,
         '#maxlength' => 100,
         '#required' => true,
@@ -32,7 +32,7 @@ function suspend_defaults() {
     $form['unsuspension_3_rule'] = array(
         '#type' => 'textfield',
         '#title' => t('When an organizer tries to UNsuspend a player when there are only 3 or less players remaining in the game:'),
-        '#default_value' => variable_get('unsuspension_3_rule', 'Cannot unsuspend player when only 3 remain alive!'),
+        '#default_value' => variable_get('unsuspension_3_rule', ''),
         '#size' => 100,
         '#maxlength' => 100,
         '#required' => true,

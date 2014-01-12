@@ -39,7 +39,7 @@ function messaging_defaults() {
     $form['suspension_msg'] = array(
         '#type' => 'textfield',
         '#title' => t('The message a player receives notifying him of his suspension:'),
-        '#default_value' => variable_get('suspension_msg', 'Your license to kill has been revoked. If you have any questions, please contact your organizer.'),
+        '#default_value' => variable_get('suspension_msg', ''),
         '#size' => 100,
         '#maxlength' => 100,
         '#required' => true,
@@ -48,7 +48,7 @@ function messaging_defaults() {
     $form['sms_long_notification'] = array(
         '#type' => 'textfield',
         '#title' => t('The SMS a player will receive when the message to be sent is over the SMS size limit:'),
-        '#default_value' => variable_get('sms_long_notification', '_name_ sent you a message on Assassin Manager. Please log in to view this message.'),
+        '#default_value' => variable_get('sms_long_notification', ''),
         '#size' => 100,
         '#maxlength' => 100,
         '#required' => true,
@@ -57,7 +57,7 @@ function messaging_defaults() {
     $form['sms_notification'] = array(
         '#type' => 'textfield',
         '#title' => t('The prefix for all sms:'),
-        '#default_value' => variable_get('sms_notification', '_name_ sent you a msg on Assassin Manager: _msg_'),
+        '#default_value' => variable_get('sms_notification', ''),
         '#size' => 100,
         '#maxlength' => 100,
         '#required' => true,

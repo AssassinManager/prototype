@@ -1,5 +1,6 @@
 <?php
 
+print("Creating Players\n");
 _create_players(5, array($rid));
 
 function _create_license($number) {
