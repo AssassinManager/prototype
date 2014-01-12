@@ -25,21 +25,12 @@ print("Starting site setup\n");
 
 ////// * Enabling features & modules * //////
 
-$disabled_modules = array( "dashboard",
-	                       "help",
-	                       "overlay",
-	                       "shortcut",
-	                       "search",
-	                       "toolbar",
-	                     );
-
 $am_features = array( "game_content_type",
                       "kill_content_type",
                       "license_content_type",
                       "message_content_type",
                       "prize_content_type",
                       "user_fields",
-                      "site_configurations",
                     );
 
 $am_modules = array("game",
@@ -52,25 +43,8 @@ $am_modules = array("game",
                     "am_tools",
                    );
 
-$contrib_modules = array("site_disclaimer",
-	                     "registration_role",
-	                     "front_page",
-	                     "login_destination",
-	                     "strongarm",
-	                     "date_popup",
-	                     "registration_role",
-	                    );
-
-$dev_modules = array( "admin_menu_toolbar",
-                      "devel",
-                      "module_filter",
-                      "rules_admin",
-                      "views_ui",
-                      "update",
-                    );
-
-print("Disabling Shit Modules\n");
-module_disable($disabled_modules);
+print("Disabling updates\n");
+module_disable(array("update"));
 
 print("Enabling Features\n");
 module_enable(array('features'));
@@ -78,12 +52,6 @@ module_enable($am_features);
 
 print("Enabling AM Modules\n");
 module_enable($am_modules);
-
-print("Enabling Contrib Modules\n");
-module_enable($contrib_modules);
-
-print("Enabling Dev Modules\n");
-module_enable($dev_modules);
 
 
 ////// * Pages configs * //////
