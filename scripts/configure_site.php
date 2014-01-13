@@ -41,6 +41,7 @@ _ss_basic_page(_get_r_l_title(), '');
 
 print("Configuring Blocks\n");
 _ss_setup_blocks();
+_ss_setup_count_block();
 
 
 ////// * Front pages * //////
@@ -49,6 +50,7 @@ print("Assigning Front Pages\n");
 
 $player_rid = array_search('Player', $roles);
 $organizer_rid = array_search('Organizer', $roles);
+$administrator_rid = array_search('administrator', $roles);
 
 variable_set('front_page_enable', 1);
 
@@ -56,6 +58,7 @@ $game_page = str_replace(' ' , '-', strtolower(variable_get('site_name', "404"))
 _ss_front_page();
 _ss_front_page_for_role('user', $player_rid);
 _ss_front_page_for_role('content/' . $game_page, $organizer_rid);
+_ss_front_page_for_role('content/' . $game_page, $administrator_rid);
 
 
 ////// * Login pages * //////
@@ -66,7 +69,7 @@ $result = db_insert('login_destination')
           ->fields(array(
                         'id' => 1,
                         'triggers' => "a:1:{s:5:\"login\";s:5:\"login\";}",
-                        'roles' => "a:2:{i:4;s:1:\"4\";i:5;s:1:\"5\";}",
+                        'roles' => "a:2:{i:3;s:1:\"3\";i:4;s:1:\"4\";i:5;s:1:\"5\";}",
                         'pages' => "",
                         'destination' => "<front>",
                         )
@@ -97,6 +100,16 @@ function _ss_setup_blocks() {
                         )
                       )
           ->condition('delta', array('prizes-block', 'leaderboard-block'), 'IN')
+          ->execute();
+}
+function _ss_setup_count_block() {
+  $result = db_update('block')
+          ->fields(array(
+                          'region' => 'header',
+                          'status' => 1,
+                        )
+                      )
+          ->condition('delta', 'jquery_countdown_timer')
           ->execute();
 }
 function _ss_basic_page($title, $body) {

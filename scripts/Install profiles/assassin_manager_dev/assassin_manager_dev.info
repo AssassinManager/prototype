@@ -37,6 +37,7 @@ dependencies[] = user
 dependencies[] = date
 dependencies[] = date_api
 dependencies[] = date_popup
+dependencies[] = jquery_countdown_timer
 
 ; Fields
 dependencies[] = entityreference

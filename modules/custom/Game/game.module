@@ -32,6 +32,16 @@ function game_form_alter(&$form, $form_state, $form_id) {
 	if ($start_time < time()) $form['field_time']['#disabled'] = true;
 }
 
+/**
+ * Implements hook_node_insert().
+ */
+function game_node_insert($node) {
+  if ($node->type != 'game') return;
+  // Set the countdown timer
+  $end_time = strtotime($node->field_time['und'][0]['value2']);
+  variable_set('jquery_countdown_timer_date', date('Y-m-d G:i:s', $end_time));
+}
+
 
 function game_page_time($build) {
 
