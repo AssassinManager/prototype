@@ -1,20 +1,11 @@
 <?php
 
 
-  function get_game2() {
-     $query = db_select('node', 'n')
-        ->fields('n', array('nid'))
-        ->condition('type', 'game', '=')
-        ->execute()
-        ->fetch();
-
-    if (!isset($query->nid)) return NULL;
-
-    return $query->nid;
-  }
-
-  global $gameid;
-  $gameid = get_game2();
+module_load_include('module', 'am_tools', 'am_tools');
+$gameid = am_get_game_nid();
+if (is_null($gameid)) {
+    drupal_set_message("No valid game found!", "warning");
+}
 
 
 ?>
