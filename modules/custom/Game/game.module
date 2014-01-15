@@ -2,6 +2,18 @@
 
 require("game_table.inc");
 
+
+/**
+ * Implements hook_user_login
+ */
+function game_user_login(&$edit, $account) {
+	//if (!(!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') return;
+	//if (am_get_game_nid()) return;
+
+	$GLOBALS['destination'] = "node/add/game";
+
+}
+
 /**
  * Implements hook_user_view_alter
  */
