@@ -2,30 +2,6 @@
 
 require('suspend_config.inc');
 
-function suspend_default_rules_configuration() {
-    $configs = array();
-
-    $am_targets = '{ "rules_assign_targets_after_suspension" : {
-	  			     "LABEL" : "Assign Targets after Suspension",
-				     "PLUGIN" : "reaction rule",
-				     "OWNER" : "rules",
-				     "TAGS" : [ "Assassin Manager" ],
-				     "REQUIRES" : [ "rules", "target" ],
-				     "ON" : { "user_update" : [] },
-				     "IF" : [
-				       { "user_has_role" : { "account" : [ "account" ], "roles" : { "value" : { "5" : "5" } } } },
-				       { "AND" : [] },
-				       { "data_is" : { "data" : [ "account:field-suspended" ], "value" : 1 } }
-				     ],
-				     "DO" : [ { "am_targeting" : [] } ]
-				   	 }
-				  	}';
-
-  $configs['rules_am_targets_suspension'] = rules_import($am_targets);
-
-  return $configs;
-}
-
 
 /**
  * User suspension handlers
