@@ -10,7 +10,7 @@
  */
 function am_test_field_default_fields_alter(&$fields) {
   // Check the user picture field
-	watchdog("test", "<pre>" . print_r($fields, 1) . "</pre>");
+	watchdog("fields", "<pre>" . print_r($fields, 1) . "</pre>");
 
   if (isset($fields['user-user-field_user_picture'])) {
     // See if a default image hasn't been set for this field yet

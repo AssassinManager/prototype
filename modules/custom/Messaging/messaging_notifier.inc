@@ -177,10 +177,11 @@ function _messaging_am_notify($message) {
           _messaging_am_mail($msg_subject, $msg_body, $from_email, $from_name, $emails);
       }
       if (count($phones) > 0) {
-          $from_phone = $from_user->field_phone['und'][0]['value'];
-          if (!isset($from_phone) || strlen($from_phone) < 1) $from_phone = variable_get('twilio_number');
+        $from_phone = variable_get('twilio_number');
+        if (isset($from_user->field_phone['und'][0]['value']) && strlen($from_phone) >= 10) 
+        $from_phone = $from_user->field_phone['und'][0]['value'];
 
-          _messaging_am_sms($msg_subject, $msg_body, $from_phone, $from_name, $phones);
+        _messaging_am_sms($msg_subject, $msg_body, $from_phone, $from_name, $phones);
       }
     } 
 }
