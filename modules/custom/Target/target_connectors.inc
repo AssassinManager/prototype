@@ -51,19 +51,6 @@ function target_accept() {
     return;
   }
 
-  // Remove current target
-  $user = user_load($user->uid);
-  $user->field_current_target = array();
-  user_save($user);
-
-  // Remove current target
-  $kill = node_load($deathWarrants[0]);
-  $target_uid = $kill->field_target['und'][0]['target_id'];
-  $target = user_load($target_uid);
-  $target->field_alive['und'][0]['value'] = 0;
-  $target->field_current_target = array();
-  user_save($target);
-
   // Update the kill node
   $kill = node_load($deathWarrants[0]);
   $kill->field_confirmed['und'][0]['value'] = 1;

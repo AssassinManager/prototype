@@ -1,0 +1,1 @@
+drush site-install assassin_manager_dev --db-url=mysql://root:drupaladm1n@localhost/am --site-name="Assassin Manager" --account-name=admin --account-pass=99REDballoons

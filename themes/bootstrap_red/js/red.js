@@ -14,5 +14,4 @@ jQuery(document).ready( function() {
 	jQuery('#messageAllBtn').click( function() {
 		jQuery('#edit-message').toggle();
 	});
-
 });

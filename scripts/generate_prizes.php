@@ -1,6 +1,7 @@
 <?php
 
 _create_prizes(5);
+print("Creating prizes\n");
 
 function _generate_word($length){
   mt_srand((double)microtime()*1000000);
@@ -28,17 +29,14 @@ function _create_prizes($num) {
     $prizes[$prize] = '';
   }
 
-  $counter = 1;
   foreach ($prizes as $prize => $value) {
   	$node = new stdClass();
     $node->type = 'prize';
     node_object_prepare($node);
 
     $node->title = $prize;
-    $node->field_required_rank['und'][0]['value'] = $counter;
     $node->field_prize_description['und'][0]['value'] = "Get the " . $prize . '!';
 
-    $counter++;
     node_save($node);
   }
 }

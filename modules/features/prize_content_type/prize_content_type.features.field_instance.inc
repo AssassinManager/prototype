@@ -10,6 +10,56 @@
 function prize_content_type_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'node-prize-field_icon'
+  $field_instances['node-prize-field_icon'] = array(
+    'bundle' => 'prize',
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'image',
+        'settings' => array(
+          'image_link' => '',
+          'image_style' => '',
+        ),
+        'type' => 'image',
+        'weight' => 3,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_icon',
+    'label' => 'Icon',
+    'required' => 0,
+    'settings' => array(
+      'alt_field' => 0,
+      'default_image' => 0,
+      'file_directory' => '',
+      'file_extensions' => 'png gif jpg jpeg',
+      'max_filesize' => '5 MB',
+      'max_resolution' => '',
+      'min_resolution' => '50x50',
+      'title_field' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'image',
+      'settings' => array(
+        'preview_image_style' => 'thumbnail',
+        'progress_indicator' => 'throbber',
+      ),
+      'type' => 'image_image',
+      'weight' => 0,
+    ),
+  );
+
   // Exported field_instance: 'node-prize-field_prize_description'
   $field_instances['node-prize-field_prize_description'] = array(
     'bundle' => 'prize',
@@ -50,60 +100,10 @@ function prize_content_type_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-prize-field_required_rank'
-  $field_instances['node-prize-field_required_rank'] = array(
-    'bundle' => 'prize',
-    'default_value' => array(
-      0 => array(
-        'value' => 0,
-      ),
-    ),
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'number',
-        'settings' => array(
-          'decimal_separator' => '.',
-          'prefix_suffix' => TRUE,
-          'scale' => 0,
-          'thousand_separator' => ' ',
-        ),
-        'type' => 'number_integer',
-        'weight' => 1,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_required_rank',
-    'label' => 'Required Rank',
-    'required' => 0,
-    'settings' => array(
-      'max' => '',
-      'min' => 0,
-      'prefix' => '',
-      'suffix' => '',
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'number',
-      'settings' => array(),
-      'type' => 'number',
-      'weight' => 2,
-    ),
-  );
-
   // Translatables
   // Included for use with string extractors like potx.
   t('Desciption');
-  t('Required Rank');
+  t('Icon');
 
   return $field_instances;
 }

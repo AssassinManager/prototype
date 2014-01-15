@@ -68,7 +68,7 @@ function module_filter_settings() {
     '#type' => 'checkbox',
     '#title' => t('Use switch instead of checkbox'),
     '#description' => t('This is purely cosmetic (at least for now). Displays a ON/OFF switch rather than a checkbox to enable/disable modules.<br /><strong>Modules will not actually be enabled/disabled until the form is saved.</strong>'),
-    '#default_value' => variable_get('module_filter_use_switch', 1),
+    '#default_value' => variable_get('module_filter_use_switch', 0),
   );
   $form['tabs']['module_filter_track_recent_modules'] = array(
     '#type' => 'checkbox',

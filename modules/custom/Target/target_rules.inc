@@ -56,10 +56,35 @@ function _update_ranking_action() {
 /**
  * implements hook_rules_action().
  */
-function _update_targets_action() {
+function _update_target_action() {
   return array(
-          'label' => t('Update Targets'),
+          'label' => t('Update Target'),
           'group' => t('Assassin Manager'),
-          'base' => 'target_assign_targets',
+          'base' => '_target_update_target',
+          'parameter' => array(
+            'Kill' => array(
+                'type' => 'node',
+                'label' => t('The Kill'),
+                'translatable' => FALSE,
+              ),
+            ),
+        );
+}
+
+/**
+ * implements hook_rules_action().
+ */
+function _update_target_s_action() {
+  return array(
+          'label' => t('Update Target Suspension'),
+          'group' => t('Assassin Manager'),
+          'base' => '_target_update_target_s',
+          'parameter' => array(
+            'Player' => array(
+                'type' => 'user',
+                'label' => t('The Player'),
+                'translatable' => FALSE,
+              ),
+            ),
         );
 }

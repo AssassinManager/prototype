@@ -15,6 +15,7 @@ function player_profile_user_view_alter(&$build) {
   $build['player_profile_table'] = drupal_get_form('pp_table_form');
   $build['pp_player_status'] = player_profile_pp_status($build);
   $build['pp_game_status'] = player_profile_pp_game($build);
+  $build['pp_kill_count'] = player_profile_kill_count($build);
 
   unset($build['field_alive']);
   unset($build['field_suspended']);
@@ -87,6 +88,8 @@ function player_profile_preprocess_page(&$vars) {
   }
   
   if(arg(0) =='user' && arg($num_arg-1) != 'edit') {
+  	if (!isset($vars['page']['content']['system_main']['#account'])) return;
+  	
     $user = $vars['page']['content']['system_main']['#account'];
     $name = $user->field_first_name['und'][0]['value'];
     $name .= " ";

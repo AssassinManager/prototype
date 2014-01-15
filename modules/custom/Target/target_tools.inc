@@ -40,7 +40,22 @@ function _target_death_warrant($uid) {
 }
 
 /**
- * Look for an uncofirmed kill which targets the 
+ * Look for a kill which targets the given user
+ * and return the nid if it is found
+ */
+function _find_target_assassin($uid) {
+  $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'user')
+          ->fieldCondition('field_current_target', 'target_id', array($uid));
+
+    $assassin = $query->execute();
+
+    if (count($assassin) < 1) return array();
+    return array_keys($assassin['user']);
+}
+
+/**
+ * Look for an unconfirmed kill which targets the 
  * given user and return true if one is found
  */
 function _target_pending_death_warrant($uid) {

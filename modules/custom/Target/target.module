@@ -10,15 +10,15 @@ require('target_button.inc');
 function target_rules_action_info() {
 	return array(
 		'am_ranking' =>_update_ranking_action(),
-		'am_targeting' =>_update_targets_action(),
+		'am_targeting' =>_update_target_action(),
+		'am_targeting_s' =>_update_target_s_action(),
 		);
 }
 
 /**
- * Main target expert
+ * Main target experts
  */
 function target_assign_targets() {
-
 	module_load_include('module', 'am_tools', 'am_tools');
 
 	// Get all the players
@@ -40,75 +40,67 @@ function target_assign_targets() {
 		return;
 	}
 
-	$players = user_load_multiple($players);
+	$targets = $players;
+	shuffle($players);
 
-	// Check that the players that already have targets have valid targets
-	foreach ($players as $uid => $user) {
-		if (count($user->field_current_target) < 1) continue;
-		$target_id = $user->field_current_target['und'][0]['target_id'];
-		if (_check_player_valid($target_id) && $target_id != $uid) continue;
-
-		$user->field_current_target = array();
-		user_save($user);
+	$players = array_values(user_load_multiple($players));
+	foreach ($players as $idx => $user) {
+		if ($targets[$idx] != $user->uid) continue;
+		$swap = $idx+1;
+		if ($swap >= count($players)) $swap = 0;
+		$uid_2 = $targets[$swap];
+		$targets[$swap] = $user->uid;
+		$targets[$idx] = $uid_2;
 	}
 
-	// Find those without targets
-	$users_without_target = _users_without_target($players);
-
-	if (count($users_without_target) < 1) {
-		drupal_set_message(variable_get('targets_already_assigned'), 'status');
-		return;
-	}
-
-	// Find those untargeted
-	$users_targeted = _users_targeted($players);
-
-	$users_not_targeted = array();
-	foreach ($players as $uid => $user) {
-		if (in_array($uid, array_keys($users_targeted))) continue;
-		$users_not_targeted[$uid] = $user;
-	}
-	if (count($users_not_targeted) < 1) {
-		drupal_set_message(variable_get('targets_already_assigned'), 'warning');
-		return;
-	}
-
-	if (count($users_without_target) == 1 && count($users_not_targeted) ==1 &&
-		key($users_without_target) == key($users_not_targeted)) {
-		  drupal_set_message(variable_get('not_enough_targets'), 'warning');
-		  return;
-	}
-
-	// Assign targets
-	$previous_target = 0;
-	foreach ($users_without_target as $uid => $user) {
-
-		if (count($users_not_targeted) < 1) {
-		  drupal_set_message(variable_get('not_enough_targets'), 'warning');
-		  return;
-		}
-
-		$target = array_pop($users_not_targeted);
-		$user->field_current_target['und'][0]['target_id'] = $target->uid;
-
-		//if user targets himself, change that
-        if ($user->field_current_target['und'][0]['target_id'] == $user->uid) {
-        	 //if no more targets, use the previous target and add this one back into the array
-            if (count($users_not_targeted) == 0) 
-            	$user->field_current_target['und'][0]['target_id'] = $previous_target;
-            else {
-            	$target = array_pop($users_not_targeted);
-            	$user->field_current_target['und'][0]['target_id'] = $target->uid;
-            }
-
-            $users_not_targeted[$uid] = $user;
-        }
-
-		user_save($user);
-		$previous_target = $target->uid;
+	foreach ($players as $idx => $user) {
+		$edit = array(
+				  'field_current_target' => array(
+				    'und' => array(
+				      0 => array(
+				        'target_id' => $targets[$idx],
+				      ),
+				    ),
+				  ),
+				);
+		user_save($user, $edit);
 	}
 
 	drupal_set_message(variable_get('all_targets_assigned'), 'status');
+}
+
+function _target_update_target($kill) {
+	$assassin = user_load($kill->field_assassin['und'][0]['target_id']);
+	$target = user_load($kill->field_target['und'][0]['target_id']);
+
+	// Give the assassin the old target's target
+	$new_target = $target->field_current_target['und'][0]['target_id'];
+	$assassin->field_current_target['und'][0]['target_id'] = $new_target;
+	user_save($assassin);
+
+	// Remove target's old target
+	$target->field_current_target = array();
+	$target->field_alive['und'][0]['value'] = 0;
+	user_save($target);
+}
+
+function _target_update_target_s($user) {
+
+	$target = $user->field_current_target['und'][0]['target_id'];
+	$assassin_uid = _find_target_assassin($user->uid);
+	if (count($assassin_uid) < 1) {
+		drupal_set_message("Player was not targeted, something must have went wrong", "error");
+		return;
+	}
+	$assassin = user_load($assassin_uid[0]);
+
+	// Give the assassin the old target's target
+	$assassin->field_current_target['und'][0]['target_id'] = $target;
+	user_save($assassin);
+
+	// Remove target's old target
+	$user->field_current_target = array();
+	user_save($user);
 }
 
 /**

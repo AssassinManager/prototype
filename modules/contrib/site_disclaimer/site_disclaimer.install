@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Site Disclaimer module.
+ *
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function site_disclaimer_uninstall() {
+  // Delete variables.
+  module_load_include('variable.inc', 'site_disclaimer'); // for itweak_login_variable_info()
+  foreach (array_keys(site_disclaimer_variable_info(array())) as $var) {
+    variable_del($var);
+  }
+  variable_del('site_disclaimer_version');
+  variable_del('site_disclaimer_allow_nodes');
+}
+

@@ -3,10 +3,8 @@ description = Creates Leaderboard & Prizes views blocks
 package = Assassin Manager - Modules
 
 dependencies[] = views
-dependencies[] = genpass
-
-dependencies[] = kill_content_type
 dependencies[] = user_fields
+dependencies[] = kill_content_type
 dependencies[] = prize_content_type
 
 core = 7.x

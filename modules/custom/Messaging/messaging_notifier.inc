@@ -51,7 +51,7 @@ function _get_user_subscriptions($user) {
 }
 function _get_user_info($user) {
 	return array( 	"name" => am_tools_user_name($user),
-					"phone" => am_tools_field_val($user->field_phone),
+					"phone" => $user->field_phone['und'][0]['value'],
 					"email" => $user->mail,
 					"subscriptions" =>_get_user_subscriptions($user)
 				);
@@ -126,11 +126,11 @@ function _messaging_am_notify($message) {
 
       if (isset($message->comment_body)) {
         $msg_subject = $message->subject;
-        $msg_body = am_tools_field_val($message->comment_body);
+        $msg_body = $message->comment_body['und'][0]['value'];
       }
       else {
         $msg_subject = $message->title;
-        $msg_body = am_tools_field_val($message->field_body);
+        $msg_body = $message->field_body['und'][0]['value'];
       }
 
 	    _messaging_am_organizer_mail($msg_subject, $msg_body, $from_user->mail, $emails);
@@ -163,11 +163,11 @@ function _messaging_am_notify($message) {
 
       if (isset($message->comment_body)) {
         $msg_subject = $message->subject;
-        $msg_body = am_tools_field_val($message->comment_body);
+        $msg_body = $message->comment_body['und'][0]['value'];
       }
       else {
         $msg_subject = $message->title;
-        $msg_body = am_tools_field_val($message->field_body);
+        $msg_body = $message->field_body['und'][0]['value'];
       }
 
       if (count($emails) > 0) {
@@ -177,7 +177,7 @@ function _messaging_am_notify($message) {
           _messaging_am_mail($msg_subject, $msg_body, $from_email, $from_name, $emails);
       }
       if (count($phones) > 0) {
-          $from_phone = am_tools_field_val($from_user->field_phone);
+          $from_phone = $from_user->field_phone['und'][0]['value'];
           if (!isset($from_phone) || strlen($from_phone) < 1) $from_phone = variable_get('twilio_number');
 
           _messaging_am_sms($msg_subject, $msg_body, $from_phone, $from_name, $phones);

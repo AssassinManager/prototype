@@ -75,3 +75,23 @@ function player_profile_pp_game($build) {
                 '#markup' => $status,
             );
 }
+
+function player_profile_kill_count($build) {
+
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+          ->fieldCondition('field_assassin', 'target_id', $build['#account']->uid)
+          ->fieldCondition('field_confirmed', 'value', 1)
+          ->entityCondition('bundle', 'kill')
+          ->propertyCondition('status', 1);
+
+  $kills = $query->execute();
+
+  ////////////////////////////////////////////////
+
+  return $form['pp_kill_count'] = array(
+              '#type' => 'item',
+              '#title' => t('Number of kills:'),
+              '#markup' => count($kills),
+          );
+}

@@ -42,7 +42,7 @@ function suspend_am_custom_profile_alter(&$data) {
 	else if ($player->field_suspended['und'][0]['value'] == 0) {
 		$data['suspend_button_suspend'] = drupal_get_form('suspend_button_suspend');
 	} else {
-		$data['suspend_button_unsuspend'] = drupal_get_form('suspend_button_unsuspend');
+		$data['suspend_button_suspend_d'] = drupal_get_form('suspend_button_suspend_d');
 	}
 }
 
@@ -57,12 +57,12 @@ function suspend_button_suspend($form, &$form_state) {
 	return $form;
 }
 
-function suspend_button_unsuspend($form, &$form_state) {
+function suspend_button_suspend_d($form, &$form_state) {
   	$form['suspend'] = array(
                 '#type' => 'button',
-                '#name' => 'Unsuspend',
-                '#value' => t('Unsuspend'),
-                '#ajax'  => array('callback' => '_suspend_unsuspend'),
+                '#name' => 'suspend_d',
+                '#value' => t('Suspend'),
+                '#disabled' => true,
             );
 
 	return $form;
@@ -78,6 +78,10 @@ function _suspend_suspend() {
 	$pathFragments = explode('/', $path);
 	$user_name = end($pathFragments);
   	$user = user_load_by_name($user_name);
+  	if (!isset($user)) {
+		drupal_set_message("Could not load user.", 'error');
+		return;
+  	}
 
   	// Check if the user has any unfinished business
 	if (module_exists('target')) {
@@ -90,7 +94,7 @@ function _suspend_suspend() {
 	}
 
 	// Remove the current target and suspend the player
-	$user->field_current_target = array();
+	//$user->field_current_target = array();
 	$user->field_suspended['und'][0]['value'] = 1;
 	user_save($user);
 }

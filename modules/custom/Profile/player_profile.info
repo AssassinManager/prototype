@@ -2,6 +2,9 @@ name = Player profile
 description = Layout & items for player profile page
 package = Assassin Manager - Modules
 
+dependencies[] = user_fields
+dependencies[] = am_tools
+
 core = 7.x
 php = 5.x
 

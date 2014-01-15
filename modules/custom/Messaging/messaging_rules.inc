@@ -125,15 +125,11 @@ function _messaging_am_target_msg($player) {
 
 function _messaging_am_kill_msg($kill) {
 
-  $assassin = $kill->field_assassin['und'][0]['target_id'];
-  $assassin = user_load($assassin);
+  $from = $kill->field_assassin['und'][0]['target_id'];
+  $to = array($kill->field_target['und'][0]['target_id']);
 
-  $target_uid = $kill->field_target['und'][0]['target_id'];
-
-  module_load_include('module', 'am_tools', 'am_tools');
   $subject = "Assassin Manager elimination notice";
-  $body = am_tools_user_name($assassin) . " claims to have eliminated you. Please confirm on your profile page.";
-  $to = array($target_uid);
+  $body = "Your assassin claims to have eliminated you. Please confirm on your profile page.";
 
-  messaging_send_message($subject, $body, $to, $assassin->uid);
+  messaging_send_message($subject, $body, $to, $from);
 }

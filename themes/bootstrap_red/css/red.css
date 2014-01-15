@@ -543,12 +543,22 @@ ul.commentbox .comment:hover .comment:hover {
 	#block-views-prizes-block{
 		float: right;
 	}
+	float: left;
+}
+
+	#block-views-leaderboard-block{
+		width: 52%;
+		margin-right: 2em;
+	}
+
+	#block-views-prizes-block{
+		width: 40%;
+	}
 
 		#block-views-prizes-block:after{
 			content: "";
-			display: table;
-			clear: both;
+		  display: table;
+		  clear: both;
 		}
 
 h1.page-header, h2.block-title, ul.breadcrumb, header span.submitted { display: none; }
-
