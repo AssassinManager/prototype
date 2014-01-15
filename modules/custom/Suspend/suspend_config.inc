@@ -29,14 +29,5 @@ function suspend_defaults() {
         '#required' => true,
     );
 
-    $form['unsuspension_3_rule'] = array(
-        '#type' => 'textfield',
-        '#title' => t('When an organizer tries to UNsuspend a player when there are only 3 or less players remaining in the game:'),
-        '#default_value' => variable_get('unsuspension_3_rule', ''),
-        '#size' => 100,
-        '#maxlength' => 100,
-        '#required' => true,
-    );
-
     return system_settings_form($form);
 }

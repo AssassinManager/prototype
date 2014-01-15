@@ -21,10 +21,26 @@ variables[no_valid_users] = 'No players at all!'
 variables[one_assassin_left] = 'Only 1 player left, could he be THE winner?'
 variables[kill_deny_confirmation] = 'Got that. The assassin was notified, and the organizer was added to the loop to help settle this.'
 variables[player_pending_elimination] = 'Player is still pending elimination!'
-variables[registration_role_roles] = '5'
 variables[sms_long_notification] = '_name_ sent you a message on Assassin Manager. Please log in to view this message.'
 variables[sms_notification] = '_name_ sent you a msg on Assassin Manager: _msg_'
 variables[suspension_msg] = 'Your license to kill has been revoked. If you have any questions, please contact your organizer.'
 variables[targets_already_assigned] = 'All targets already assigned'
 variables[target_pending_elimination] = 'Illegal action, please first accept or deny having been killed!'
-variables[unsuspension_3_rule] = 'Cannot unsuspend player when only 3 remain alive!
+
+// Set all the messaging variables and all
+  variable_set('all_targets_assigned', 'All assassins have been assigned targets.');
+  variable_set('assassin_singled_out', '1 Player left to target himself... the others are busy...');
+  variable_set('cannot_find_death_warrant', 'Cannot find your death warrant... something must have went wrong. Please contact our staff for help');
+  variable_set('cannot_find_messaging', 'Cannot find messaging module, you cannot challenge a kill without communication!');
+  variable_set('challenge_title', 'Elimination challenge');
+  variable_set('not_enough_targets', 'No players left for an assassin without target.');
+  variable_set('no_valid_players', 'No available players.');
+  variable_set('no_valid_users', 'No players at all!');
+  variable_set('one_assassin_left', 'Only 1 player left, could he be THE winner?');
+  variable_set('kill_deny_confirmation', 'Got that. The assassin was notified, and the organizer was added to the loop to help settle this.');
+  variable_set('player_pending_elimination', 'Player is still pending elimination!');
+  variable_set('sms_long_notification', '_name_ sent you a message on Assassin Manager. Please log in to view this message.');
+  variable_set('sms_notification', '_name_ sent you a msg on Assassin Manager: _msg_');
+  variable_set('suspension_msg', 'Your license to kill has been revoked. If you have any questions, please contact your organizer.');
+  variable_set('targets_already_assigned', 'All targets already assigned');
+  variable_set('target_pending_elimination', 'Illegal action, please first accept or deny having been killed!');

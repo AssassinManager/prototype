@@ -75,31 +75,6 @@ function _suspend_suspend() {
 	user_save($user);
 }
 
-function _suspend_unsuspend() {
-
-	module_load_include('module', 'am_tools', 'am_tools');
-	$players = am_tools_players_uids();
-	$players = am_tools_players_status($players);
-
-	if (count($players) < 3) {
-		drupal_set_message(variable_get('unsuspension_3_rule'), 'error');
-		return;
-	}
-
-	// Get the user based on the calling form url
-	list($form, $form_state) = ajax_get_form();
-  	drupal_process_form($form['#form_id'], $form, $form_state);
-
-  	$path = parse_url($form["#action"], PHP_URL_PATH);
-	$pathFragments = explode('/', $path);
-	$user_name = end($pathFragments);
-  	$user = user_load_by_name($user_name);
-
-	// Remove the current target and suspend the player
-	$user->field_suspended['und'][0]['value'] = 0;
-	user_save($user);
-}
-
 function _suspend_unconfirmed_kills($uid) {
 	$query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'node')
