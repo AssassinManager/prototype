@@ -69,7 +69,7 @@ $result = db_insert('login_destination')
           ->fields(array(
                         'id' => 1,
                         'triggers' => "a:1:{s:5:\"login\";s:5:\"login\";}",
-                        'roles' => "a:2:{i:3;s:1:\"3\";i:4;s:1:\"4\";i:5;s:1:\"5\";}",
+                        'roles' => "a:1:{i:5;s:1:\"5\";}",
                         'pages' => "",
                         'destination' => "<front>",
                         )
