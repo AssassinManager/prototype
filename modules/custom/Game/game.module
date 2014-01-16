@@ -7,11 +7,17 @@ require("game_table.inc");
  * Implements hook_user_login
  */
 function game_user_login(&$edit, $account) {
-	//if (!(!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') return;
-	//if (am_get_game_nid()) return;
+  if (!(!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset')) return;
+  if (!array_search('Organizer', $account->roles)) return;
 
-	$GLOBALS['destination'] = "node/add/game";
+  module_load_include('module', 'am_tools', 'am_tools');
+  if (am_get_game_nid()) return;
 
+  $GLOBALS['_GET']['destination'] = "node/add/game";
+  //$GLOBALS['_REQUEST']['destination'] = "node/add/game";
+  //$GLOBALS['_SERVER']['REDIRECT_QUERY_STRING'] = "destination=node/add/game";
+  //$GLOBALS['_SERVER']['QUERY_STRING'] = "destination=node/add/game";
+  //$GLOBALS['_SERVER']['REQUEST_URI'] = "/am/node?destination=node/add/game";
 }
 
 /**
