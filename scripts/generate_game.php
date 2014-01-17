@@ -22,7 +22,7 @@ function _create_game() {
 function _create_game_rules() {
 
 	$node = new stdClass();
-	$node->type = 'game-rules';
+	$node->type = 'game_rules';
 	$node->title = 'Assassin Manager Rules';
 	node_object_prepare($node);
 
