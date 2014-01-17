@@ -42,6 +42,7 @@ _ss_basic_page(_get_r_l_title(), '');
 print("Configuring Blocks\n");
 _ss_setup_blocks();
 _ss_setup_count_block();
+_ss_setup_news_block();
 
 
 ////// * Front pages * //////
@@ -112,6 +113,17 @@ function _ss_setup_count_block() {
           ->condition('delta', 'jquery_countdown_timer')
           ->execute();
 }
+function _ss_setup_news_block() {
+  $result = db_update('block')
+          ->fields(array(
+                          'region' => 'sidebar_second',
+                          'status' => 1,
+                        )
+                      )
+          ->condition('delta', 'news-news_block')
+          ->execute();
+}
+
 function _ss_basic_page($title, $body) {
 
   $node = new StdClass();
