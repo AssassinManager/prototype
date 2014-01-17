@@ -50,12 +50,19 @@ function _get_user_subscriptions($user) {
 	return $subscriptions;
 }
 function _get_user_info($user) {
-	return array( 	"name" => am_tools_user_name($user),
-					"phone" => $user->field_phone['und'][0]['value'],
-					"email" => $user->mail,
-					"subscriptions" =>_get_user_subscriptions($user)
-				);
 
+  if (isset($user->field_phone['und'][0]['value'])) {
+    return array( "name" => am_tools_user_name($user),
+                  "phone" => $user->field_phone['und'][0]['value'],
+                  "email" => $user->mail,
+                  "subscriptions" =>_get_user_subscriptions($user)
+                );
+  }
+
+	return array( "name" => am_tools_user_name($user),
+      					"email" => $user->mail,
+      					"subscriptions" =>_get_user_subscriptions($user)
+      				);
 }
 
 /*
