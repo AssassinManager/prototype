@@ -1,0 +1,139 @@
+<?php
+
+require('suspend_config.inc');
+
+function suspend_default_rules_configuration() {
+    $configs = array();
+
+    $am_targets = '{ "rules_assign_targets_after_suspension" : {
+	  			     "LABEL" : "Assign Targets after Suspension",
+				     "PLUGIN" : "reaction rule",
+				     "OWNER" : "rules",
+				     "TAGS" : [ "Assassin Manager" ],
+				     "REQUIRES" : [ "rules", "target" ],
+				     "ON" : { "user_update" : [] },
+				     "IF" : [
+				       { "user_has_role" : { "account" : [ "account" ], "roles" : { "value" : { "5" : "5" } } } },
+				       { "AND" : [] },
+				       { "data_is" : { "data" : [ "account:field-suspended" ], "value" : 1 } }
+				     ],
+				     "DO" : [ { "am_targeting" : [] } ]
+				   	 }
+				  	}';
+
+  $configs['rules_am_targets_suspension'] = rules_import($am_targets);
+
+  return $configs;
+}
+
+
+/**
+ * User suspension handlers
+ */
+function suspend_am_custom_profile_alter(&$data) {
+	if (!in_array('Player', $data['#account']->roles)) return;
+	global $user;
+	if (!in_array('Organizer', $user->roles)) return;
+
+	$player = user_load($data['#account']->uid);
+
+	if ($player->field_alive['und'][0]['value'] == 0) return;
+
+	else if ($player->field_suspended['und'][0]['value'] == 0) {
+		$data['suspend_button_suspend'] = drupal_get_form('suspend_button_suspend');
+	} else {
+		$data['suspend_button_suspend_d'] = drupal_get_form('suspend_button_suspend_d');
+	}
+}
+
+function suspend_button_suspend($form, &$form_state) {
+  	$form['suspend'] = array(
+                '#type' => 'button',
+                '#name' => 'Suspend',
+                '#value' => t('Suspend'),
+                '#ajax'  => array('callback' => '_suspend_suspend'),
+            );
+
+	return $form;
+}
+
+function suspend_button_suspend_d($form, &$form_state) {
+  	$form['suspend'] = array(
+                '#type' => 'button',
+                '#name' => 'suspend_d',
+                '#value' => t('Suspend'),
+                '#disabled' => true,
+            );
+
+	return $form;
+}
+
+function _suspend_suspend() {
+
+	// Get the user based on the calling form url
+	list($form, $form_state) = ajax_get_form();
+  	drupal_process_form($form['#form_id'], $form, $form_state);
+
+  	$path = parse_url($form["#action"], PHP_URL_PATH);
+	$pathFragments = explode('/', $path);
+	$user_name = end($pathFragments);
+  	$user = user_load_by_name($user_name);
+  	if (!isset($user)) {
+		drupal_set_message("Could not load user.", 'error');
+		return;
+  	}
+
+  	// Check if the user has any unfinished business
+	if (module_exists('target')) {
+
+	  	module_load_include('module', 'target', 'target');
+		if (_check_player_unconfirmed_kill($user->uid)) {
+			drupal_set_message(variable_get('player_pending_elimination'), 'warning');
+			return;
+		}
+	}
+
+	// Remove the current target and suspend the player
+	//$user->field_current_target = array();
+	$user->field_suspended['und'][0]['value'] = 1;
+	user_save($user);
+}
+
+function _suspend_unsuspend() {
+
+	module_load_include('module', 'am_tools', 'am_tools');
+	$players = am_tools_players_uids();
+	$players = am_tools_players_status($players);
+
+	if (count($players) < 3) {
+		drupal_set_message(variable_get('unsuspension_3_rule'), 'error');
+		return;
+	}
+
+	// Get the user based on the calling form url
+	list($form, $form_state) = ajax_get_form();
+  	drupal_process_form($form['#form_id'], $form, $form_state);
+
+  	$path = parse_url($form["#action"], PHP_URL_PATH);
+	$pathFragments = explode('/', $path);
+	$user_name = end($pathFragments);
+  	$user = user_load_by_name($user_name);
+
+	// Remove the current target and suspend the player
+	$user->field_suspended['und'][0]['value'] = 0;
+	user_save($user);
+}
+
+function _suspend_unconfirmed_kills($uid) {
+	$query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+            ->entityCondition('bundle', 'kill')
+            ->propertyCondition('status', 1)
+            ->propertyCondition('uid', $uid)
+            ->fieldCondition('field_confirmed', 'value', array(0));
+
+    $kills = $query->execute();
+
+    if (count($kills) < 1) return array();
+    return array_keys($kills['node']);
+}

@@ -1,0 +1,10 @@
+<?php
+
+require('leaderboard.views_default.inc');
+
+/**
+ * Implementation of hook_views_api.
+ */
+function leaderboard_views_api() {
+  return array("version" => "3.0");
+}

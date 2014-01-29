@@ -68,13 +68,19 @@ function module_filter_settings() {
     '#type' => 'checkbox',
     '#title' => t('Use switch instead of checkbox'),
     '#description' => t('This is purely cosmetic (at least for now). Displays a ON/OFF switch rather than a checkbox to enable/disable modules.<br /><strong>Modules will not actually be enabled/disabled until the form is saved.</strong>'),
-    '#default_value' => variable_get('module_filter_use_switch', 1),
+    '#default_value' => variable_get('module_filter_use_switch', 0),
   );
   $form['tabs']['module_filter_track_recent_modules'] = array(
     '#type' => 'checkbox',
     '#title' => t('Track recently enabled/disabled modules'),
     '#description' => t('Adds a "Recent" tab that displays modules that have been enabled or disabled with the last week.'),
     '#default_value' => variable_get('module_filter_track_recent_modules', 1),
+  );
+  $form['tabs']['module_filter_remember_active_tab'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Remember active tab.'),
+    '#description' => t('When enabled, the active tab will be remembered.'),
+    '#default_value' => variable_get('module_filter_remember_active_tab', 1),
   );
 
   $form['update'] = array(

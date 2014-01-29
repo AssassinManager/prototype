@@ -1,9 +1,9 @@
 <?php
 
+require('license_to_kill_form.inc');
 require('license_generation.inc');
 require('license_requirement.inc');
 require('license_export.inc');
-//require('license_display.inc');
 
 /**
  * Implementation of hook_views_api.

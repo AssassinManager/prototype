@@ -10,6 +10,50 @@
 function user_fields_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'node-page-body'
+  $field_instances['node-page-body'] = array(
+    'bundle' => 'page',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(
+          'trim_length' => 600,
+        ),
+        'type' => 'text_summary_or_trimmed',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'body',
+    'label' => 'Body',
+    'required' => FALSE,
+    'settings' => array(
+      'display_summary' => TRUE,
+      'text_processing' => 1,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 20,
+        'summary_rows' => 5,
+      ),
+      'type' => 'text_textarea_with_summary',
+      'weight' => -4,
+    ),
+  );
+
   // Exported field_instance: 'user-user-field_alive'
   $field_instances['user-user-field_alive'] = array(
     'bundle' => 'user',
@@ -26,7 +70,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 0,
+        'weight' => 3,
       ),
     ),
     'entity_type' => 'user',
@@ -61,7 +105,7 @@ function user_fields_field_default_field_instances() {
           'link' => FALSE,
         ),
         'type' => 'entityreference_label',
-        'weight' => 2,
+        'weight' => 5,
       ),
     ),
     'entity_type' => 'user',
@@ -92,7 +136,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 5,
+        'weight' => 0,
       ),
     ),
     'entity_type' => 'user',
@@ -126,7 +170,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 6,
+        'weight' => 1,
       ),
     ),
     'entity_type' => 'user',
@@ -148,73 +192,6 @@ function user_fields_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'user-user-field_license_code'
-  $field_instances['user-user-field_license_code'] = array(
-    'bundle' => 'user',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'text',
-        'settings' => array(),
-        'type' => 'text_default',
-        'weight' => 7,
-      ),
-    ),
-    'entity_type' => 'user',
-    'field_name' => 'field_license_code',
-    'label' => 'License code',
-    'required' => 1,
-    'settings' => array(
-      'text_processing' => 0,
-      'user_register_form' => 1,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'text',
-      'settings' => array(
-        'size' => 60,
-      ),
-      'type' => 'text_textfield',
-      'weight' => 1,
-    ),
-  );
-
-  // Exported field_instance: 'user-user-field_pending_target'
-  $field_instances['user-user-field_pending_target'] = array(
-    'bundle' => 'user',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 3,
-      ),
-    ),
-    'entity_type' => 'user',
-    'field_name' => 'field_pending_target',
-    'label' => 'Pending target',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => 0,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'options',
-      'settings' => array(),
-      'type' => 'options_select',
-      'weight' => 10,
-    ),
-  );
-
   // Exported field_instance: 'user-user-field_phone'
   $field_instances['user-user-field_phone'] = array(
     'bundle' => 'user',
@@ -227,7 +204,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'phone',
         'settings' => array(),
         'type' => 'phone',
-        'weight' => 1,
+        'weight' => 4,
       ),
     ),
     'entity_type' => 'user',
@@ -268,7 +245,7 @@ function user_fields_field_default_field_instances() {
           'thousand_separator' => ' ',
         ),
         'type' => 'number_integer',
-        'weight' => 9,
+        'weight' => 2,
       ),
     ),
     'entity_type' => 'user',
@@ -291,6 +268,37 @@ function user_fields_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'user-user-field_subscriptions'
+  $field_instances['user-user-field_subscriptions'] = array(
+    'bundle' => 'user',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Would you like to be notified of messages?',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 11,
+      ),
+    ),
+    'entity_type' => 'user',
+    'field_name' => 'field_subscriptions',
+    'label' => 'Subscriptions',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => 0,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(),
+      'type' => 'options_buttons',
+      'weight' => 12,
+    ),
+  );
+
   // Exported field_instance: 'user-user-field_suspended'
   $field_instances['user-user-field_suspended'] = array(
     'bundle' => 'user',
@@ -307,7 +315,7 @@ function user_fields_field_default_field_instances() {
         'module' => 'list',
         'settings' => array(),
         'type' => 'list_default',
-        'weight' => 8,
+        'weight' => 10,
       ),
     ),
     'entity_type' => 'user',
@@ -321,58 +329,25 @@ function user_fields_field_default_field_instances() {
       'active' => 1,
       'module' => 'options',
       'settings' => array(
-        'display_label' => 0,
+        'display_label' => 1,
       ),
       'type' => 'options_onoff',
       'weight' => 7,
     ),
   );
 
-  // Exported field_instance: 'user-user-field_terminated_targets'
-  $field_instances['user-user-field_terminated_targets'] = array(
-    'bundle' => 'user',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 4,
-      ),
-    ),
-    'entity_type' => 'user',
-    'field_name' => 'field_terminated_targets',
-    'label' => 'Terminated targets',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => 0,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'options',
-      'settings' => array(),
-      'type' => 'options_buttons',
-      'weight' => 11,
-    ),
-  );
-
   // Translatables
   // Included for use with string extractors like potx.
   t('Alive');
+  t('Body');
   t('Current target');
   t('First name');
   t('Last Name');
-  t('License code');
-  t('Pending target');
   t('Phone');
   t('Rank');
+  t('Subscriptions');
   t('Suspended');
-  t('Terminated targets');
+  t('Would you like to be notified of messages?');
 
   return $field_instances;
 }

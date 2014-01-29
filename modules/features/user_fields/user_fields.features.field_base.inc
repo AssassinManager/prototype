@@ -130,71 +130,6 @@ function user_fields_field_default_field_bases() {
     'type' => 'text',
   );
 
-  // Exported field_base: 'field_license_code'
-  $field_bases['field_license_code'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_license_code',
-    'foreign keys' => array(
-      'format' => array(
-        'columns' => array(
-          'format' => 'format',
-        ),
-        'table' => 'filter_format',
-      ),
-    ),
-    'indexes' => array(
-      'format' => array(
-        0 => 'format',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'text',
-    'settings' => array(
-      'max_length' => 8,
-    ),
-    'translatable' => 0,
-    'type' => 'text',
-  );
-
-  // Exported field_base: 'field_pending_target'
-  $field_bases['field_pending_target'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_pending_target',
-    'foreign keys' => array(
-      'users' => array(
-        'columns' => array(
-          'target_id' => 'uid',
-        ),
-        'table' => 'users',
-      ),
-    ),
-    'indexes' => array(
-      'target_id' => array(
-        0 => 'target_id',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'entityreference',
-    'settings' => array(
-      'handler' => 'base',
-      'handler_settings' => array(
-        'sort' => array(
-          'type' => 'none',
-        ),
-        'target_bundles' => array(),
-      ),
-      'target_type' => 'user',
-    ),
-    'translatable' => 0,
-    'type' => 'entityreference',
-  );
-
   // Exported field_base: 'field_phone'
   $field_bases['field_phone'] = array(
     'active' => 1,
@@ -229,6 +164,32 @@ function user_fields_field_default_field_bases() {
     'type' => 'number_integer',
   );
 
+  // Exported field_base: 'field_subscriptions'
+  $field_bases['field_subscriptions'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_subscriptions',
+    'foreign keys' => array(),
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'settings' => array(
+      'allowed_values' => array(
+        'Email' => 'Email',
+        'SMS' => 'SMS',
+      ),
+      'allowed_values_function' => '',
+    ),
+    'translatable' => 0,
+    'type' => 'list_text',
+  );
+
   // Exported field_base: 'field_suspended'
   $field_bases['field_suspended'] = array(
     'active' => 1,
@@ -253,42 +214,6 @@ function user_fields_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'list_boolean',
-  );
-
-  // Exported field_base: 'field_terminated_targets'
-  $field_bases['field_terminated_targets'] = array(
-    'active' => 1,
-    'cardinality' => -1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_terminated_targets',
-    'foreign keys' => array(
-      'users' => array(
-        'columns' => array(
-          'target_id' => 'uid',
-        ),
-        'table' => 'users',
-      ),
-    ),
-    'indexes' => array(
-      'target_id' => array(
-        0 => 'target_id',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'entityreference',
-    'settings' => array(
-      'handler' => 'base',
-      'handler_settings' => array(
-        'sort' => array(
-          'type' => 'none',
-        ),
-        'target_bundles' => array(),
-      ),
-      'target_type' => 'user',
-    ),
-    'translatable' => 0,
-    'type' => 'entityreference',
   );
 
   return $field_bases;

@@ -1,0 +1,127 @@
+<?php
+
+require("player_profile_buttons.inc");
+require("player_profile_table.inc");
+require("player_profile_page.inc");
+
+/**
+ * Implements hook_user_view_alter
+ */
+function player_profile_user_view_alter(&$build) {
+
+	unset($build['summary']);
+  drupal_alter('am_custom_profile', $build);
+
+  $build['player_profile_table'] = drupal_get_form('pp_table_form');
+  $build['pp_player_status'] = player_profile_pp_status($build);
+  $build['pp_game_status'] = player_profile_pp_game($build);
+  $build['pp_kill_count'] = player_profile_kill_count($build);
+
+  unset($build['field_alive']);
+  unset($build['field_suspended']);
+  unset($build['field_current_target']);
+
+  unset($build['field_first_name']);
+  unset($build['field_last_name']);
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+ function player_profile_form_alter(&$form, $form_state, $form_id) {
+    if ($form_id === 'user_profile_form') {
+
+      global $user;
+
+      if (isset($form['picture'])) unset($form['picture']);
+
+      if (in_array('administrator', $user->roles)) return;
+
+      if (in_array('Player', $user->roles) && $form['#user']->uid == $user->uid) {
+        $form['field_license_code']['#disabled'] = true;
+
+        unset($form['field_current_target']);
+        unset($form['field_suspended']);
+        unset($form['field_alive']);
+        unset($form['field_rank']);
+
+        return;
+      }
+
+      if (in_array('Organizer', $user->roles) && $form['#user']->uid != $user->uid) {
+
+        $form['field_first_name']['#disabled'] = true;
+        $form['field_last_name']['#disabled'] = true;
+        $form['field_phone']['#disabled'] = true;
+
+        $form['field_alive']['#disabled'] = true;
+        $form['field_subscriptions']['#disabled'] = true;
+
+        unset($form['field_rank']);
+
+        return;
+      }
+
+      if (in_array('Organizer', $user->roles) && $form['#user']->uid == $user->uid) {
+
+        unset($form['account']['roles']);
+        unset($form['account']['status']);
+
+        unset($form['field_current_target']);
+        unset($form['field_subscriptions']);
+        unset($form['field_license_code']);
+        unset($form['field_suspended']);
+        unset($form['field_alive']);
+        unset($form['field_rank']);
+      }
+    }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function player_profile_preprocess_page(&$vars) {
+
+  $num_arg = 0;
+  while (arg($num_arg)) {
+    $num_arg++;
+  }
+  
+  if(arg(0) =='user' && arg($num_arg-1) != 'edit') {
+  	if (!isset($vars['page']['content']['system_main']['#account'])) return;
+  	
+    $user = $vars['page']['content']['system_main']['#account'];
+    $name = $user->field_first_name['und'][0]['value'];
+    $name .= " ";
+    $name .= $user->field_last_name['und'][0]['value'];
+    $vars['title']=t($name); 
+  } 
+  else if (arg(0) =='user' && arg($num_arg-1) == 'edit') {
+    $vars['title']=t('Edit Profile'); 
+  }
+}
+
+
+/*
+ * Example of the connector
+ */
+/*
+function player_profile_am_custom_profile_alter(&$data) {
+  $data['_profile_form'] = drupal_get_form('_profile_form');
+}
+
+function _profile_form($form, &$form_state) {
+  $form['profile'] = array(
+                '#type' => 'button',
+                '#name' => 'profile',
+                '#value' => t('profile'),
+                '#ajax'  => array('callback' => '_do_stuff'),
+            );
+
+  return $form;
+}
+
+function _do_stuff() {
+  echo 1;
+}
+*/

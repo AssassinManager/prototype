@@ -1,0 +1,74 @@
+<?php
+
+function am_get_game_nid() {
+	$query = db_select('node', 'n')
+		->fields('n', array('nid'))
+		->condition('type', 'game', '=')
+		->execute()
+		->fetch();
+
+	if (!isset($query->nid)) return NULL;
+
+	return $query->nid;
+}
+
+function am_check_game_started() {
+	$game_nid = am_get_game_nid();
+	if ($game_nid > 0) {
+		$game = node_load($game_nid);
+		$start_date = $game->field_time['und'][0]['value'];
+		$start_date = strtotime($start_date);
+
+		if ($start_date < time()) return true;
+	}
+	return false;
+}
+
+function am_tools_user_name($user) {
+	
+	if (!is_object($user)) return "na";
+
+	$name = $user->field_first_name['und'][0]['value'];
+	$name .= " ";
+	$name .= $user->field_last_name['und'][0]['value'];
+
+	if (strlen($name) <= 1) return "na";
+
+	return $name;
+}
+
+function am_tools_players_uids() {
+	$uids = array();
+
+	$rid = array_search('Player', user_roles());
+
+	$user_query = db_select('users_roles', 'ur')
+				->fields('ur', array('uid'))
+				->condition('uid', 0, '!=')
+				->condition('rid', $rid, '=');
+	$result = $user_query->execute();
+
+	while($record = $result->fetchAssoc()) {
+		array_push($uids, $record['uid']);
+    }
+
+	return $uids;
+}
+
+/**
+ * Check if players is alive and not suspended
+ * and return the ones that are not
+ */
+function am_tools_players_status($uids) {
+
+	$query = new EntityFieldQuery();
+	$query->entityCondition('entity_type', 'user')
+	    ->propertyCondition('uid', $uids, 'IN')
+	    ->propertyCondition('status', 1)
+	    ->fieldCondition('field_suspended', 'value', array(0))
+	    ->fieldCondition('field_alive', 'value', array(1));
+	$entities = $query->execute();
+
+	if (count($entities) < 1) return array();
+	return array_keys($entities['user']);
+}

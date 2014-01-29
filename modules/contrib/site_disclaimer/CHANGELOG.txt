@@ -1,0 +1,19 @@
+site_disclaimer 7.x-1.x-dev
+---------------------------
+[#1898636] by iva2k: The disclaimer is displayed incorrectly for users with 'administer users' permission
+[#1926216] by iva2k: The disclaimer node does not show images from image field (or any other fields)
+
+
+site_disclaimer 7.x-1.2
+-----------------------
+[#1889928] by iva2k: Updated integration with i18n_variable.
+[NOISSUE] by iva2k: Added hooks for variable.module
+[NOISSUE] by iva2k: Preview forms on the multilingual settings page in the selected language
+[#1895322] by iva2k: Fix configuration page not submitting in Opera
+
+
+site_disclaimer 7.x-1.1
+-----------------------
+[NOISSUE] by iva2k: Initial commit
+
+

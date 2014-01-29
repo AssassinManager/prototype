@@ -1,0 +1,11 @@
+name = Game Page
+description = Layout & items for game page
+package = Assassin Manager - Modules
+
+dependencies[] = game_content_type
+dependencies[] = am_tools
+
+core = 7.x
+php = 5.x
+
+version = 7.x-1.0

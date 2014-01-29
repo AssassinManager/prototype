@@ -1,0 +1,14 @@
+name = Targeting & Kill System
+description = Targeting and Elimination System
+package = Assassin Manager - Modules
+
+dependencies[] = kill_content_type
+dependencies[] = user_fields
+dependencies[] = rules
+
+dependencies[] = am_tools
+
+core = 7.x
+php = 5.x
+
+version = 7.x-1.0-beta3
