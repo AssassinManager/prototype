@@ -15,6 +15,7 @@ function user_fields_user_default_permissions() {
     'name' => 'access user profiles',
     'roles' => array(
       'Organizer' => 'Organizer',
+      'Player' => 'Player',
       'administrator' => 'administrator',
     ),
     'module' => 'user',
