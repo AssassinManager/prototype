@@ -42,6 +42,7 @@ _ss_basic_page(_get_r_l_title(), '');
 print("Configuring Blocks\n");
 _ss_setup_blocks();
 _ss_setup_count_block();
+_ss_setup_news_block();
 
 
 ////// * Front pages * //////
@@ -69,7 +70,7 @@ $result = db_insert('login_destination')
           ->fields(array(
                         'id' => 1,
                         'triggers' => "a:1:{s:5:\"login\";s:5:\"login\";}",
-                        'roles' => "a:2:{i:3;s:1:\"3\";i:4;s:1:\"4\";i:5;s:1:\"5\";}",
+                        'roles' => "a:1:{i:5;s:1:\"5\";}",
                         'pages' => "",
                         'destination' => "<front>",
                         )
@@ -112,6 +113,17 @@ function _ss_setup_count_block() {
           ->condition('delta', 'jquery_countdown_timer')
           ->execute();
 }
+function _ss_setup_news_block() {
+  $result = db_update('block')
+          ->fields(array(
+                          'region' => 'sidebar_second',
+                          'status' => 1,
+                        )
+                      )
+          ->condition('delta', 'news-news_block')
+          ->execute();
+}
+
 function _ss_basic_page($title, $body) {
 
   $node = new StdClass();

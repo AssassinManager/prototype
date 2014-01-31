@@ -25,7 +25,7 @@ function am_check_game_started() {
 }
 
 function am_tools_user_name($user) {
-	
+
 	if (!is_object($user)) return "na";
 
 	$name = $user->field_first_name['und'][0]['value'];

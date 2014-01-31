@@ -20,7 +20,6 @@ function player_profile_user_view_alter(&$build) {
   unset($build['field_alive']);
   unset($build['field_suspended']);
   unset($build['field_current_target']);
-
   unset($build['field_first_name']);
   unset($build['field_last_name']);
 }

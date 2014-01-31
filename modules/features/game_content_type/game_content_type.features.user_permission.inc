@@ -20,6 +20,16 @@ function game_content_type_user_default_permissions() {
     'module' => 'node',
   );
 
+  // Exported permission: 'create game_rules content'.
+  $permissions['create game_rules content'] = array(
+    'name' => 'create game_rules content',
+    'roles' => array(
+      'Organizer' => 'Organizer',
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
+  );
+
   // Exported permission: 'delete any game content'.
   $permissions['delete any game content'] = array(
     'name' => 'delete any game content',
@@ -29,9 +39,27 @@ function game_content_type_user_default_permissions() {
     'module' => 'node',
   );
 
+  // Exported permission: 'delete any game_rules content'.
+  $permissions['delete any game_rules content'] = array(
+    'name' => 'delete any game_rules content',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
+  );
+
   // Exported permission: 'delete own game content'.
   $permissions['delete own game content'] = array(
     'name' => 'delete own game content',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
+  );
+
+  // Exported permission: 'delete own game_rules content'.
+  $permissions['delete own game_rules content'] = array(
+    'name' => 'delete own game_rules content',
     'roles' => array(
       'administrator' => 'administrator',
     ),
@@ -48,9 +76,29 @@ function game_content_type_user_default_permissions() {
     'module' => 'node',
   );
 
+  // Exported permission: 'edit any game_rules content'.
+  $permissions['edit any game_rules content'] = array(
+    'name' => 'edit any game_rules content',
+    'roles' => array(
+      'Organizer' => 'Organizer',
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
+  );
+
   // Exported permission: 'edit own game content'.
   $permissions['edit own game content'] = array(
     'name' => 'edit own game content',
+    'roles' => array(
+      'Organizer' => 'Organizer',
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node',
+  );
+
+  // Exported permission: 'edit own game_rules content'.
+  $permissions['edit own game_rules content'] = array(
+    'name' => 'edit own game_rules content',
     'roles' => array(
       'Organizer' => 'Organizer',
       'administrator' => 'administrator',

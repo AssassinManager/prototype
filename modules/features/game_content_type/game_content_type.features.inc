@@ -26,6 +26,14 @@ function game_content_type_node_info() {
       'title_label' => t('Title'),
       'help' => '',
     ),
+    'game_rules' => array(
+      'name' => t('Game Rules'),
+      'base' => 'node_content',
+      'description' => '',
+      'has_title' => '1',
+      'title_label' => t('Title'),
+      'help' => '',
+    ),
   );
   return $items;
 }

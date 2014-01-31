@@ -14,6 +14,19 @@ function _recipients_uids_read($message) {
 }
 
 /*
+ * Implements hook_node_view_alter
+ */
+function messaging_node_view_alter(&$build) {
+
+	if ($build['#node']->type != 'message') return;
+
+	unset($build['comments']['comment_form']['subject']);
+	unset($build['comments']['comment_form']['author']);
+
+	unset($build['comments']['comment_form']['field_read_by']);
+}
+
+/*
  * Implements hook_entity_view
  * Responds when the user views a message or a reply (comment)
  */

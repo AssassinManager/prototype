@@ -2,6 +2,20 @@
 
 require("game_table.inc");
 
+
+/**
+ * Implements hook_user_login
+ */
+function game_user_login(&$edit, $account) {
+  if (!(!isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset')) return;
+  if (!array_search('Organizer', $account->roles)) return;
+
+  module_load_include('module', 'am_tools', 'am_tools');
+  $nid = am_get_game_nid();
+  if ($nid == NULL) $GLOBALS['_GET']['destination'] = "node/add/game";
+  else              $GLOBALS['_GET']['destination'] = "node/" . $nid;
+}
+
 /**
  * Implements hook_user_view_alter
  */
@@ -24,6 +38,7 @@ function game_node_view_alter(&$build) {
 function game_form_alter(&$form, $form_state, $form_id) {
 
 	if ($form_id != 'game_node_form') return;
+  if (isset($form['nid'])) return;
 	
 	global $user;
 	if (!in_array('Organizer', $user->roles)) return;
@@ -36,10 +51,22 @@ function game_form_alter(&$form, $form_state, $form_id) {
  * Implements hook_node_insert().
  */
 function game_node_insert($node) {
-  if ($node->type != 'game') return;
+  if ($node->type == 'game') {
   // Set the countdown timer
-  $end_time = strtotime($node->field_time['und'][0]['value2']);
-  variable_set('jquery_countdown_timer_date', date('Y-m-d G:i:s', $end_time));
+    $end_time = strtotime($node->field_time['und'][0]['value2']);
+    variable_set('jquery_countdown_timer_date', date('Y-m-d G:i:s', $end_time));
+
+    global $user;
+    if (!in_array('Organizer', $user->roles)) return;
+    $GLOBALS['_GET']['destination'] = "node/add/game-rules";
+  } 
+  else if ($node->type == 'game-rules') {
+    global $user;
+    if (!in_array('Organizer', $user->roles)) return;
+
+    module_load_include('module', 'am_tools', 'am_tools');
+    $GLOBALS['_GET']['destination'] = "node/" . am_get_game_nid();
+  }
 }
 
 

@@ -50,12 +50,19 @@ function _get_user_subscriptions($user) {
 	return $subscriptions;
 }
 function _get_user_info($user) {
-	return array( 	"name" => am_tools_user_name($user),
-					"phone" => $user->field_phone['und'][0]['value'],
-					"email" => $user->mail,
-					"subscriptions" =>_get_user_subscriptions($user)
-				);
 
+  if (isset($user->field_phone['und'][0]['value'])) {
+    return array( "name" => am_tools_user_name($user),
+                  "phone" => $user->field_phone['und'][0]['value'],
+                  "email" => $user->mail,
+                  "subscriptions" =>_get_user_subscriptions($user)
+                );
+  }
+
+	return array( "name" => am_tools_user_name($user),
+      					"email" => $user->mail,
+      					"subscriptions" =>_get_user_subscriptions($user)
+      				);
 }
 
 /*
@@ -177,10 +184,11 @@ function _messaging_am_notify($message) {
           _messaging_am_mail($msg_subject, $msg_body, $from_email, $from_name, $emails);
       }
       if (count($phones) > 0) {
-          $from_phone = $from_user->field_phone['und'][0]['value'];
-          if (!isset($from_phone) || strlen($from_phone) < 1) $from_phone = variable_get('twilio_number');
+        $from_phone = variable_get('twilio_number');
+        if (isset($from_user->field_phone['und'][0]['value']) && strlen($from_phone) >= 10) 
+        $from_phone = $from_user->field_phone['und'][0]['value'];
 
-          _messaging_am_sms($msg_subject, $msg_body, $from_phone, $from_name, $phones);
+        _messaging_am_sms($msg_subject, $msg_body, $from_phone, $from_name, $phones);
       }
     } 
 }

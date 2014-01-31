@@ -3,7 +3,7 @@
 
 echo "BEGIN Assassin Manager Install"
 
-drush site-install assassin_manager_dev --db-url=mysql://root:drupaladm1n@localhost/am --site-name="Assassin Manager" --account-name=admin --account-pass=99REDballoons
+drush site-install assassin_manager_dev --db-url=mysql://root:drupaladm1n@localhost/am1 --site-name="Assassin Manager 1" --account-name=admin --account-pass=99REDballoons
 echo
 
 drush scr setup_site.php

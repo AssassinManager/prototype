@@ -1,0 +1,42 @@
+<?php
+
+
+/**
+ * Implements hook_field_default_fields_alter().
+ *
+ * Alter the default fields right before they are cached into the database.
+ *
+ * @param &$fields
+ *   By reference. The fields that have been declared by another feature.
+ */
+function am_test_field_default_fields_alter(&$fields) {
+  // Check the user picture field
+	watchdog("fields", "<pre>" . print_r($fields, 1) . "</pre>");
+
+  if (isset($fields['user-user-field_user_picture'])) {
+    // See if a default image hasn't been set for this field yet
+    if (!$fields['user-user-field_user_picture']['field_config']['settings']['default_image']) {
+      // Dynamically set the user default image on the field
+      $filename = 'default_user.png';
+      $destination = file_default_scheme() . '://' . $filename;
+      // Check to see if it exists already
+      $query = db_select('file_managed', 'f');
+      $query->fields('f', array('fid'));
+      $query->condition('f.uri', $destination);
+      $result = $query->execute();
+      if ((!$fid = $result->fetchField())) {
+        // Simulate an upload of the default user image
+        $file = new stdClass;
+        $file->uid = 1;
+        $file->filename = $filename;
+        $file->status = 1;
+        $file->timestamp = REQUEST_TIME;
+        $file->uri = drupal_get_path('module', 'mymodule') . '/theme/images/' . $file->filename;
+        $file->filemime = 'image/png';
+        $file = file_copy($file, 'public://', FILE_EXISTS_REPLACE);
+        $fid = $file->fid;
+      }
+      $fields['user-user-field_user_picture']['field_config']['settings']['default_image'] = (string) $fid;
+    }
+  }
+}
