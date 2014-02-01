@@ -46,6 +46,10 @@ function suspend_button_suspend_d($form, &$form_state) {
 
 function _suspend_suspend() {
 
+	module_load_include('inc', 'popup', 'includes/popup.api');
+	popup_ui_confirm("Are you sure you want to suspend xxx?", "Some msg", "google.com", $attributes = array());
+	/*
+
 	// Get the user based on the calling form url
 	list($form, $form_state) = ajax_get_form();
   	drupal_process_form($form['#form_id'], $form, $form_state);
@@ -73,6 +77,7 @@ function _suspend_suspend() {
 	//$user->field_current_target = array();
 	$user->field_suspended['und'][0]['value'] = 1;
 	user_save($user);
+	*/
 }
 
 function _suspend_unconfirmed_kills($uid) {
