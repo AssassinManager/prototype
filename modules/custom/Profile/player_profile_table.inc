@@ -15,14 +15,18 @@ function pp_table_form($form, &$form_state) {
 
   // test if the user is suspended
   if ($player->field_suspended['und'][0]['value'] != 1) {
-      $pending_target = _get_target_pending($player);
-      if (count($pending_target) < 1) $current_target = _get_target_current($player);
+
+      if (!_target_pending_death_warrant($player->uid)) {
+        $pending_target = _get_target_pending($player);
+        if (count($pending_target) < 1) $current_target = _get_target_current($player);
+      }
   }
 
   module_load_include('module', 'am_tools', 'am_tools');
   foreach ($killed_targets as $idx => $uid) {
     $killed_targets[$idx] = am_tools_user_name(user_load($uid));
   }
+
   if (count($current_target) > 0) 
     $current_target[0] = am_tools_user_name(user_load($current_target[0]));
   if (count($pending_target) > 0) 

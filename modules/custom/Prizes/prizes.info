@@ -1,0 +1,8 @@
+name = AM Prizes
+description = Adds in a default image to a prize
+package = Assassin Manager - Modules
+
+core = 7.x
+php = 5.x
+
+version = 7.x-1.0
