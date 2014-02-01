@@ -9,6 +9,10 @@ function player_profile_pp_status($build) {
   if ($suspended)   $status = 'Suspended!';
   else if (!$alive) $status = 'Eliminated!';
 
+  if (!$suspended && $alive) {
+    if (_target_pending_death_warrant($build['#account']->uid)) $status = "Pending elimination...";
+  }
+
   return $form['player_status'] = array(
                 '#type' => 'item',
                 '#title' => t('Your Status:'),
