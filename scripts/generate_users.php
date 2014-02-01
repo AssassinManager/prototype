@@ -57,6 +57,29 @@ function _create_players($num) {
     $names[$name] = '';
   }
 
+  // Creating an Organizer
+  $license_code = _get_new_license();
+	$license = $license_code->field_license;
+
+	$first_name = array('und' => array(array('value' => 'The', 'safe_value' => 'The')));
+	$last_name = array('und' => array(array('value' => 'Organizer', 'safe_value' => 'Organizer')));
+
+	$roles = array_search('Organizer', user_roles());
+	$edit = array(
+	  'pass'    => '99REDballoons',
+	  'name'    => 'organizer',
+	  'mail'    => 'organizer@gmail.com',
+	  'status'  => 1,
+	  'roles' => drupal_map_assoc(array($roles)),
+	  'field_first_name' => $first_name,
+	  'field_last_name' => $last_name,
+	  'field_license_code' => $license,
+	);
+
+	$account = user_save(drupal_anonymous_user(), $edit);
+	node_delete($license_code->nid);
+
+  // Creating players
   foreach ($names as $name => $value) {
 
     $license_code = _get_new_license();
