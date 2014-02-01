@@ -1,0 +1,25 @@
+<?php
+
+
+/**
+ * Implements hook_node_insert()
+ */
+function prizes_node_insert($node) {
+  if ($node->type != 'prize') return;
+
+  $prize_img = 'prize.png';
+  $filepath = drupal_realpath('sites/all/modules/custom/prizes/' . $prize_img);
+  // Create managed File object and associate with Image field.
+  $file = (object) array(
+    'uid' => 1,
+    'uri' => $filepath,
+    'filemime' => file_get_mimetype($filepath),
+    'status' => 1,
+  );
+
+
+  $uri = 'public://' . $prize_img;
+  if (!file_exists($uri)) $file = file_copy($file, 'public://');
+
+  $node->field_image[LANGUAGE_NONE][0] = (array)$file;
+}
