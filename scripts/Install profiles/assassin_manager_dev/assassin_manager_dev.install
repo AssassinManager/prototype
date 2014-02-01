@@ -188,6 +188,10 @@ function assassin_manager_dev_install() {
   db_insert('users_roles')
     ->fields(array('uid' => 1, 'rid' => $admin_role->rid))
     ->execute();
+    
+  db_insert('users_roles')
+    ->fields(array('uid' => 1, 'rid' => $org_role->rid))
+    ->execute();
 
   // Create a Home link in the main menu.
   $item = array(
